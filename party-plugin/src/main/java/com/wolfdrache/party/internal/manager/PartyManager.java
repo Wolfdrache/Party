@@ -98,6 +98,9 @@ public class PartyManager {
         if (pendingInvites.getOrDefault(player, Set.of()).isEmpty()) {
             pendingInvites.remove(player);
         }
+        for (Player member : getPartyMembers(player)) {
+            MessageHelper.sendMessage(member, player.getName() + " §aist der Party beigetreten.");
+        }
     }
 
     public List<Player> getPartyMembers(Player player) {
