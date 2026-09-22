@@ -1,9 +1,9 @@
 package com.wolfdrache.party;
 
 import com.wolfdrache.party.api.PartyService;
-import com.wolfdrache.party.internal.commands.PartyCommand;
-import com.wolfdrache.party.internal.listener.ConnectionListener;
-import com.wolfdrache.party.internal.manager.PartyManager;
+import com.wolfdrache.party.internal.commands.*;
+import com.wolfdrache.party.internal.listener.*;
+import com.wolfdrache.party.internal.manager.*;
 import com.wolfdrache.party.service.PartyServiceImpl;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.ServicePriority;
@@ -24,6 +24,7 @@ public class Party extends JavaPlugin {
         Bukkit.getServicesManager().register(PartyService.class, this.partyService, this, ServicePriority.Normal);
 
         getCommand("party").setExecutor(new PartyCommand(partyManager));
+        getCommand("partychat").setExecutor(new PartyChatCommand(partyManager));
 
         getServer().getPluginManager().registerEvents(new ConnectionListener(partyManager), this);
         getLogger().info("Party has been enabled!");

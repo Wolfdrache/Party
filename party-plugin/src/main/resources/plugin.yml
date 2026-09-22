@@ -9,3 +9,7 @@ commands:
   party:
     description: partyCommand
     usage: /party <subcommand> [args]
+  partychat:
+    description: partyChatCommand
+    usage: /partychat <message>
+    aliases: [pc]

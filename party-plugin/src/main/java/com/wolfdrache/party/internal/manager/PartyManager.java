@@ -9,6 +9,7 @@ import java.util.Set;
 
 import org.bukkit.entity.Player;
 
+import com.wolfdrache.party.internal.helper.MessageHelper;
 import com.wolfdrache.party.internal.models.PartyData;
 
 public class PartyManager {
@@ -21,7 +22,7 @@ public class PartyManager {
             partyData = new PartyData(player);
             partyDataMap.put(player, partyData);
         }
-        target.sendMessage(player.getName() + " hat dich zu einer Party eingeladen.");
+        MessageHelper.sendMessage(target, player.getName() + " hat dich zu einer Party eingeladen.");
         partyData.invited.add(target);
         
         pendingInvites.computeIfAbsent(target, k -> new HashSet<>()).add(player);
@@ -33,6 +34,9 @@ public class PartyManager {
             return;
         }
         if (partyData.leader.equals(player)) {
+            for (Player member : getPartyMembers(player)) {
+                MessageHelper.sendMessage(member, target.getName() + " §cwurde aus der Party entfernt.");
+            }
             partyData.members.remove(target);
             partyDataMap.remove(target);
         }
@@ -45,7 +49,7 @@ public class PartyManager {
         }
 
         for (Player member : getPartyMembers(player)) {
-            member.sendMessage(player.getName() + " hat die Party verlassen.");
+            MessageHelper.sendMessage(member, player.getName() + " §chat die Party verlassen.");
         }
 
         if (partyData.leader.equals(player)) {
@@ -54,6 +58,9 @@ public class PartyManager {
                 newLeader = partyData.members.get(0);
                 partyData.members.remove(0);
                 partyData.leader = newLeader;
+                for (Player member : getPartyMembers(player)) {
+                    MessageHelper.sendMessage(member, "§a" + newLeader.getName() + " ist nun der Party-Leader.");
+                }
             }
             partyDataMap.remove(player);
         } else {
@@ -68,19 +75,17 @@ public class PartyManager {
             return;
         }
         if (partyData.leader.equals(player)) {
-            for (Player member : partyData.members) {
+            for (Player member : getPartyMembers(player)) {
                 partyDataMap.remove(member);
-                member.sendMessage("Die Party wurde aufgelöst.");
+                MessageHelper.sendMessage(member, "§cDie Party wurde aufgelöst.");
             }
-            partyDataMap.remove(player);
-            player.sendMessage("Die Party wurde aufgelöst.");
         }
     }
 
     public void acceptInvite(Player player, Player target) {
         PartyData partyData = partyDataMap.get(target);
         if (partyData == null || !partyData.invited.contains(player) || !pendingInvites.getOrDefault(player, Set.of()).contains(target)) {
-            player.sendMessage("Die Einladung von " + target.getName() + " existiert nicht.");
+            MessageHelper.sendMessage(player, "§cDie Einladung von " + target.getName() + " existiert nicht.");
             return;
         }
         partyData.members.add(player);
