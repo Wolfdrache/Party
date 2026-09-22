@@ -20,7 +20,8 @@ public class PartyCommand implements TabExecutor {
         "leave",
         "disband",
         "accept",
-        "list"
+        "list",
+        "decline"
     );
     public PartyCommand(PartyManager partyManager) {
         this.partyManager = partyManager;
@@ -100,6 +101,19 @@ public class PartyCommand implements TabExecutor {
                     MessageHelper.sendMessage(player, "§7- " + member.getName());
                 }
             }
+            case "decline" -> {
+                if (args.length < 2) {
+                    MessageHelper.sendMessage(player, "§cNutzung: /party decline <Spieler>");
+                    return true;
+                }
+                String targetName = args[1];
+                Player target = Bukkit.getPlayer(targetName);
+                if (target == null) {
+                    MessageHelper.sendMessage(player, "§cSpieler nicht gefunden: " + targetName);
+                    return true;
+                }
+                partyManager.declineInvite(player, target);
+            }
         }
         return true;
     }
@@ -123,6 +137,11 @@ public class PartyCommand implements TabExecutor {
                     .filter(name -> name.startsWith(args[1]))
                     .toList();
             } else if ("accept".equalsIgnoreCase(subCommand)) {
+                return partyManager.getPendingInvites((Player) sender).stream()
+                    .map(player -> player.getName())
+                    .filter(name -> name.startsWith(args[1]))
+                    .toList();
+            } else if ("decline".equalsIgnoreCase(subCommand)) {
                 return partyManager.getPendingInvites((Player) sender).stream()
                     .map(player -> player.getName())
                     .filter(name -> name.startsWith(args[1]))

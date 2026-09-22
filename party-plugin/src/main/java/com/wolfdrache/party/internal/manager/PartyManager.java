@@ -22,7 +22,7 @@ public class PartyManager {
             partyData = new PartyData(player);
             partyDataMap.put(player, partyData);
         }
-        MessageHelper.sendMessage(target, player.getName() + " hat dich zu einer Party eingeladen.");
+        MessageHelper.sendPartyInviteMessage(player, target);
         partyData.invited.add(target);
         
         pendingInvites.computeIfAbsent(target, k -> new HashSet<>()).add(player);
@@ -125,5 +125,19 @@ public class PartyManager {
     public Player getPartyLeader(Player player) {
         PartyData partyData = partyDataMap.get(player);
         return partyData != null ? partyData.leader : null;
+    }
+
+    public void declineInvite(Player player, Player target) {
+        PartyData partyData = partyDataMap.get(target);
+        if (partyData == null || !partyData.invited.contains(player) || !pendingInvites.getOrDefault(player, Set.of()).contains(target)) {
+            MessageHelper.sendMessage(player, "§cDie Einladung von " + target.getName() + " existiert nicht.");
+            return;
+        }
+        partyData.invited.remove(player);
+        pendingInvites.getOrDefault(player, Set.of()).remove(target);
+        if (pendingInvites.getOrDefault(player, Set.of()).isEmpty()) {
+            pendingInvites.remove(player);
+        }
+        MessageHelper.sendMessage(player, "§cDu hast die Einladung von " + target.getName() + " abgelehnt.");
     }
 }

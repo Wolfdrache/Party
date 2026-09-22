@@ -5,6 +5,8 @@ import java.time.Duration;
 import org.bukkit.entity.Player;
 
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.kyori.adventure.title.Title;
 
@@ -29,5 +31,22 @@ public class MessageHelper {
 
     public static Component createComponent(String text) {
         return LegacyComponentSerializer.legacySection().deserialize(text);
+    }
+
+    public static void sendPartyInviteMessage(Player sender, Player target) {
+        Component message = createComponent("Du wurdest von " + sender.getName() + " zu einer Party eingeladen. ")
+            .append(
+                Component.text("[Annehmen]")
+                    .color(NamedTextColor.GREEN)
+                    .clickEvent(ClickEvent.runCommand("/party accept " + sender.getName()))
+            )
+            .append(Component.text(" "))
+            .append(
+                Component.text("[Ablehnen]")
+                    .color(NamedTextColor.RED)
+                    .clickEvent(ClickEvent.runCommand("/party decline " + sender.getName()))
+            );
+        Component finalMessage = createComponent(prefix).append(message);
+        target.sendMessage(finalMessage);
     }
 }
