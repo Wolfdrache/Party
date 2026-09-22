@@ -83,6 +83,9 @@ public class PartyManager {
     }
 
     public void acceptInvite(Player player, Player target) {
+        if (isInParty(player)) {
+            leaveParty(player);
+        }
         PartyData partyData = partyDataMap.get(target);
         if (partyData == null || !partyData.invited.contains(player) || !pendingInvites.getOrDefault(player, Set.of()).contains(target)) {
             MessageHelper.sendMessage(player, "§cDie Einladung von " + target.getName() + " existiert nicht.");
