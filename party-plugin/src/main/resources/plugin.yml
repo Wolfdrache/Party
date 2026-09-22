@@ -1,0 +1,11 @@
+name: Party
+version: ${project.version}
+main: com.wolfdrache.party.Party
+api-version: 1.19
+description: A party and friends plugin for Minecraft 1.19.3
+author: Wolfdrache
+
+commands:
+  party:
+    description: partyCommand
+    usage: /party <subcommand> [args]
