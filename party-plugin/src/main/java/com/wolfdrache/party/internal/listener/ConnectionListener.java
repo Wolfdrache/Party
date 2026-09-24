@@ -18,5 +18,6 @@ public class ConnectionListener implements Listener {
         if (partyManager.isInParty(event.getPlayer())) {
             partyManager.leaveParty(event.getPlayer());
         }
+        partyManager.cancelPendingInvites(event.getPlayer());
     }
 }

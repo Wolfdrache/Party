@@ -49,10 +49,6 @@ public class PartyCommand implements TabExecutor {
                     MessageHelper.sendMessage(player, "§cNutzung: /party invite <Spieler>");
                     return true;
                 }
-                if (partyManager.isInParty(player) && !partyManager.isPartyLeader(player)) {
-                    MessageHelper.sendMessage(player, "§cDu musst der Party-Leader sein, um Spieler einzuladen.");
-                    return true;
-                }
                 String targetName = args[1];
                 Player target = Bukkit.getPlayer(targetName);
                 if (target == null) {
@@ -60,7 +56,6 @@ public class PartyCommand implements TabExecutor {
                     return true;
                 }
                 partyManager.invitePlayer(player, target);
-                MessageHelper.sendMessage(player, "§aEinladung an " + targetName + " gesendet.");
             }
             case "kick" -> {
                 if (args.length < 2) {
@@ -136,12 +131,7 @@ public class PartyCommand implements TabExecutor {
                     .map(player -> player.getName())
                     .filter(name -> name.startsWith(args[1]))
                     .toList();
-            } else if ("accept".equalsIgnoreCase(subCommand)) {
-                return partyManager.getPendingInvites((Player) sender).stream()
-                    .map(player -> player.getName())
-                    .filter(name -> name.startsWith(args[1]))
-                    .toList();
-            } else if ("decline".equalsIgnoreCase(subCommand)) {
+            } else if ("accept".equalsIgnoreCase(subCommand) || "decline".equalsIgnoreCase(subCommand)) {
                 return partyManager.getPendingInvites((Player) sender).stream()
                     .map(player -> player.getName())
                     .filter(name -> name.startsWith(args[1]))

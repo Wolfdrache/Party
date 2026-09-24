@@ -24,13 +24,13 @@ public class PartyServiceImpl implements PartyService {
     }
 
     @Override
-    public void invitePlayer(Player player, Player target) {
-        partyManager.invitePlayer(player, target);
+    public void invitePlayer(Player player, Player invitedPlayer) {
+        partyManager.invitePlayer(player, invitedPlayer);
     }
 
     @Override
-    public void kickPlayer(Player player, Player target) {
-        partyManager.kickPlayer(player, target);
+    public void kickPlayer(Player player, Player playerToKick) {
+        partyManager.kickPlayer(player, playerToKick);
     }
 
     @Override
@@ -44,8 +44,8 @@ public class PartyServiceImpl implements PartyService {
     }
 
     @Override
-    public void acceptInvite(Player player, Player target) {
-        partyManager.acceptInvite(player, target);
+    public void acceptInvite(Player player, Player invitingPlayer) {
+        partyManager.acceptInvite(player, invitingPlayer);
     }
 
     @Override
