@@ -1,4 +1,4 @@
-package com.wolfdrache.party.internal.manager;
+package com.wolfdrache.party.party;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,8 +9,7 @@ import java.util.Set;
 
 import org.bukkit.entity.Player;
 
-import com.wolfdrache.party.internal.helper.MessageHelper;
-import com.wolfdrache.party.internal.models.PartyData;
+import com.wolfdrache.party.general.MessageHelper;
 
 public class PartyManager {
     private final Map<Player, PartyData> partyDataMap = new HashMap<>();
@@ -23,10 +22,10 @@ public class PartyManager {
             partyDataMap.put(player, partyData);
         }
         if (!partyData.leader.equals(player)) {
-            MessageHelper.sendMessage(player, "§cDu musst der Party-Leader sein, um Spieler einzuladen.");
+            MessageHelper.sendMessage(player, MessageHelper.Type.PARTY, "§cDu musst der Party-Leader sein, um Spieler einzuladen.");
             return;
         } else if (partyData.leader.equals(invitedPlayer) || partyData.members.contains(invitedPlayer)) {
-            MessageHelper.sendMessage(player, "§c" + invitedPlayer.getName() + " ist bereits in der Party.");
+            MessageHelper.sendMessage(player, MessageHelper.Type.PARTY, "§c" + invitedPlayer.getName() + " ist bereits in der Party.");
             return;
         }
         MessageHelper.sendPartyInviteMessage(player, invitedPlayer);
@@ -34,7 +33,7 @@ public class PartyManager {
         
         pendingInvites.computeIfAbsent(invitedPlayer, k -> new HashSet<>()).add(player);
         for (Player member : getPartyMembers(player)) {
-            MessageHelper.sendMessage(member, "§aEinladung an " + invitedPlayer.getName() + " gesendet.");
+            MessageHelper.sendMessage(member, MessageHelper.Type.PARTY, "§aEinladung an " + invitedPlayer.getName() + " gesendet.");
         }
     }
 
@@ -45,7 +44,7 @@ public class PartyManager {
         }
         if (partyData.leader.equals(player)) {
             for (Player member : getPartyMembers(player)) {
-                MessageHelper.sendMessage(member, playerToKick.getName() + " §cwurde aus der Party entfernt.");
+                MessageHelper.sendMessage(member, MessageHelper.Type.PARTY, playerToKick.getName() + " §cwurde aus der Party entfernt.");
             }
             partyData.members.remove(playerToKick);
             partyDataMap.remove(playerToKick);
@@ -59,7 +58,7 @@ public class PartyManager {
         }
 
         for (Player member : getPartyMembers(player)) {
-            MessageHelper.sendMessage(member, player.getName() + " §chat die Party verlassen.");
+            MessageHelper.sendMessage(member, MessageHelper.Type.PARTY, player.getName() + " §chat die Party verlassen.");
         }
 
         if (partyData.leader.equals(player)) {
@@ -69,7 +68,7 @@ public class PartyManager {
                 newLeader = partyData.members.get(0);
                 partyData.members.remove(0);
                 for (Player member : getPartyMembers(player)) {
-                    MessageHelper.sendMessage(member, "§a" + newLeader.getName() + " ist nun der Party-Leader.");
+                    MessageHelper.sendMessage(member, MessageHelper.Type.PARTY, "§a" + newLeader.getName() + " ist nun der Party-Leader.");
                 }
                 partyData.leader = newLeader;
             }
@@ -95,7 +94,7 @@ public class PartyManager {
         if (partyData.leader.equals(player)) {
             for (Player member : getPartyMembers(player)) {
                 partyDataMap.remove(member);
-                MessageHelper.sendMessage(member, "§cDie Party wurde aufgelöst.");
+                MessageHelper.sendMessage(member, MessageHelper.Type.PARTY, "§cDie Party wurde aufgelöst.");
             }
             for (Player invited : partyData.invited) {
                 Set<Player> invites = pendingInvites.getOrDefault(invited, Set.of());
@@ -113,7 +112,7 @@ public class PartyManager {
         }
         PartyData partyData = partyDataMap.get(invitingPlayer);
         if (partyData == null || !partyData.invited.contains(player) || !pendingInvites.getOrDefault(player, Set.of()).contains(invitingPlayer)) {
-            MessageHelper.sendMessage(player, "§cDie Einladung von " + invitingPlayer.getName() + " existiert nicht.");
+            MessageHelper.sendMessage(player, MessageHelper.Type.PARTY, "§cDie Einladung von " + invitingPlayer.getName() + " existiert nicht.");
             return;
         }
         partyData.members.add(player);
@@ -124,7 +123,7 @@ public class PartyManager {
             pendingInvites.remove(player);
         }
         for (Player member : getPartyMembers(player)) {
-            MessageHelper.sendMessage(member, player.getName() + " §aist der Party beigetreten.");
+            MessageHelper.sendMessage(member, MessageHelper.Type.PARTY, player.getName() + " §aist der Party beigetreten.");
         }
     }
 
@@ -161,7 +160,7 @@ public class PartyManager {
     public void declineInvite(Player player, Player invitingPlayer) {
         PartyData partyData = partyDataMap.get(invitingPlayer);
         if (partyData == null || !partyData.invited.contains(player) || !pendingInvites.getOrDefault(player, Set.of()).contains(invitingPlayer)) {
-            MessageHelper.sendMessage(player, "§cDie Einladung von " + invitingPlayer.getName() + " existiert nicht.");
+            MessageHelper.sendMessage(player, MessageHelper.Type.PARTY, "§cDie Einladung von " + invitingPlayer.getName() + " existiert nicht.");
             return;
         }
         partyData.invited.remove(player);
@@ -169,7 +168,7 @@ public class PartyManager {
         if (pendingInvites.getOrDefault(player, Set.of()).isEmpty()) {
             pendingInvites.remove(player);
         }
-        MessageHelper.sendMessage(player, "§cDu hast die Einladung von " + invitingPlayer.getName() + " abgelehnt.");
+        MessageHelper.sendMessage(player, MessageHelper.Type.PARTY, "§cDu hast die Einladung von " + invitingPlayer.getName() + " abgelehnt.");
     }
 
     public void cancelPendingInvites(Player player) {

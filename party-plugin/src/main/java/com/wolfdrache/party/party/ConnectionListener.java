@@ -1,10 +1,8 @@
-package com.wolfdrache.party.internal.listener;
+package com.wolfdrache.party.party;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
-
-import com.wolfdrache.party.internal.manager.PartyManager;
 
 public class ConnectionListener implements Listener {
     private final PartyManager partyManager;

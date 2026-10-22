@@ -1,4 +1,4 @@
-package com.wolfdrache.party.internal.models;
+package com.wolfdrache.party.party;
 
 import java.util.ArrayList;
 import java.util.List;

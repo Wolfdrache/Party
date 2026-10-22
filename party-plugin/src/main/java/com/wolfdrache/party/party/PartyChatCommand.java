@@ -1,4 +1,4 @@
-package com.wolfdrache.party.internal.commands;
+package com.wolfdrache.party.party;
 
 import java.util.List;
 
@@ -7,8 +7,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 
-import com.wolfdrache.party.internal.helper.MessageHelper;
-import com.wolfdrache.party.internal.manager.PartyManager;
+import com.wolfdrache.party.general.MessageHelper;
 
 public class PartyChatCommand implements TabExecutor {
     private final PartyManager partyManager;
@@ -24,14 +23,14 @@ public class PartyChatCommand implements TabExecutor {
             return true;
         }
         if (!partyManager.isInParty(player)) {
-            MessageHelper.sendMessage(player, "§cDu bist in keiner Party.");
+            MessageHelper.sendMessage(player, MessageHelper.Type.PARTY, "§cDu bist in keiner Party.");
             return true;
         }
         if (args.length > 0) {
             String message = String.join(" ", args);
             message = message.replace("&", "§");
             for (Player member : partyManager.getPartyMembers(player)) {
-                MessageHelper.sendMessage(member, player.getName() + ": " + message);
+                MessageHelper.sendMessage(member, MessageHelper.Type.PARTY, player.getName() + ": " + message);
             }
         }
         return true;

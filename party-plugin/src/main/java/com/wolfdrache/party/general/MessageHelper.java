@@ -1,4 +1,4 @@
-package com.wolfdrache.party.internal.helper;
+package com.wolfdrache.party.general;
 
 import java.time.Duration;
 
@@ -11,11 +11,19 @@ import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.kyori.adventure.title.Title;
 
 public class MessageHelper {
+    public static enum Type {
+        PARTY("§9§lParty §7 >> §r"),
+        FRIEND("§a§lFriend §7 >> §r");
+
+        public final String prefix;
+
+        Type(String prefix) {
+            this.prefix = prefix;
+        }
+    }
     
-    private static final String prefix = "§9§lParty §7 >> §r";
-    
-    public static void sendMessage(Player player, String message) {
-        player.sendMessage(prefix + message);
+    public static void sendMessage(Player player, Type type, String message) {
+        player.sendMessage(type.prefix + message);
     }
     
     public static void sendTitle(Player player, String title, String subtitle, int fadeIn, int stay, int fadeOut) {
@@ -46,7 +54,24 @@ public class MessageHelper {
                     .color(NamedTextColor.RED)
                     .clickEvent(ClickEvent.runCommand("/party decline " + sender.getName()))
             );
-        Component finalMessage = createComponent(prefix).append(message);
+        Component finalMessage = createComponent(Type.PARTY.prefix).append(message);
+        target.sendMessage(finalMessage);
+    }
+
+    public static void sendFriendRequestMessage(Player sender, Player target) {
+        Component message = createComponent("Du hast eine Freundschaftsanfrage von " + sender.getName() + " erhalten. ")
+            .append(
+                Component.text("[Annehmen]")
+                    .color(NamedTextColor.GREEN)
+                    .clickEvent(ClickEvent.runCommand("/friends accept " + sender.getName()))
+            )
+            .append(Component.text(" "))
+            .append(
+                Component.text("[Ablehnen]")
+                    .color(NamedTextColor.RED)
+                    .clickEvent(ClickEvent.runCommand("/friends deny " + sender.getName()))
+            );
+        Component finalMessage = createComponent(Type.FRIEND.prefix).append(message);
         target.sendMessage(finalMessage);
     }
 }

@@ -1,4 +1,4 @@
-package com.wolfdrache.party.internal.commands;
+package com.wolfdrache.party.party;
 
 import java.util.List;
 
@@ -8,8 +8,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 
-import com.wolfdrache.party.internal.helper.MessageHelper;
-import com.wolfdrache.party.internal.manager.PartyManager;
+import com.wolfdrache.party.general.MessageHelper;
 
 public class PartyCommand implements TabExecutor {
     private final PartyManager partyManager;
@@ -34,38 +33,38 @@ public class PartyCommand implements TabExecutor {
             return true;
         }
         if (args.length == 0) {
-            MessageHelper.sendMessage(player, "§cNutzung: /party <subcommand>");
+            MessageHelper.sendMessage(player, MessageHelper.Type.PARTY, "§cNutzung: /party <subcommand>");
             return true;
         }
         String subCommand = args[0].toLowerCase();
         if (!subCommands.contains(subCommand)) {
-            MessageHelper.sendMessage(player, "§cUnbekannter Unterbefehl: " + subCommand);
+            MessageHelper.sendMessage(player, MessageHelper.Type.PARTY, "§cUnbekannter Unterbefehl: " + subCommand);
             return true;
         }
 
         switch (subCommand) {
             case "invite" -> {
                 if (args.length < 2) {
-                    MessageHelper.sendMessage(player, "§cNutzung: /party invite <Spieler>");
+                    MessageHelper.sendMessage(player, MessageHelper.Type.PARTY, "§cNutzung: /party invite <Spieler>");
                     return true;
                 }
                 String targetName = args[1];
                 Player target = Bukkit.getPlayer(targetName);
                 if (target == null) {
-                    MessageHelper.sendMessage(player, "§cSpieler nicht gefunden: " + targetName);
+                    MessageHelper.sendMessage(player, MessageHelper.Type.PARTY, "§cSpieler nicht gefunden: " + targetName);
                     return true;
                 }
                 partyManager.invitePlayer(player, target);
             }
             case "kick" -> {
                 if (args.length < 2) {
-                    MessageHelper.sendMessage(player, "§cNutzung: /party kick <Spieler>");
+                    MessageHelper.sendMessage(player, MessageHelper.Type.PARTY, "§cNutzung: /party kick <Spieler>");
                     return true;
                 }
                 String targetName = args[1];
                 Player target = Bukkit.getPlayer(targetName);
                 if (target == null) {
-                    MessageHelper.sendMessage(player, "§cSpieler nicht gefunden: " + targetName);
+                    MessageHelper.sendMessage(player, MessageHelper.Type.PARTY, "§cSpieler nicht gefunden: " + targetName);
                     return true;
                 }
                 partyManager.kickPlayer(player, target);
@@ -78,33 +77,33 @@ public class PartyCommand implements TabExecutor {
             }
             case "accept" -> {
                 if (args.length < 2) {
-                    MessageHelper.sendMessage(player, "§cNutzung: /party accept <Spieler>");
+                    MessageHelper.sendMessage(player, MessageHelper.Type.PARTY, "§cNutzung: /party accept <Spieler>");
                     return true;
                 }
                 String targetName = args[1];
                 Player target = Bukkit.getPlayer(targetName);
                 if (target == null) {
-                    MessageHelper.sendMessage(player, "§cSpieler nicht gefunden: " + targetName);
+                    MessageHelper.sendMessage(player, MessageHelper.Type.PARTY, "§cSpieler nicht gefunden: " + targetName);
                     return true;
                 }
                 partyManager.acceptInvite(player, target);
             }
             case "list" -> {
                 List<Player> members = partyManager.getPartyMembers(player);
-                MessageHelper.sendMessage(player, "§aMitglieder der Party: ");
+                MessageHelper.sendMessage(player, MessageHelper.Type.PARTY, "§aMitglieder der Party: ");
                 for (Player member : members) {
-                    MessageHelper.sendMessage(player, "§7- " + member.getName());
+                    MessageHelper.sendMessage(player, MessageHelper.Type.PARTY, "§7- " + member.getName());
                 }
             }
             case "decline" -> {
                 if (args.length < 2) {
-                    MessageHelper.sendMessage(player, "§cNutzung: /party decline <Spieler>");
+                    MessageHelper.sendMessage(player, MessageHelper.Type.PARTY, "§cNutzung: /party decline <Spieler>");
                     return true;
                 }
                 String targetName = args[1];
                 Player target = Bukkit.getPlayer(targetName);
                 if (target == null) {
-                    MessageHelper.sendMessage(player, "§cSpieler nicht gefunden: " + targetName);
+                    MessageHelper.sendMessage(player, MessageHelper.Type.PARTY, "§cSpieler nicht gefunden: " + targetName);
                     return true;
                 }
                 partyManager.declineInvite(player, target);

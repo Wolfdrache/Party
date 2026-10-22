@@ -1,4 +1,4 @@
-package com.wolfdrache.party.api;
+package com.wolfdrache.party;
 
 import org.bukkit.entity.Player;
 import java.util.List;

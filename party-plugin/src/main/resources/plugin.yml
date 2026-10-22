@@ -13,3 +13,6 @@ commands:
     description: partyChatCommand
     usage: /partychat <message>
     aliases: [pc]
+  friends:
+    description: friendsCommand
+    usage: /friends <subcommand> [args]
