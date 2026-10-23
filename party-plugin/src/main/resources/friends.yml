@@ -1,0 +1,16 @@
+config:
+  maxFriendsPerPage: 5
+  maxFriends: 25
+
+UUID:
+  name: "examplePlayer"
+  unlimitedPermission: false
+  friends: 
+    - "UUID-of-friend1"
+    - "UUID-of-friend2"
+  requests:
+    - "UUID-of-request1"
+    - "UUID-of-request2"
+  sent:
+    - "UUID-of-sent-request1"
+    - "UUID-of-sent-request2"

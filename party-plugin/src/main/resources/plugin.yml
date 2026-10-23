@@ -16,3 +16,8 @@ commands:
   friends:
     description: friendsCommand
     usage: /friends <subcommand> [args]
+
+permissions:
+  social.friends.unlimited:
+    description: Allows unlimited friends
+    default: false

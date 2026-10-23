@@ -5,13 +5,15 @@ import java.util.Set;
 import org.bukkit.OfflinePlayer;
 
 public class PlayerFriends {
+    public boolean unlimitedPermission;
     public final Set<OfflinePlayer> friends;
-    public final Set<OfflinePlayer> pendingRequests;
+    public final Set<OfflinePlayer> incomingRequests;
     public final Set<OfflinePlayer> sentRequests; 
 
-    public PlayerFriends(Set<OfflinePlayer> friends, Set<OfflinePlayer> pendingRequests, Set<OfflinePlayer> sentRequests) {
+    public PlayerFriends(boolean unlimitedPermission, Set<OfflinePlayer> friends, Set<OfflinePlayer> incomingRequests, Set<OfflinePlayer> sentRequests) {
+        this.unlimitedPermission = unlimitedPermission;
         this.friends = friends;
-        this.pendingRequests = pendingRequests;
+        this.incomingRequests = incomingRequests;
         this.sentRequests = sentRequests;
     }
 }

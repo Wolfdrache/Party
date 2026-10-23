@@ -2,6 +2,7 @@ package com.wolfdrache.party.general;
 
 import java.time.Duration;
 
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import net.kyori.adventure.text.Component;
@@ -58,7 +59,7 @@ public class MessageHelper {
         target.sendMessage(finalMessage);
     }
 
-    public static void sendFriendRequestMessage(Player sender, Player target) {
+    public static void sendFriendRequestMessage(OfflinePlayer sender, Player target) {
         Component message = createComponent("Du hast eine Freundschaftsanfrage von " + sender.getName() + " erhalten. ")
             .append(
                 Component.text("[Annehmen]")

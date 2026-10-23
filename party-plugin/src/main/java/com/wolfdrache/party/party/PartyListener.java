@@ -4,10 +4,10 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-public class ConnectionListener implements Listener {
+public class PartyListener implements Listener {
     private final PartyManager partyManager;
 
-    public ConnectionListener(PartyManager partyManager) {
+    public PartyListener(PartyManager partyManager) {
         this.partyManager = partyManager;
     }
 

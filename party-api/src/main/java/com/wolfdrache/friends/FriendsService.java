@@ -1,15 +1,16 @@
 package com.wolfdrache.friends;
 
-import java.util.Set;
+import java.util.List;
 
 import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
 
 public interface FriendsService {
-    Set<OfflinePlayer> getFriends(OfflinePlayer player);
-    Set<OfflinePlayer> getFriendRequests(OfflinePlayer player);
-    Set<OfflinePlayer> getSentFriendRequests(OfflinePlayer player);
-    void cancelFriendRequest(OfflinePlayer player, OfflinePlayer target);
-    void replayFriendRequest(OfflinePlayer player, OfflinePlayer requester, boolean accept);
-    void sendFriendRequest(OfflinePlayer player, OfflinePlayer target);
-    void removeFriend(OfflinePlayer player, OfflinePlayer friend);
+    List<OfflinePlayer> getFriends(OfflinePlayer player);
+    List<OfflinePlayer> getFriendRequests(OfflinePlayer player);
+    List<OfflinePlayer> getSentFriendRequests(OfflinePlayer player);
+    void cancelFriendRequest(Player player, OfflinePlayer target);
+    void replyFriendRequest(Player player, OfflinePlayer requester, boolean accept);
+    void sendFriendRequest(Player player, OfflinePlayer target);
+    void removeFriend(Player player, OfflinePlayer friend);
 }
