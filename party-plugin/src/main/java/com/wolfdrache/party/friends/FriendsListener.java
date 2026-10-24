@@ -24,7 +24,7 @@ public class FriendsListener implements Listener {
         List<Player> onlineFriends = friendsManager.getOnlineFriends(player);
         MessageHelper.sendMessage(player, MessageHelper.Type.FRIEND, "§a" + onlineFriends.size() + " deiner Freunde sind online.");
         for (Player friend : onlineFriends) {
-            MessageHelper.sendMessage(player, MessageHelper.Type.FRIEND, "§e" + friend.getName() + "§a ist nun online.");
+            MessageHelper.sendMessage(friend, MessageHelper.Type.FRIEND, "§e" + player.getName() + "§a ist nun online.");
         }
     }
 
