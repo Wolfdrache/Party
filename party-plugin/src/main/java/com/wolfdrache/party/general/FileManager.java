@@ -40,12 +40,14 @@ public class FileManager {
         List<String> friendsStrings = config.getStringList(uuid.toString() + ".friends");
         List<String> requestsStrings = config.getStringList(uuid.toString() + ".requests");
         List<String> sentStrings = config.getStringList(uuid.toString() + ".sent");
+        List<String> newFriendRequestsStrings = config.getStringList(uuid.toString() + ".newFriendRequests");
 
         Set<OfflinePlayer> friends = friendsStrings.stream().map(s -> plugin.getServer().getOfflinePlayer(UUID.fromString(s))).collect(Collectors.toSet());
         Set<OfflinePlayer> requests = requestsStrings.stream().map(s -> plugin.getServer().getOfflinePlayer(UUID.fromString(s))).collect(Collectors.toSet());
         Set<OfflinePlayer> sent = sentStrings.stream().map(s -> plugin.getServer().getOfflinePlayer(UUID.fromString(s))).collect(Collectors.toSet());
+        Set<OfflinePlayer> newFriendRequests = newFriendRequestsStrings.stream().map(s -> plugin.getServer().getOfflinePlayer(UUID.fromString(s))).collect(Collectors.toSet());
 
-        return new PlayerFriends(unlimitedPermission, friends, requests, sent);
+        return new PlayerFriends(unlimitedPermission, friends, requests, sent, newFriendRequests);
     }
 
     public void savePlayerFriends(OfflinePlayer player, PlayerFriends playerFriends) {
@@ -55,12 +57,14 @@ public class FileManager {
         List<String> friendsStrings = playerFriends.friends.stream().map(p -> p.getUniqueId().toString()).collect(Collectors.toList());
         List<String> requestsStrings = playerFriends.incomingRequests.stream().map(p -> p.getUniqueId().toString()).collect(Collectors.toList());
         List<String> sentStrings = playerFriends.sentRequests.stream().map(p -> p.getUniqueId().toString()).collect(Collectors.toList());
+        List<String> newFriendRequestsStrings = playerFriends.newFriendRequests.stream().map(p -> p.getUniqueId().toString()).collect(Collectors.toList());
 
         config.set(uuid.toString() + ".name", player.getName());
         config.set(uuid.toString() + ".unlimitedPermission", playerFriends.unlimitedPermission);
         config.set(uuid.toString() + ".friends", friendsStrings);
         config.set(uuid.toString() + ".requests", requestsStrings);
         config.set(uuid.toString() + ".sent", sentStrings);
+        config.set(uuid.toString() + ".newFriendRequests", newFriendRequestsStrings);
 
         try {
             config.save(friendsFile);

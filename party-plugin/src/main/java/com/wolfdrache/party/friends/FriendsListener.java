@@ -2,6 +2,7 @@ package com.wolfdrache.party.friends;
 
 import java.util.List;
 
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -22,9 +23,18 @@ public class FriendsListener implements Listener {
         Player player = event.getPlayer();
         friendsManager.loadPlayerInCache(player);
         List<Player> onlineFriends = friendsManager.getOnlineFriends(player);
-        MessageHelper.sendMessage(player, MessageHelper.Type.FRIEND, "§a" + onlineFriends.size() + " deiner Freunde sind online.");
-        for (Player friend : onlineFriends) {
-            MessageHelper.sendMessage(friend, MessageHelper.Type.FRIEND, "§e" + player.getName() + "§a ist nun online.");
+        if (!onlineFriends.isEmpty()) {
+            MessageHelper.sendMessage(player, MessageHelper.Type.FRIEND, "§a" + onlineFriends.size() + " deiner Freunde sind online.");
+            for (Player friend : onlineFriends) {
+                MessageHelper.sendMessage(friend, MessageHelper.Type.FRIEND, "§e" + player.getName() + "§a ist nun online.");
+            }
+        }
+        List<OfflinePlayer> newFriendRequests = friendsManager.getNewFriendRequests(player);
+        if (!newFriendRequests.isEmpty()) {
+            MessageHelper.sendMessage(player, MessageHelper.Type.FRIEND, "§aDu hast " + newFriendRequests.size() + " neue Freundschaftsanfragen.");
+            PlayerFriends playerFriends = friendsManager.getPlayerFriends(player);
+            playerFriends.newFriendRequests.clear();
+            friendsManager.savePlayerFriends(player, playerFriends, false);
         }
     }
 
@@ -35,6 +45,6 @@ public class FriendsListener implements Listener {
         for (Player friend : onlineFriends) {
             MessageHelper.sendMessage(friend, MessageHelper.Type.FRIEND, "§e" + player.getName() + "§c ist nun offline.");
         }
-        friendsManager.removeFromCache(player);
+        friendsManager.savePlayerFriends(player, true);
     }
 }

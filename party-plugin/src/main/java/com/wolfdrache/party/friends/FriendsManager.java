@@ -37,8 +37,16 @@ public class FriendsManager {
         return playerFriends;
     }
 
-    public void removeFromCache(OfflinePlayer player) {
-        playerFriendsCache.remove(player);
+    public void savePlayerFriends(OfflinePlayer player, boolean removeFromCache) {
+        PlayerFriends playerFriends = getPlayerFriends(player);
+        savePlayerFriends(player, playerFriends, removeFromCache);
+    }
+
+    public void savePlayerFriends(OfflinePlayer player, PlayerFriends playerFriends, boolean removeFromCache) {
+        fileManager.savePlayerFriends(player, playerFriends);
+        if (removeFromCache) {
+            playerFriendsCache.remove(player);
+        }
     }
 
     public List<OfflinePlayer> getFriends(OfflinePlayer player) {
@@ -74,11 +82,13 @@ public class FriendsManager {
         }
         playerFriends.sentRequests.add(target);
         targetFriends.incomingRequests.add(player);
-        fileManager.savePlayerFriends(player, playerFriends);
-        fileManager.savePlayerFriends(target, targetFriends);
         if (target.isOnline()) {
             MessageHelper.sendFriendRequestMessage(player, (Player) target);
+        } else {
+            targetFriends.newFriendRequests.add(player);
         }
+        savePlayerFriends(player, playerFriends, false);
+        savePlayerFriends(target, targetFriends, false);
         MessageHelper.sendMessage(player, MessageHelper.Type.FRIEND, "§aDu hast eine Freundschaftsanfrage an §7" + target.getName() + "§a gesendet.");
     }
 
@@ -90,8 +100,8 @@ public class FriendsManager {
         }
         playerFriends.friends.remove(target);
         targetFriends.friends.remove(player);
-        fileManager.savePlayerFriends(player, playerFriends);
-        fileManager.savePlayerFriends(target, targetFriends);
+        savePlayerFriends(player, playerFriends, false);
+        savePlayerFriends(target, targetFriends, false);
         if (target.isOnline()) {
             MessageHelper.sendMessage((Player) target, MessageHelper.Type.FRIEND, player.getName() + " §chat dich aus der Freundesliste entfernt.");
         }
@@ -133,8 +143,8 @@ public class FriendsManager {
         }
         playerFriends.incomingRequests.remove(target);
         targetFriends.sentRequests.remove(player);
-        fileManager.savePlayerFriends(player, playerFriends);
-        fileManager.savePlayerFriends(target, targetFriends);
+        savePlayerFriends(player, playerFriends, false);
+        savePlayerFriends(target, targetFriends, false);
         if (target.isOnline()) {
             MessageHelper.sendMessage((Player) target, MessageHelper.Type.FRIEND, player.getName() + (accept ? "§a hat deine Freundschaftsanfrage akzeptiert." : "§c hat deine Freundschaftsanfrage abgelehnt."));
         }
@@ -148,10 +158,18 @@ public class FriendsManager {
         }
         playerFriends.sentRequests.remove(target);
         targetFriends.incomingRequests.remove(player);
-        fileManager.savePlayerFriends(player, playerFriends);
-        fileManager.savePlayerFriends(target, targetFriends);
         if (target.isOnline()) {
             MessageHelper.sendMessage((Player) target, MessageHelper.Type.FRIEND, player.getName() + "§c hat seine Freundschaftsanfrage zurückgezogen.");
+        } else {
+            targetFriends.newFriendRequests.remove(player);
         }
+        savePlayerFriends(player, playerFriends, false);
+        savePlayerFriends(target, targetFriends, false);
+    }
+
+    public List<OfflinePlayer> getNewFriendRequests(Player player) {
+        PlayerFriends playerFriends = getPlayerFriends(player);
+        List<OfflinePlayer> newFriendRequests = new ArrayList<>(playerFriends.newFriendRequests);
+        return newFriendRequests;
     }
 }

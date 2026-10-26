@@ -1,6 +1,6 @@
 package com.wolfdrache.party.service;
 
-import com.wolfdrache.party.PartyService;
+import com.wolfdrache.party.api.PartyService;
 import com.wolfdrache.party.party.PartyManager;
 
 import java.util.List;

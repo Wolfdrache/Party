@@ -9,11 +9,13 @@ public class PlayerFriends {
     public final Set<OfflinePlayer> friends;
     public final Set<OfflinePlayer> incomingRequests;
     public final Set<OfflinePlayer> sentRequests; 
+    public final Set<OfflinePlayer> newFriendRequests;
 
-    public PlayerFriends(boolean unlimitedPermission, Set<OfflinePlayer> friends, Set<OfflinePlayer> incomingRequests, Set<OfflinePlayer> sentRequests) {
+    public PlayerFriends(boolean unlimitedPermission, Set<OfflinePlayer> friends, Set<OfflinePlayer> incomingRequests, Set<OfflinePlayer> sentRequests, Set<OfflinePlayer> newFriendRequests) {
         this.unlimitedPermission = unlimitedPermission;
         this.friends = friends;
         this.incomingRequests = incomingRequests;
         this.sentRequests = sentRequests;
+        this.newFriendRequests = newFriendRequests;
     }
 }

@@ -27,8 +27,6 @@ public class Party extends JavaPlugin {
         this.partyManager = new PartyManager();
         this.partyService = new PartyServiceImpl(partyManager);
         Bukkit.getServicesManager().register(PartyService.class, this.partyService, this, ServicePriority.Normal);
-        // Keep legacy registration so older plugins compiled against com.wolfdrache.party.PartyService still work.
-        Bukkit.getServicesManager().register(PartyService.class, this.partyService, this, ServicePriority.Normal);
         
         getCommand("party").setExecutor(new PartyCommand(partyManager));
         getCommand("partychat").setExecutor(new PartyChatCommand(partyManager));
@@ -47,7 +45,6 @@ public class Party extends JavaPlugin {
     @Override
     public void onDisable() {
         Bukkit.getServicesManager().unregister(PartyService.class, this.partyService);
-        Bukkit.getServicesManager().unregister(com.wolfdrache.party.PartyService.class, this.partyService);
         Bukkit.getServicesManager().unregister(FriendsService.class, this.friendsService);
         getLogger().info("Party has been disabled!");
     }
