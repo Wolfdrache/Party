@@ -29,7 +29,7 @@ public class FriendsListener implements Listener {
             MessageHelper.sendMessage(player, MessageHelper.Type.FRIEND, "§a" + onlineFriends.size() + " deiner Freunde sind online.");
             for (Player friend : onlineFriends) {
                 MessageHelper.sendMessage(friend, MessageHelper.Type.FRIEND, "§e" + player.getName() + "§a ist nun online.");
-                FriendsUpdateEvent updateEvent = new FriendsUpdateEvent(player, friend, FriendsUpdateEvent.FriendsUpdateType.FRIEND_ONLINE);
+                FriendsUpdateEvent updateEvent = new FriendsUpdateEvent(friend, player, FriendsUpdateEvent.FriendsUpdateType.FRIEND_ONLINE);
                 Bukkit.getPluginManager().callEvent(updateEvent);
             }
         }
@@ -48,7 +48,7 @@ public class FriendsListener implements Listener {
         List<Player> onlineFriends = friendsManager.getOnlineFriends(player);
         for (Player friend : onlineFriends) {
             MessageHelper.sendMessage(friend, MessageHelper.Type.FRIEND, "§e" + player.getName() + "§c ist nun offline.");
-            FriendsUpdateEvent updateEvent = new FriendsUpdateEvent(player, friend, FriendsUpdateEvent.FriendsUpdateType.FRIEND_OFFLINE);
+            FriendsUpdateEvent updateEvent = new FriendsUpdateEvent(friend, player, FriendsUpdateEvent.FriendsUpdateType.FRIEND_OFFLINE);
             Bukkit.getPluginManager().callEvent(updateEvent);
         }
         friendsManager.savePlayerFriends(player, true);
