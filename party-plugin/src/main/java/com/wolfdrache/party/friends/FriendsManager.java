@@ -5,9 +5,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
+import com.wolfdrache.friends.FriendsUpdateEvent;
 import com.wolfdrache.party.general.FileManager;
 import com.wolfdrache.party.general.MessageHelper;
 
@@ -90,6 +92,8 @@ public class FriendsManager {
         savePlayerFriends(player, playerFriends, false);
         savePlayerFriends(target, targetFriends, false);
         MessageHelper.sendMessage(player, MessageHelper.Type.FRIEND, "§aDu hast eine Freundschaftsanfrage an §7" + target.getName() + "§a gesendet.");
+        FriendsUpdateEvent updateEvent = new FriendsUpdateEvent(player, target, FriendsUpdateEvent.FriendsUpdateType.REQUEST_SENT);
+        Bukkit.getPluginManager().callEvent(updateEvent);
     }
 
     public void removeFriend(Player player, OfflinePlayer target) {
@@ -106,6 +110,8 @@ public class FriendsManager {
             MessageHelper.sendMessage((Player) target, MessageHelper.Type.FRIEND, player.getName() + " §chat dich aus der Freundesliste entfernt.");
         }
         MessageHelper.sendMessage(player, MessageHelper.Type.FRIEND, "§cDu bist nicht mehr mit §7" + target.getName() + "§c befreundet.");
+        FriendsUpdateEvent updateEvent = new FriendsUpdateEvent(player, target, FriendsUpdateEvent.FriendsUpdateType.FRIEND_REMOVED);
+        Bukkit.getPluginManager().callEvent(updateEvent);
     }
 
     public void listFriends(Player player, int page) {
@@ -150,6 +156,8 @@ public class FriendsManager {
             MessageHelper.sendMessage((Player) target, MessageHelper.Type.FRIEND, player.getName() + (accept ? "§a hat deine Freundschaftsanfrage akzeptiert." : "§c hat deine Freundschaftsanfrage abgelehnt."));
         }
         MessageHelper.sendMessage(player, MessageHelper.Type.FRIEND, (accept ? "§aDu hast die Freundschaftsanfrage von §7" + target.getName() + "§a akzeptiert." : "§cDu hast die Freundschaftsanfrage von §7" + target.getName() + "§c abgelehnt."));
+        FriendsUpdateEvent updateEvent = new FriendsUpdateEvent(player, target, accept ? FriendsUpdateEvent.FriendsUpdateType.REQUEST_ACCEPTED : FriendsUpdateEvent.FriendsUpdateType.REQUEST_DECLINED);
+        Bukkit.getPluginManager().callEvent(updateEvent);
     }
 
     public void cancelFriendRequest(Player player, OfflinePlayer target) {
@@ -168,6 +176,8 @@ public class FriendsManager {
         savePlayerFriends(player, playerFriends, false);
         savePlayerFriends(target, targetFriends, false);
         MessageHelper.sendMessage(player, MessageHelper.Type.FRIEND, "§cDu hast die Freundschaftsanfrage an §7" + target.getName() + "§c zurückgezogen.");
+        FriendsUpdateEvent updateEvent = new FriendsUpdateEvent(player, target, FriendsUpdateEvent.FriendsUpdateType.REQUEST_CANCELLED);
+        Bukkit.getPluginManager().callEvent(updateEvent);
     }
 
     public List<OfflinePlayer> getNewFriendRequests(Player player) {
