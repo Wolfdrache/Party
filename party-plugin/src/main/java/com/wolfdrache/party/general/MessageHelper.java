@@ -12,7 +12,7 @@ import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.kyori.adventure.title.Title;
 
 public class MessageHelper {
-    public static enum Type {
+    public enum Type {
         PARTY("§9§lParty §7 >> §r"),
         FRIEND("§a§lFreunde §7 >> §r");
 

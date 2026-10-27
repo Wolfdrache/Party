@@ -61,7 +61,7 @@ public class FriendsManager {
         List<OfflinePlayer> friends = getFriends(player);
         List<Player> onlineFriends = friends.stream()
             .filter(OfflinePlayer::isOnline)
-            .map(friend -> (Player) friend)
+            .map(friend -> Bukkit.getPlayer(friend.getUniqueId()))
             .toList();
         return onlineFriends;
     }
