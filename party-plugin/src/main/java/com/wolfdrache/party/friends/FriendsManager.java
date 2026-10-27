@@ -105,6 +105,7 @@ public class FriendsManager {
         if (target.isOnline()) {
             MessageHelper.sendMessage((Player) target, MessageHelper.Type.FRIEND, player.getName() + " §chat dich aus der Freundesliste entfernt.");
         }
+        MessageHelper.sendMessage(player, MessageHelper.Type.FRIEND, "§cDu bist nicht mehr mit §7" + target.getName() + "§c befreundet.");
     }
 
     public void listFriends(Player player, int page) {
@@ -148,6 +149,7 @@ public class FriendsManager {
         if (target.isOnline()) {
             MessageHelper.sendMessage((Player) target, MessageHelper.Type.FRIEND, player.getName() + (accept ? "§a hat deine Freundschaftsanfrage akzeptiert." : "§c hat deine Freundschaftsanfrage abgelehnt."));
         }
+        MessageHelper.sendMessage(player, MessageHelper.Type.FRIEND, (accept ? "§aDu hast die Freundschaftsanfrage von §7" + target.getName() + "§a akzeptiert." : "§cDu hast die Freundschaftsanfrage von §7" + target.getName() + "§c abgelehnt."));
     }
 
     public void cancelFriendRequest(Player player, OfflinePlayer target) {
@@ -165,6 +167,7 @@ public class FriendsManager {
         }
         savePlayerFriends(player, playerFriends, false);
         savePlayerFriends(target, targetFriends, false);
+        MessageHelper.sendMessage(player, MessageHelper.Type.FRIEND, "§cDu hast die Freundschaftsanfrage an §7" + target.getName() + "§c zurückgezogen.");
     }
 
     public List<OfflinePlayer> getNewFriendRequests(Player player) {
