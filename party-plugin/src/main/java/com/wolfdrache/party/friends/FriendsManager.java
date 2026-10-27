@@ -87,8 +87,7 @@ public class FriendsManager {
         if (target.isOnline()) {
             Player targetPlayer = (Player) target;
             MessageHelper.sendFriendRequestMessage(player, targetPlayer);
-            FriendsUpdateEvent updateEvent = new FriendsUpdateEvent(targetPlayer, player, FriendsUpdateEvent.FriendsUpdateType.REQUEST_SENT);
-            Bukkit.getPluginManager().callEvent(updateEvent);
+            fireFriendsUpdate(targetPlayer, player, FriendsUpdateEvent.FriendsUpdateType.REQUEST_SENT);
         } else {
             targetFriends.newFriendRequests.add(player);
         }
@@ -110,8 +109,7 @@ public class FriendsManager {
         if (target.isOnline()) {
             Player targetPlayer = (Player) target;
             MessageHelper.sendMessage(targetPlayer, MessageHelper.Type.FRIEND, player.getName() + " §chat dich aus der Freundesliste entfernt.");
-            FriendsUpdateEvent updateEvent = new FriendsUpdateEvent(targetPlayer, player, FriendsUpdateEvent.FriendsUpdateType.FRIEND_REMOVED);
-            Bukkit.getPluginManager().callEvent(updateEvent);
+            fireFriendsUpdate(targetPlayer, player, FriendsUpdateEvent.FriendsUpdateType.FRIEND_REMOVED);
         }
         MessageHelper.sendMessage(player, MessageHelper.Type.FRIEND, "§cDu bist nicht mehr mit §7" + target.getName() + "§c befreundet.");
     }
@@ -157,8 +155,7 @@ public class FriendsManager {
         if (target.isOnline()) {
             Player targetPlayer = (Player) target;
             MessageHelper.sendMessage(targetPlayer, MessageHelper.Type.FRIEND, player.getName() + (accept ? "§a hat deine Freundschaftsanfrage akzeptiert." : "§c hat deine Freundschaftsanfrage abgelehnt."));
-            FriendsUpdateEvent updateEvent = new FriendsUpdateEvent(targetPlayer, player, accept ? FriendsUpdateEvent.FriendsUpdateType.REQUEST_ACCEPTED : FriendsUpdateEvent.FriendsUpdateType.REQUEST_DECLINED);
-            Bukkit.getPluginManager().callEvent(updateEvent);
+            fireFriendsUpdate(targetPlayer, player, accept ? FriendsUpdateEvent.FriendsUpdateType.REQUEST_ACCEPTED : FriendsUpdateEvent.FriendsUpdateType.REQUEST_DECLINED);
         }
         MessageHelper.sendMessage(player, MessageHelper.Type.FRIEND, (accept ? "§aDu hast die Freundschaftsanfrage von §7" + target.getName() + "§a akzeptiert." : "§cDu hast die Freundschaftsanfrage von §7" + target.getName() + "§c abgelehnt."));
     }
@@ -174,8 +171,7 @@ public class FriendsManager {
         if (target.isOnline()) {
             Player targetPlayer = (Player) target;
             MessageHelper.sendMessage(targetPlayer, MessageHelper.Type.FRIEND, player.getName() + "§c hat seine Freundschaftsanfrage zurückgezogen.");
-            FriendsUpdateEvent updateEvent = new FriendsUpdateEvent(targetPlayer, player, FriendsUpdateEvent.FriendsUpdateType.REQUEST_CANCELLED);
-            Bukkit.getPluginManager().callEvent(updateEvent);
+            fireFriendsUpdate(targetPlayer, player, FriendsUpdateEvent.FriendsUpdateType.REQUEST_CANCELLED);
         } else {
             targetFriends.newFriendRequests.remove(player);
         }
@@ -188,5 +184,10 @@ public class FriendsManager {
         PlayerFriends playerFriends = getPlayerFriends(player);
         List<OfflinePlayer> newFriendRequests = new ArrayList<>(playerFriends.newFriendRequests);
         return newFriendRequests;
+    }
+
+    public void fireFriendsUpdate(Player player, OfflinePlayer target, FriendsUpdateEvent.FriendsUpdateType updateType) {
+        FriendsUpdateEvent updateEvent = new FriendsUpdateEvent(player, target, updateType);
+        Bukkit.getPluginManager().callEvent(updateEvent);
     }
 }

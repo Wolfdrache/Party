@@ -7,13 +7,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import com.wolfdrache.party.api.PartyUpdateEvent;
 import com.wolfdrache.party.general.MessageHelper;
 
 public class PartyManager {
     private final Map<Player, PartyData> partyDataMap = new HashMap<>();
     private final Map<Player, Set<Player>> pendingInvites = new HashMap<>();
+
+    private void firePartyUpdate(Player player, Player target, PartyUpdateEvent.PartyUpdateType updateType) {
+        Bukkit.getPluginManager().callEvent(new PartyUpdateEvent(player, target, updateType));
+    }
 
     public void invitePlayer(Player player, Player invitedPlayer) {
         PartyData partyData = partyDataMap.get(player);
@@ -34,7 +40,9 @@ public class PartyManager {
         pendingInvites.computeIfAbsent(invitedPlayer, k -> new HashSet<>()).add(player);
         for (Player member : getPartyMembers(player)) {
             MessageHelper.sendMessage(member, MessageHelper.Type.PARTY, "§aEinladung an " + invitedPlayer.getName() + " gesendet.");
+            firePartyUpdate(member, invitedPlayer, PartyUpdateEvent.PartyUpdateType.PARTY_INVITE_SENT);
         }
+        firePartyUpdate(invitedPlayer, player, PartyUpdateEvent.PartyUpdateType.PARTY_INVITE_RECEIVED);
     }
 
     public void kickPlayer(Player player, Player playerToKick) {
@@ -43,11 +51,16 @@ public class PartyManager {
             return;
         }
         if (partyData.leader.equals(player)) {
-            for (Player member : getPartyMembers(player)) {
+            List<Player> partyMembers = getPartyMembers(player);
+            for (Player member : partyMembers) {
                 MessageHelper.sendMessage(member, MessageHelper.Type.PARTY, playerToKick.getName() + " §cwurde aus der Party entfernt.");
             }
             partyData.members.remove(playerToKick);
             partyDataMap.remove(playerToKick);
+            for (Player member : partyMembers) {
+                firePartyUpdate(member, playerToKick, PartyUpdateEvent.PartyUpdateType.PARTY_LEFT);
+            }
+            firePartyUpdate(playerToKick, playerToKick, PartyUpdateEvent.PartyUpdateType.PARTY_LEFT);
         }
     }
 
@@ -57,7 +70,8 @@ public class PartyManager {
             return;
         }
 
-        for (Player member : getPartyMembers(player)) {
+        List<Player> partyMembers = new ArrayList<>(getPartyMembers(player));
+        for (Player member : partyMembers) {
             MessageHelper.sendMessage(member, MessageHelper.Type.PARTY, player.getName() + " §chat die Party verlassen.");
         }
 
@@ -84,6 +98,13 @@ public class PartyManager {
             partyData.members.remove(player);
             partyDataMap.remove(player);
         }
+
+        for (Player member : partyMembers) {
+            if (!member.equals(player)) {
+                firePartyUpdate(member, player, PartyUpdateEvent.PartyUpdateType.PARTY_LEFT);
+            }
+        }
+        firePartyUpdate(player, null, PartyUpdateEvent.PartyUpdateType.PARTY_LEFT);
     }
 
     public void disbandParty(Player player) {
@@ -92,16 +113,19 @@ public class PartyManager {
             return;
         }
         if (partyData.leader.equals(player)) {
-            for (Player member : getPartyMembers(player)) {
+            List<Player> partyMembers = new ArrayList<>(getPartyMembers(player));
+            for (Player member : partyMembers) {
                 partyDataMap.remove(member);
                 MessageHelper.sendMessage(member, MessageHelper.Type.PARTY, "§cDie Party wurde aufgelöst.");
+                firePartyUpdate(member, null, PartyUpdateEvent.PartyUpdateType.PARTY_DISBANDED);
             }
-            for (Player invited : partyData.invited) {
+            for (Player invited : new ArrayList<>(partyData.invited)) {
                 Set<Player> invites = pendingInvites.getOrDefault(invited, Set.of());
                 invites.remove(player);
                 if (invites.isEmpty()) {
                     pendingInvites.remove(invited);
                 }
+                firePartyUpdate(invited, player, PartyUpdateEvent.PartyUpdateType.PARTY_DISBANDED);
             }
         }
     }
@@ -124,6 +148,7 @@ public class PartyManager {
         }
         for (Player member : getPartyMembers(player)) {
             MessageHelper.sendMessage(member, MessageHelper.Type.PARTY, player.getName() + " §aist der Party beigetreten.");
+            firePartyUpdate(member, player, PartyUpdateEvent.PartyUpdateType.INVITE_ACCEPTED);
         }
     }
 
@@ -169,15 +194,18 @@ public class PartyManager {
             pendingInvites.remove(player);
         }
         MessageHelper.sendMessage(player, MessageHelper.Type.PARTY, "§cDu hast die Einladung von " + invitingPlayer.getName() + " abgelehnt.");
+        for (Player member : getPartyMembers(invitingPlayer)) {
+            firePartyUpdate(member, player, PartyUpdateEvent.PartyUpdateType.INVITE_DECLINED);
+        }
     }
 
     public void cancelPendingInvites(Player player) {
-        Set<Player> invites = pendingInvites.remove(player);
+        Set<Player> invites = pendingInvites.get(player);
         if (invites != null) {
-            for (Player invitingPlayer : invites) {
+            for (Player invitingPlayer : new HashSet<>(invites)) {
                 PartyData partyData = partyDataMap.get(invitingPlayer);
                 if (partyData != null) {
-                    partyData.invited.remove(player);
+                    declineInvite(player, invitingPlayer);
                 }
             }
         }
