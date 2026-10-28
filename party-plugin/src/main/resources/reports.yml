@@ -1,0 +1,19 @@
+reports:
+  1:
+    reported: "UuidReported1"
+    reporter: "UuidReporter1"
+    category: "category_name"
+    reason: "custom"
+    message: "custom message"
+    time: "2024-06-01T12:00:00Z"
+    operator: "UuidSupporter1"
+    handledTime: "2024-06-01T12:30:00Z"
+    conclusion: "custom conclusion"
+  2:
+    reported: "UuidReported2"
+    reporter: "UuidReporter2"
+    category: "spam"
+    reason: "harassment"
+    message: "spam message"
+    time: "2024-06-02T10:00:00Z"
+  

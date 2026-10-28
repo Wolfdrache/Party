@@ -14,7 +14,8 @@ import net.kyori.adventure.title.Title;
 public class MessageHelper {
     public enum Type {
         PARTY("§9§lParty §7 >> §r"),
-        FRIEND("§a§lFreunde §7 >> §r");
+        FRIEND("§a§lFreunde §7 >> §r"),
+        REPORT("§4§lReports §7 >> §r");
 
         public final String prefix;
 
