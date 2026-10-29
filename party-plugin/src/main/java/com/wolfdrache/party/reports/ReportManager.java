@@ -87,8 +87,11 @@ public class ReportManager {
         playerReports.get(reported).receivedReportsOpen.add(report);
         playerReports.get(reporter).madeReports.add(report);
 
-        Bukkit.broadcast(MessageHelper.createComponent("§cNeuer Report:"), "reports.manage");
-        Bukkit.broadcast(MessageHelper.createComponent("§8" + reported.getName() + ": " + category + " - " + reason + " - " + message), "reports.manage");
+        List<Player> onlineOperators = new ArrayList<>(Bukkit.getOnlinePlayers().stream().filter(p -> p.hasPermission("reports.manage")).toList());
+        for (Player operator : onlineOperators) {
+            MessageHelper.sendMessage(operator, MessageHelper.Type.REPORT, "§8Neuer Report von §7" + reporter.getName() + "§8 gegen §c" + reported.getName() + "§8 wurde erstellt.");
+            MessageHelper.sendReportMessage(operator, report);
+        }
     }
 
     public void closeReports(OfflinePlayer reported, Player operator, String conclusion) {
@@ -105,7 +108,7 @@ public class ReportManager {
             updateReport(report);
             OfflinePlayer reporter = report.reporter;
             if (reporter.isOnline()) {
-                MessageHelper.sendMessage((Player) reporter, MessageHelper.Type.REPORT, "Dein Report an " + reported.getName() + " wurde bearbeitet.");
+                MessageHelper.sendMessage((Player) reporter, MessageHelper.Type.REPORT, "§8Dein Report an §c" + reported.getName() + "§8 wurde bearbeitet.");
             }
         }
         reportsForPlayer.receivedReportsOpen.clear();
@@ -137,5 +140,30 @@ public class ReportManager {
 
     public Map<OfflinePlayer, PlayerReports> getAllReports() {
         return playerReports;
+    }
+
+    public ReportModel getReportById(int reportId) {
+        for (ReportModel report : reports) {
+            if (report.getId() == reportId) {
+                return report;
+            }
+        }
+        return null;
+    }
+
+    public void closeReport(ReportModel report, Player player, String message) {
+        report.operator = player;
+        report.conclusion = message;
+        report.handledTimestamp = Instant.now().atZone(ZoneId.of("Europe/Berlin")).format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss"));
+        updateReport(report);
+        OfflinePlayer reporter = report.reporter;
+        if (reporter.isOnline()) {
+            MessageHelper.sendMessage((Player) reporter, MessageHelper.Type.REPORT, "§8Dein Report an §c" + report.reportedPlayer.getName() + "§8 wurde bearbeitet.");
+        }
+        OfflinePlayer reported = report.reportedPlayer;
+        PlayerReports reportsForPlayer = playerReports.get(reported);
+        if (reportsForPlayer != null) {
+            reportsForPlayer.closeReport(report);
+        }
     }
 }

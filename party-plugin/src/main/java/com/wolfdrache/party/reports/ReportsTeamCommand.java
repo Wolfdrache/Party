@@ -30,7 +30,7 @@ public class ReportsTeamCommand implements TabExecutor {
             return true;
         }
         
-        if (args.length == 0 || !subCommands.contains(args[0].toLowerCase())) {
+        if (args.length == 0) {
             player.sendMessage("Invalid subcommand. Available subcommands: " + String.join(", ", subCommands));
             return true;
         }
@@ -80,14 +80,53 @@ public class ReportsTeamCommand implements TabExecutor {
                     return true;
                 }
 
-                if (playerReports.receivedReportsOpen.isEmpty()) {
-                    MessageHelper.sendMessage(player, MessageHelper.Type.REPORT, "No open reports for " + target.getName() + ".");
-                } else {
-                    for (ReportModel report : playerReports.receivedReportsOpen) {
-                        MessageHelper.sendMessage(player, MessageHelper.Type.REPORT, "Report ID: " + report.getId() + ", Category: " + report.category + ", Reason: " + report.reason + ", Message: " + report.message);
-                        MessageHelper.sendMessage(player, MessageHelper.Type.REPORT, "Reported by: " + report.reporter.getName() + ", Timestamp: " + report.timestamp);
-                    }
+                if (playerReports.receivedReportsOpen.isEmpty() && playerReports.receivedReportsClosed.isEmpty()) {
+                    MessageHelper.sendMessage(player, MessageHelper.Type.REPORT, "Player has no reports.");
+                    return true;
                 }
+
+                if (!playerReports.receivedReportsOpen.isEmpty()) {
+                    MessageHelper.sendMessage(player, MessageHelper.Type.REPORT, "§cOffene Reports an §7" + target.getName() + "§8: §c" + playerReports.receivedReportsOpen.size());
+                }
+                for (ReportModel report : playerReports.receivedReportsOpen) {
+                    MessageHelper.sendReportMessage(player, report);
+                }
+
+                if (!playerReports.receivedReportsClosed.isEmpty()) {
+                    MessageHelper.sendMessage(player, MessageHelper.Type.REPORT, "§aGeschlossene Reports an §7" + target.getName() + "§8: §a" + playerReports.receivedReportsClosed.size());
+                }
+                for (ReportModel report : playerReports.receivedReportsClosed) {
+                    MessageHelper.sendReportMessage(player, report);
+                }
+            }
+            case "closeId" -> {
+                if (args.length < 2) {
+                    return true;
+                }
+                int reportId = Integer.parseInt(args[1]);
+                ReportModel report = reportManager.getReportById(reportId);
+                if (report == null) {
+                    MessageHelper.sendMessage(player, MessageHelper.Type.REPORT, "Report not found.");
+                    return true;
+                }
+                String message = args.length >= 3 ? String.join(" ", Arrays.copyOfRange(args, 2, args.length)) : "";
+                reportManager.closeReport(report, player, message);
+            }
+            case "delete" -> {
+                if (!player.hasPermission("reports.delete")) {
+                    MessageHelper.sendMessage(player, MessageHelper.Type.REPORT, "You do not have permission to delete reports.");
+                    return true;
+                }
+                if (args.length < 2) {
+                    return true;
+                }
+                int reportId = Integer.parseInt(args[1]);
+                ReportModel report = reportManager.getReportById(reportId);
+                if (report == null) {
+                    MessageHelper.sendMessage(player, MessageHelper.Type.REPORT, "Report not found.");
+                    return true;
+                }
+                reportManager.deleteReport(report);
             }
         }
         return true;

@@ -54,8 +54,8 @@ public class ReportCommand implements TabExecutor {
         OfflinePlayer reportedPlayer = Bukkit.getOfflinePlayer(target);
         reportManager.createReport(reportedPlayer, player, category, reason, message);
         
-        MessageHelper.sendMessage(player, MessageHelper.Type.REPORT, "§cDein Report an §7" + reportedPlayer.getName() + " §cwurde erstellt.");
-        MessageHelper.sendMessage(player, MessageHelper.Type.REPORT, "§cAusnutzen von Reports kann bestraft werden.");
+        MessageHelper.sendMessage(player, MessageHelper.Type.REPORT, "§8Dein Report an §c" + reportedPlayer.getName() + " §8wurde erstellt.");
+        MessageHelper.sendMessage(player, MessageHelper.Type.REPORT, "§cAusnutzen von Reports ist verboten.");
         return true;
     }
 
