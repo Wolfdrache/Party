@@ -16,8 +16,24 @@ commands:
   friends:
     description: friendsCommand
     usage: /friends <subcommand> [args]
+  report:
+    description: reportCommand
+    usage: /report <player> <category> <reason> <message>
+  reportsteam:
+    description: reportTeamCommand
+    usage: /reportsteam <subcommand> [args]
+    permission: reports.manage
+  
 
 permissions:
   social.friends.unlimited:
     description: Allows unlimited friends
     default: false
+  reports.manage:
+    description: Allows managing reports
+    default: false
+  reports.delete:
+    description: Allows deleting reports
+    default: false
+    children:
+      reports.manage: true

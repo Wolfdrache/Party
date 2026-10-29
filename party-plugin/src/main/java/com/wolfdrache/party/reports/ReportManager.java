@@ -3,10 +3,12 @@ package com.wolfdrache.party.reports;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
@@ -84,6 +86,9 @@ public class ReportManager {
         playerReports.computeIfAbsent(reporter, k -> new PlayerReports());
         playerReports.get(reported).receivedReportsOpen.add(report);
         playerReports.get(reporter).madeReports.add(report);
+
+        Bukkit.broadcast(MessageHelper.createComponent("§cNeuer Report:"), "reports.manage");
+        Bukkit.broadcast(MessageHelper.createComponent("§8" + reported.getName() + ": " + category + " - " + reason + " - " + message), "reports.manage");
     }
 
     public void closeReports(OfflinePlayer reported, Player operator, String conclusion) {
@@ -119,5 +124,18 @@ public class ReportManager {
     public void createCategory(String name) {
         if (reportCategories.containsKey(name.toLowerCase())) return;
         reportCategories.put(name.toLowerCase(), new ReportCategory(name.toLowerCase()));
+    }
+
+    public ReportCategory getReportCategory(String category) {
+        if (!reportCategories.containsKey(category.toLowerCase())) return null;
+        return reportCategories.get(category.toLowerCase());
+    }
+
+    public List<String> getReportCategoryNames() {
+        return new ArrayList<>(reportCategories.keySet());
+    }
+
+    public Map<OfflinePlayer, PlayerReports> getAllReports() {
+        return playerReports;
     }
 }

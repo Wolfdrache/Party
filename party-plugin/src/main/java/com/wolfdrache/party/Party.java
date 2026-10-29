@@ -48,6 +48,9 @@ public class Party extends JavaPlugin {
         this.reportService = new ReportServiceImpl(reportManager);
         Bukkit.getServicesManager().register(ReportService.class, this.reportService, this, ServicePriority.Normal);
 
+        getCommand("report").setExecutor(new ReportCommand(reportManager));
+        getCommand("reportsteam").setExecutor(new ReportsTeamCommand(reportManager));
+
         getLogger().info("Party has been enabled!");
     }
 

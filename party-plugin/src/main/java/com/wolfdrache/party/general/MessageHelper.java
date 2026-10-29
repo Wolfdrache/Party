@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.kyori.adventure.title.Title;
 
@@ -40,7 +41,7 @@ public class MessageHelper {
     }
 
     public static Component createComponent(String text) {
-        return LegacyComponentSerializer.legacySection().deserialize(text);
+        return LegacyComponentSerializer.legacySection().deserialize(text).decoration(TextDecoration.ITALIC, false);
     }
 
     public static void sendPartyInviteMessage(Player sender, Player target) {
