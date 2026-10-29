@@ -99,7 +99,7 @@ public class ReportsTeamCommand implements TabExecutor {
                     MessageHelper.sendReportMessage(player, report);
                 }
             }
-            case "closeId" -> {
+            case "closeid" -> {
                 if (args.length < 2) {
                     return true;
                 }
