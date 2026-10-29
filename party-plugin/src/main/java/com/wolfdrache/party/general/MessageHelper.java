@@ -81,15 +81,14 @@ public class MessageHelper {
     }
 
     public static void sendReportMessage(Player player, ReportModel report) {
-        Component message = createComponent(Type.REPORT.prefix + "§8Kategorie: §7" + report.category + 
-            "\n§8Grund: §7" + report.reason + 
+        Component message = createComponent(Type.REPORT.prefix + 
+            "\n§8Kategorie: §7" + report.category + " §8Grund: §7" + report.reason + 
             "\n§8Nachricht: §7" + report.message + 
-            "\n§8Gemeldet von: §7" + report.reporter.getName() + 
-            "\n§8Zeitpunkt: §7" + report.timestamp);
+            "\n§8Gemeldet von: §7" + report.reporter.getName() + " §8Zeitpunkt: §7" + report.timestamp);
 
         if (report.operator != null) {
-            message = message.append(createComponent("\n§8Operator: §a" + report.operator.getName() +
-                "\n§8Bearbeitungszeit: §a" + report.handledTimestamp +
+            message = message.append(createComponent(
+                "\n§8Operator: §a" + report.operator.getName() + " §8Bearbeitungszeit: §a" + report.handledTimestamp +
                 "\n§8Fazit: §a" + report.conclusion));
         } else if (player.hasPermission("reports.manage")) {
             message = message.append(createComponent("\n§8[§4Bann§8]")

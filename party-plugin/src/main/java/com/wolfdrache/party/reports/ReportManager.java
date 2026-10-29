@@ -99,19 +99,9 @@ public class ReportManager {
             return;
         }
         PlayerReports reportsForPlayer = playerReports.get(reported);
-        String timestamp = Instant.now().atZone(ZoneId.of("Europe/Berlin")).format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss"));
-        for (ReportModel report : reportsForPlayer.receivedReportsOpen) {
-            report.operator = operator;
-            report.conclusion = conclusion;
-            report.handledTimestamp = timestamp;
-            reportsForPlayer.receivedReportsClosed.add(report);
-            updateReport(report);
-            OfflinePlayer reporter = report.reporter;
-            if (reporter.isOnline()) {
-                MessageHelper.sendMessage((Player) reporter, MessageHelper.Type.REPORT, "§8Dein Report an §c" + reported.getName() + "§8 wurde bearbeitet.");
-            }
+        for (ReportModel report : new ArrayList<>(reportsForPlayer.receivedReportsOpen)) {
+            closeReport(report, operator, conclusion);
         }
-        reportsForPlayer.receivedReportsOpen.clear();
     }
 
     public String getBaseCategoryName() {
@@ -152,6 +142,11 @@ public class ReportManager {
     }
 
     public void closeReport(ReportModel report, Player player, String message) {
+        if (report == null) return;
+        if (report.operator != null) {
+            MessageHelper.sendMessage(player, MessageHelper.Type.REPORT, "§8Dieser Report wurde bereits von §7" + report.operator.getName() + "§8 bearbeitet.");
+            return;
+        }
         report.operator = player;
         report.conclusion = message;
         report.handledTimestamp = Instant.now().atZone(ZoneId.of("Europe/Berlin")).format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss"));

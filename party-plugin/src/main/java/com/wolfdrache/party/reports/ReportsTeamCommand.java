@@ -49,6 +49,7 @@ public class ReportsTeamCommand implements TabExecutor {
                 }
                 String message = args.length >= 3 ? String.join(" ", Arrays.copyOfRange(args, 2, args.length)) : "";
                 reportManager.closeReports(target, player, message);
+                MessageHelper.sendMessage(player, MessageHelper.Type.REPORT, "§8Die Reports an " + target.getName() + " wurden erfolgreich geschlossen.");
             }
             case "list" -> {
                 Map<OfflinePlayer, PlayerReports> reports = reportManager.getAllReports();
@@ -111,6 +112,7 @@ public class ReportsTeamCommand implements TabExecutor {
                 }
                 String message = args.length >= 3 ? String.join(" ", Arrays.copyOfRange(args, 2, args.length)) : "";
                 reportManager.closeReport(report, player, message);
+                MessageHelper.sendMessage(player, MessageHelper.Type.REPORT, "§8Der Report wurde erfolgreich geschlossen.");
             }
             case "delete" -> {
                 if (!player.hasPermission("reports.delete")) {
@@ -127,6 +129,7 @@ public class ReportsTeamCommand implements TabExecutor {
                     return true;
                 }
                 reportManager.deleteReport(report);
+                MessageHelper.sendMessage(player, MessageHelper.Type.REPORT, "§8Der Report wurde erfolgreich gelöscht.");
             }
         }
         return true;
