@@ -92,12 +92,12 @@ public class MessageHelper {
                 "\n§8Bearbeitungszeit: §a" + report.handledTimestamp +
                 "\n§8Fazit: §a" + report.conclusion));
         } else if (player.hasPermission("reports.manage")) {
-            message = message.append(createComponent("§8[§4Bann§8]"))
-                .clickEvent(ClickEvent.runCommand("/reportsteam closeId " + report.getId() + " Bann")).append(createComponent("   "));
-            message = message.append(createComponent("§8[§eMute§8]"))
-                .clickEvent(ClickEvent.runCommand("/reportsteam closeId " + report.getId() + " Mute")).append(createComponent("   "));
-            message = message.append(createComponent("§8[§aInkorrekt§8]"))
-                .clickEvent(ClickEvent.runCommand("/reportsteam closeId " + report.getId() + " Inkorrekter Report"));
+            message = message.append(createComponent("\n§8[§4Bann§8]")
+                .clickEvent(ClickEvent.runCommand("/reportsteam closeId " + report.getId() + " Bann"))).append(createComponent(" "));
+            message = message.append(createComponent("§8[§eMute§8]")
+                .clickEvent(ClickEvent.runCommand("/reportsteam closeId " + report.getId() + " Mute"))).append(createComponent(" "));
+            message = message.append(createComponent("§8[§aInkorrekt§8]")
+                .clickEvent(ClickEvent.runCommand("/reportsteam closeId " + report.getId() + " Inkorrekter Report")));
         }
 
         if (player.hasPermission("reports.delete")) {

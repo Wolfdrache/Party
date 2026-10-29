@@ -155,7 +155,6 @@ public class ReportManager {
         report.operator = player;
         report.conclusion = message;
         report.handledTimestamp = Instant.now().atZone(ZoneId.of("Europe/Berlin")).format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss"));
-        updateReport(report);
         OfflinePlayer reporter = report.reporter;
         if (reporter.isOnline()) {
             MessageHelper.sendMessage((Player) reporter, MessageHelper.Type.REPORT, "§8Dein Report an §c" + report.reportedPlayer.getName() + "§8 wurde bearbeitet.");
@@ -163,7 +162,9 @@ public class ReportManager {
         OfflinePlayer reported = report.reportedPlayer;
         PlayerReports reportsForPlayer = playerReports.get(reported);
         if (reportsForPlayer != null) {
-            reportsForPlayer.closeReport(report);
+            reportsForPlayer.receivedReportsOpen.remove(report);
+            reportsForPlayer.receivedReportsClosed.add(report);
         }
+        updateReport(report);
     }
 }
