@@ -42,7 +42,7 @@ public class GameCommands implements TabExecutor {
             if (executor != null) {
                 return executor.onCommand(sender, command, label, args);
             }
-        } else if (args.length >= 2) {
+        } else {
             plugin = gameCommandManager.getPluginForCommand(gameCommandType, args[0]);
             if (plugin == null) {
                 MessageHelper.sendMessage(player, MessageHelper.Type.SYSTEM, "Invalid plugin specified.");
