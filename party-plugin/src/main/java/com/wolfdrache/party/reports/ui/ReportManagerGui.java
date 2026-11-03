@@ -88,7 +88,7 @@ public class ReportManagerGui implements Listener {
             PlayerReportsGui.open(player, data.report.reportedPlayer);
             return;
         } else if (clickedItem.equals(NavItems.customReportItem)) {
-            // Handle custom report action here
+            MessageHelper.sendMessage(player, MessageHelper.Type.REPORT, "§cNoch nicht implementiert");
             return;
         }
     }
