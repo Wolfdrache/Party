@@ -152,7 +152,8 @@ public class ReportManager {
         report.handledTimestamp = Instant.now().atZone(ZoneId.of("Europe/Berlin")).format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss"));
         OfflinePlayer reporter = report.reporter;
         if (reporter.isOnline()) {
-            MessageHelper.sendMessage((Player) reporter, MessageHelper.Type.REPORT, "§8Dein Report an §c" + report.reportedPlayer.getName() + "§8 wurde bearbeitet.");
+            Player reporterPlayer = Bukkit.getPlayer(reporter.getUniqueId());
+            MessageHelper.sendMessage(reporterPlayer, MessageHelper.Type.REPORT, "§8Dein Report an §c" + report.reportedPlayer.getName() + "§8 wurde bearbeitet.");
         }
         OfflinePlayer reported = report.reportedPlayer;
         PlayerReports reportsForPlayer = playerReports.get(reported);
