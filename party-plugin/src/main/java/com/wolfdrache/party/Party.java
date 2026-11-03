@@ -3,11 +3,15 @@ package com.wolfdrache.party;
 import com.wolfdrache.friends.FriendsService;
 import com.wolfdrache.party.api.PartyService;
 import com.wolfdrache.party.friends.*;
+import com.wolfdrache.party.gamemodes.GameCommandManager;
+import com.wolfdrache.party.gamemodes.GameCommands;
 import com.wolfdrache.party.general.FileManager;
 import com.wolfdrache.party.party.*;
 import com.wolfdrache.party.reports.*;
 import com.wolfdrache.party.reports.ui.*;
 import com.wolfdrache.party.service.*;
+import com.wolfdrache.serverapi.gamemodes.GameCommandTypes;
+import com.wolfdrache.serverapi.gamemodes.GameService;
 import com.wolfdrache.serverapi.reports.*;
 
 import org.bukkit.Bukkit;
@@ -28,6 +32,9 @@ public class Party extends JavaPlugin {
     private ReportsGui reportsGui;
     private PlayerReportsGui playerReportsGui;
     private ReportManagerGui reportManagerGui;
+
+    private GameService gameService;
+    private GameCommandManager gameManager;
 
     @Override
     public void onEnable() {
@@ -61,6 +68,14 @@ public class Party extends JavaPlugin {
         getServer().getPluginManager().registerEvents(playerReportsGui, this);
         getServer().getPluginManager().registerEvents(reportManagerGui, this);
 
+        this.gameManager = new GameCommandManager();
+        this.gameService = new GameServiceImpl(gameManager);
+        Bukkit.getServicesManager().register(GameService.class, this.gameService, this, ServicePriority.Normal);
+
+        for (GameCommandTypes commandType : GameCommandTypes.values()) {
+            getCommand(commandType.name().toLowerCase()).setExecutor(new GameCommands(gameManager, commandType));
+        }
+
         getLogger().info("Party has been enabled!");
     }
 
@@ -69,6 +84,7 @@ public class Party extends JavaPlugin {
         Bukkit.getServicesManager().unregister(PartyService.class, this.partyService);
         Bukkit.getServicesManager().unregister(FriendsService.class, this.friendsService);
         Bukkit.getServicesManager().unregister(ReportService.class, this.reportService);
+        Bukkit.getServicesManager().unregister(GameService.class, this.gameService);
         getLogger().info("Party has been disabled!");
     }
 }

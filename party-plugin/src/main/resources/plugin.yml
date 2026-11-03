@@ -23,9 +23,41 @@ commands:
     description: reportTeamCommand
     usage: /reportsteam <subcommand> [args]
     permission: reports.manage
+
+  join:
+    description: joinCommand for Game Modes
+    usage: /join <gamemode> [args]
+  leave:
+    description: leaveCommand for Game Modes
+    usage: /leave [<gamemode>]
+  start:
+    description: startCommand for Game Modes
+    usage: /start [<gamemode>]
+    permission: gamemodes.start
+  stats:
+    description: statsCommand for Game Modes
+    usage: /stats <gamemode>
+  admin:
+    description: adminCommand for Game Modes
+    usage: /admin <plugin> <subcommand> [args]
+    permission: gamemodes.admin
+  forcejoin:
+    description: forceJoinCommand for Game Modes
+    usage: /forcejoin <gamemode> [args]
+    permission: gamemodes.forcejoin
   
 
 permissions:
+  gamemodes.start:
+    description: Allows starting game modes
+    default: false
+  gamemodes.admin:
+    description: Allows admin commands for game modes
+    default: false
+  gamemodes.forcejoin:
+    description: Allows force joining game modes
+    default: false
+    
   social.friends.unlimited:
     description: Allows unlimited friends
     default: false

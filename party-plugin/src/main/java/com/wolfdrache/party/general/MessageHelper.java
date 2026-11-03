@@ -18,7 +18,8 @@ public class MessageHelper {
     public enum Type {
         PARTY("§9§lParty §7 >> §r"),
         FRIEND("§a§lFreunde §7 >> §r"),
-        REPORT("§4§lReports §7 >> §r");
+        REPORT("§4§lReports §7 >> §r"),
+        SYSTEM("§e§lSystem §7 >> §r");
 
         public final String prefix;
 
@@ -28,7 +29,7 @@ public class MessageHelper {
     }
     
     public static void sendMessage(Player player, Type type, String message) {
-        player.sendMessage(type.prefix + message);
+        player.sendMessage(type != null ? type.prefix + message : message);
     }
     
     public static void sendTitle(Player player, String title, String subtitle, int fadeIn, int stay, int fadeOut) {
