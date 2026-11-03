@@ -12,6 +12,7 @@ import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 
 import com.wolfdrache.party.general.MessageHelper;
+import com.wolfdrache.party.reports.ui.ReportsGui;
 import com.wolfdrache.serverapi.reports.ReportModel;
 
 public class ReportsTeamCommand implements TabExecutor {
@@ -29,9 +30,13 @@ public class ReportsTeamCommand implements TabExecutor {
             sender.sendMessage("Only players can use this command.");
             return true;
         }
+        if (!player.hasPermission("reports.manage")) {
+            MessageHelper.sendMessage(player, MessageHelper.Type.REPORT, "You do not have permission to use this command.");
+            return true;
+        }
         
         if (args.length == 0) {
-            player.sendMessage("Invalid subcommand. Available subcommands: " + String.join(", ", subCommands));
+            ReportsGui.open(player);
             return true;
         }
         String subCommand = args[0].toLowerCase();
@@ -60,7 +65,7 @@ public class ReportsTeamCommand implements TabExecutor {
                         OfflinePlayer reported = entry.getKey();
                         PlayerReports playerReports = entry.getValue();
                         if (!playerReports.receivedReportsOpen.isEmpty()) {
-                            MessageHelper.sendMessage(player, MessageHelper.Type.REPORT, "Open reports for " + reported.getName() + ": " + playerReports.receivedReportsOpen.size());
+                            MessageHelper.sendMessage(player, MessageHelper.Type.REPORT, "§8Offene Reports an §7" + reported.getName() + "§8: §c" + playerReports.receivedReportsOpen.size());
                         }
                     }
                 }

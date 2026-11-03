@@ -36,8 +36,8 @@ public class ReportManager {
         for (ReportModel report : reports) {
             OfflinePlayer reportedPlayer = report.reportedPlayer;
             OfflinePlayer reporter = report.reporter;
-            playerReports.computeIfAbsent(reportedPlayer, k -> new PlayerReports());
-            playerReports.computeIfAbsent(reporter, k -> new PlayerReports());
+            playerReports.computeIfAbsent(reportedPlayer, k -> new PlayerReports(reportedPlayer));
+            playerReports.computeIfAbsent(reporter, k -> new PlayerReports(reporter));
             if (report.operator == null) {
                 playerReports.get(reportedPlayer).receivedReportsOpen.add(report);
             } else {
@@ -82,15 +82,15 @@ public class ReportManager {
         reports.add(report);
         updateReport(report);
 
-        playerReports.computeIfAbsent(reported, k -> new PlayerReports());
-        playerReports.computeIfAbsent(reporter, k -> new PlayerReports());
+        playerReports.computeIfAbsent(reported, k -> new PlayerReports(reported));
+        playerReports.computeIfAbsent(reporter, k -> new PlayerReports(reporter));
         playerReports.get(reported).receivedReportsOpen.add(report);
         playerReports.get(reporter).madeReports.add(report);
 
         List<Player> onlineOperators = new ArrayList<>(Bukkit.getOnlinePlayers().stream().filter(p -> p.hasPermission("reports.manage")).toList());
         for (Player operator : onlineOperators) {
-            MessageHelper.sendMessage(operator, MessageHelper.Type.REPORT, "§8Neuer Report von §7" + reporter.getName() + "§8 gegen §c" + reported.getName() + "§8 wurde erstellt.");
-            MessageHelper.sendReportMessage(operator, report);
+            MessageHelper.sendMessage(operator, MessageHelper.Type.REPORT, "§8Neuer Report von §7" + reporter.getName() + "§8 für §c" + reported.getName());
+            MessageHelper.sendMessage(operator, MessageHelper.Type.REPORT, "§8Kategorie: §7" + category + " §8 Grund: §7" + reason);
         }
     }
 
@@ -161,5 +161,9 @@ public class ReportManager {
             reportsForPlayer.receivedReportsClosed.add(report);
         }
         updateReport(report);
+    }
+
+    public PlayerReports getPlayerReports(OfflinePlayer player) {
+        return playerReports.get(player);
     }
 }

@@ -6,6 +6,7 @@ import com.wolfdrache.party.friends.*;
 import com.wolfdrache.party.general.FileManager;
 import com.wolfdrache.party.party.*;
 import com.wolfdrache.party.reports.*;
+import com.wolfdrache.party.reports.ui.*;
 import com.wolfdrache.party.service.*;
 import com.wolfdrache.serverapi.reports.*;
 
@@ -24,6 +25,8 @@ public class Party extends JavaPlugin {
 
     private ReportService reportService;
     private ReportManager reportManager;
+    private ReportsGui reportsGui;
+    private PlayerReportsGui playerReportsGui;
 
     @Override
     public void onEnable() {
@@ -46,10 +49,14 @@ public class Party extends JavaPlugin {
 
         this.reportManager = new ReportManager(fileManager);
         this.reportService = new ReportServiceImpl(reportManager);
+        this.playerReportsGui = new PlayerReportsGui(reportManager);
+        this.reportsGui = new ReportsGui(reportManager);
         Bukkit.getServicesManager().register(ReportService.class, this.reportService, this, ServicePriority.Normal);
 
         getCommand("report").setExecutor(new ReportCommand(reportManager));
         getCommand("reportsteam").setExecutor(new ReportsTeamCommand(reportManager));
+        getServer().getPluginManager().registerEvents(reportsGui, this);
+        getServer().getPluginManager().registerEvents(playerReportsGui, this);
 
         getLogger().info("Party has been enabled!");
     }
