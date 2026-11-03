@@ -47,7 +47,7 @@ public class ReportManagerGui implements Listener {
         gui.setItem(10, done ? NavItems.disabledItem : NavItems.innocentReportItem);
         gui.setItem(11, done ? NavItems.disabledItem : NavItems.warningReportItem);
         gui.setItem(19, done ? NavItems.disabledItem : NavItems.muteReportItem);
-        gui.setItem(20, done ? NavItems.disabledItem : NavItems.banReportItem);
+        gui.setItem(20, done ? NavItems.disabledItem : NavItems.bannReportItem);
         gui.setItem(13, player.hasPermission("reports.delete") ? NavItems.deleteReportItem : NavItems.disabledItem);
         gui.setItem(15, NavItems.returnItem);
         gui.setItem(16, done ? NavItems.disabledItem : NavItems.customReportItem);
@@ -69,23 +69,23 @@ public class ReportManagerGui implements Listener {
             return;
         } else if (clickedItem.equals(NavItems.deleteReportItem)) {
             reportManager.deleteReport(data.report);
-            player.closeInventory();
+            PlayerReportsGui.open(player, data.report.reportedPlayer);
             return;
         } else if (clickedItem.equals(NavItems.innocentReportItem)) {
             reportManager.closeReport(data.report, player, "Inkorrekt");
-            player.closeInventory();
+            PlayerReportsGui.open(player, data.report.reportedPlayer);
             return;
         } else if (clickedItem.equals(NavItems.warningReportItem)) {
             reportManager.closeReport(data.report, player, "Warnung");
-            player.closeInventory();
+            PlayerReportsGui.open(player, data.report.reportedPlayer);
             return;
         } else if (clickedItem.equals(NavItems.muteReportItem)) {
             reportManager.closeReport(data.report, player, "Mute");
-            player.closeInventory();
+            PlayerReportsGui.open(player, data.report.reportedPlayer);
             return;
-        } else if (clickedItem.equals(NavItems.banReportItem)) {
+        } else if (clickedItem.equals(NavItems.bannReportItem)) {
             reportManager.closeReport(data.report, player, "Bann");
-            player.closeInventory();
+            PlayerReportsGui.open(player, data.report.reportedPlayer);
             return;
         } else if (clickedItem.equals(NavItems.customReportItem)) {
             // Handle custom report action here
