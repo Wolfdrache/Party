@@ -57,7 +57,9 @@ public class ItemHelper {
         if (meta != null) {
             meta.displayName(MessageHelper.createComponent("§c" + report.reporter.getName()));
             List<Component> lore = new ArrayList<>();
+            lore.add(MessageHelper.createComponent("§7Gemeldet: §c" + report.reportedPlayer.getName()));
             lore.add(MessageHelper.createComponent("§7Grund: §e" + report.category + ": " + report.reason));
+            if (report.message != null && !report.message.isEmpty()) lore.add(MessageHelper.createComponent("§7Nachricht: §e" + report.message));
             lore.add(MessageHelper.createComponent("§7Zeitpunkt: §8" + report.timestamp));
             if (report.operator != null) {
                 lore.add(MessageHelper.createComponent("§7Bearbeitet von: §a" + report.operator.getName()));
@@ -68,5 +70,50 @@ public class ItemHelper {
             head.setItemMeta(meta);
         }
         return head;
+    }
+
+    public static ItemStack createReportManagerHead(ReportModel report) {
+        ItemStack head = createPlayerHead(report.reportedPlayer);
+        ItemMeta meta = head.getItemMeta();
+        if (meta != null) {
+            meta.displayName(MessageHelper.createComponent("§c" + report.reportedPlayer.getName()));
+            List<Component> lore = new ArrayList<>();
+            lore.add(MessageHelper.createComponent("§7Gemeldet von: §c" + report.reporter.getName()));
+            lore.add(MessageHelper.createComponent("§7Grund: §e" + report.category + ": " + report.reason));
+            if (report.message != null && !report.message.isEmpty()) lore.add(MessageHelper.createComponent("§7Nachricht: §e" + report.message));
+            lore.add(MessageHelper.createComponent("§7Zeitpunkt: §8" + report.timestamp));
+            if (report.operator != null) {
+                lore.add(MessageHelper.createComponent("§7Bearbeitet von: §a" + report.operator.getName()));
+                lore.add(MessageHelper.createComponent("§7Zeitpunkt: §a" + report.handledTimestamp));
+                lore.add(MessageHelper.createComponent("§7Fazit: §e" + report.conclusion));
+            }
+            meta.lore(lore);
+            head.setItemMeta(meta);
+        }
+        return head;
+    }
+    
+    public static ItemStack createNextArrow(boolean next) {
+        ItemStack item = new ItemStack(Material.ARROW);
+        ItemMeta meta = item.getItemMeta();
+        if (meta != null) {
+            if (next) {
+                meta.displayName(MessageHelper.createComponent("§aNexte Seite"));
+            } else {
+                meta.displayName(MessageHelper.createComponent("§aVorherige Seite"));
+            }
+            item.setItemMeta(meta);
+        }
+        return item;
+    }
+
+    public static ItemStack createNavItem (String name, Material material) {
+        ItemStack item = new ItemStack(material);
+        ItemMeta meta = item.getItemMeta();
+        if (meta != null) {
+            meta.displayName(MessageHelper.createComponent(name));
+            item.setItemMeta(meta);
+        }
+        return item;
     }
 }

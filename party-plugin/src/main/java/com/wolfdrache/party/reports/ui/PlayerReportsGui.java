@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -13,9 +14,11 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 
 import com.wolfdrache.party.general.ItemHelper;
 import com.wolfdrache.party.general.MessageHelper;
+import com.wolfdrache.party.general.NavItems;
 import com.wolfdrache.party.reports.PlayerReports;
 import com.wolfdrache.party.reports.ReportManager;
 import com.wolfdrache.serverapi.reports.ReportModel;
@@ -37,10 +40,12 @@ public class PlayerReportsGui implements Listener {
     }
 
     private final ReportManager reportManager;
+    private final ReportManagerGui reportManagerGui;
 
     private final Map<Player, Data> playerData = new HashMap<>();
-    public PlayerReportsGui(ReportManager reportManager) {
+    public PlayerReportsGui(ReportManager reportManager, ReportManagerGui reportManagerGui) {
         this.reportManager = reportManager;
+        this.reportManagerGui = reportManagerGui;
         instance = this;
     }
 
@@ -48,7 +53,7 @@ public class PlayerReportsGui implements Listener {
         instance.open(player, target, 0);
     }
 
-    public void open(Player player, OfflinePlayer target, int page) {
+    private void open(Player player, OfflinePlayer target, int page) {
         PlayerReports playerReports = reportManager.getPlayerReports(target);
         List<ReportModel> reports = new ArrayList<>();
         reports.addAll(playerReports.receivedReportsOpen);
@@ -62,6 +67,14 @@ public class PlayerReportsGui implements Listener {
             slotToReport.put(i, reports.get(i));
             gui.setItem(i, ItemHelper.createReportHead(reports.get(i)));
         }
+        
+        for (int i = size - 9; i < size; i++) {
+            gui.setItem(i, ItemHelper.createFillerItem(Material.GRAY_STAINED_GLASS_PANE));
+        }
+        gui.setItem(size - 9, (page > 0) ? NavItems.previousArrow : ItemHelper.createFillerItem(Material.WHITE_STAINED_GLASS_PANE));
+        gui.setItem(size - 5, NavItems.returnItem);
+        gui.setItem(size - 1, (page < getMaxPages(reports.size())) ? NavItems.nextArrow : ItemHelper.createFillerItem(Material.WHITE_STAINED_GLASS_PANE));
+
         player.openInventory(gui);
         playerData.put(player, new Data(page, gui, target, slotToReport));
     }
@@ -74,11 +87,17 @@ public class PlayerReportsGui implements Listener {
         if (!event.getView().getTopInventory().equals(data.gui)) return;
         event.setCancelled(true);
         if (!event.getInventory().equals(data.gui)) return;
+        
+        ItemStack clickedItem = event.getCurrentItem();
+        if (clickedItem == null || clickedItem.getType() == Material.AIR) return;
+        else if (clickedItem.equals(NavItems.previousArrow)) { open(player, data.target, data.page - 1); return; }
+        else if (clickedItem.equals(NavItems.nextArrow)) { open(player, data.target, data.page + 1); return; }
+        else if (clickedItem.equals(NavItems.returnItem)) { ReportsGui.open(player); return; }
+
         int slot = event.getSlot();
         ReportModel report = data.slotToReport.get(slot);
         if (report != null) {
-            MessageHelper.sendReportMessage(player, report);
-            player.closeInventory();
+            reportManagerGui.open(player, report);
         }
     }
 
@@ -94,9 +113,16 @@ public class PlayerReportsGui implements Listener {
 
     private int getSize(List<ReportModel> reports) {
         int size = 9;
-        while (size <= reports.size()) {
+        while (size < reports.size()) {
             size += 9;
         }
+        size = size + 9;
         return size;
+    }
+
+    private int getMaxPages(int totalReports) {
+        int pages = totalReports / 45;
+        if (totalReports % 45 == 0) pages--;
+        return pages;
     }
 }

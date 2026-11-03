@@ -27,6 +27,7 @@ public class Party extends JavaPlugin {
     private ReportManager reportManager;
     private ReportsGui reportsGui;
     private PlayerReportsGui playerReportsGui;
+    private ReportManagerGui reportManagerGui;
 
     @Override
     public void onEnable() {
@@ -49,7 +50,8 @@ public class Party extends JavaPlugin {
 
         this.reportManager = new ReportManager(fileManager);
         this.reportService = new ReportServiceImpl(reportManager);
-        this.playerReportsGui = new PlayerReportsGui(reportManager);
+        this.reportManagerGui = new ReportManagerGui(reportManager);
+        this.playerReportsGui = new PlayerReportsGui(reportManager, reportManagerGui);
         this.reportsGui = new ReportsGui(reportManager);
         Bukkit.getServicesManager().register(ReportService.class, this.reportService, this, ServicePriority.Normal);
 
@@ -57,6 +59,7 @@ public class Party extends JavaPlugin {
         getCommand("reportsteam").setExecutor(new ReportsTeamCommand(reportManager));
         getServer().getPluginManager().registerEvents(reportsGui, this);
         getServer().getPluginManager().registerEvents(playerReportsGui, this);
+        getServer().getPluginManager().registerEvents(reportManagerGui, this);
 
         getLogger().info("Party has been enabled!");
     }
