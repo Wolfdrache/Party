@@ -63,7 +63,8 @@ public class Party extends JavaPlugin {
         Bukkit.getServicesManager().register(ReportService.class, this.reportService, this, ServicePriority.Normal);
 
         getCommand("report").setExecutor(new ReportCommand(reportManager));
-        getCommand("reportsteam").setExecutor(new ReportsTeamCommand(reportManager));
+        gameService.registerPluginAlias(this, "reports");
+        gameService.registerCommand(this, GameCommandTypes.ADMIN, new ReportsTeamCommand(reportManager));
         getServer().getPluginManager().registerEvents(reportsGui, this);
         getServer().getPluginManager().registerEvents(playerReportsGui, this);
         getServer().getPluginManager().registerEvents(reportManagerGui, this);
