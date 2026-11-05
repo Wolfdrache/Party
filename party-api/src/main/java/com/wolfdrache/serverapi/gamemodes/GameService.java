@@ -8,4 +8,5 @@ public interface GameService {
     void registerCommand(Plugin plugin, GameCommandTypes command, TabExecutor executor);
     void joinPlugin(Player player, Plugin plugin);
     void leaveGame(Player player, Plugin plugin);
+    void registerPluginAlias(Plugin plugin, String alias);
 }

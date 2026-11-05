@@ -14,6 +14,7 @@ import com.wolfdrache.serverapi.gamemodes.GameCommandTypes;
 public class GameCommandManager {
     private final Map<GameCommandTypes, Map<Plugin, TabExecutor>> commands = new HashMap<>();
     private final Map<Player, Plugin> playerPluginMap = new HashMap<>();
+    private final Map<Plugin, String> pluginAliases = new HashMap<>();
 
     public void registerCommand(Plugin plugin, GameCommandTypes command, TabExecutor executor) {
         commands.computeIfAbsent(command, k -> new HashMap<>()).put(plugin, executor);
@@ -26,7 +27,11 @@ public class GameCommandManager {
         }
         List<String> pluginNames = new ArrayList<>();
         for (Plugin plugin : pluginMap.keySet()) {
-            pluginNames.add(plugin.getName());
+            if (pluginAliases.containsKey(plugin)) {
+                pluginNames.add(pluginAliases.get(plugin));
+            } else {
+                pluginNames.add(plugin.getName());
+            }
         }
         return pluginNames;
     }
@@ -37,7 +42,9 @@ public class GameCommandManager {
             return null;
         }
         for (Plugin plugin : pluginMap.keySet()) {
-            if (plugin.getName().equalsIgnoreCase(pluginName)) {
+            String pluginAlias = pluginAliases.get(plugin);
+            if (pluginAlias == null) pluginAlias = plugin.getName();
+            if (pluginAlias.equalsIgnoreCase(pluginName)) {
                 return plugin;
             }
         }
@@ -68,5 +75,9 @@ public class GameCommandManager {
         if (playerPluginMap.get(player) == plugin) {
             playerPluginMap.remove(player);
         }
+    }
+
+    public void registerPluginAlias(Plugin plugin, String alias) {
+        pluginAliases.put(plugin, alias);
     }
 }

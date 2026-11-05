@@ -30,4 +30,8 @@ public class GameServiceImpl implements GameService {
         gameCommandManager.removePluginForPlayer(player, plugin);
     }
     
+    @Override
+    public void registerPluginAlias(Plugin plugin, String alias) {
+        gameCommandManager.registerPluginAlias(plugin, alias);
+    }
 }
