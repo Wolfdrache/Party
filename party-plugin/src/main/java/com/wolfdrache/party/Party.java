@@ -63,8 +63,6 @@ public class Party extends JavaPlugin {
         Bukkit.getServicesManager().register(ReportService.class, this.reportService, this, ServicePriority.Normal);
 
         getCommand("report").setExecutor(new ReportCommand(reportManager));
-        gameService.registerPluginAlias(this, "reports");
-        gameService.registerCommand(this, GameCommandTypes.ADMIN, new ReportsTeamCommand(reportManager));
         getServer().getPluginManager().registerEvents(reportsGui, this);
         getServer().getPluginManager().registerEvents(playerReportsGui, this);
         getServer().getPluginManager().registerEvents(reportManagerGui, this);
@@ -76,6 +74,8 @@ public class Party extends JavaPlugin {
         for (GameCommandTypes commandType : GameCommandTypes.values()) {
             getCommand(commandType.name().toLowerCase()).setExecutor(new GameCommands(gameManager, commandType));
         }
+        gameService.registerPluginAlias(this, "reports");
+        gameService.registerCommand(this, GameCommandTypes.ADMIN, new ReportsTeamCommand(reportManager));
 
         getLogger().info("Party has been enabled!");
     }
