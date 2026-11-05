@@ -4,9 +4,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
 import com.wolfdrache.serverapi.gamemodes.GameCommandTypes;
@@ -15,6 +18,7 @@ public class GameCommandManager {
     private final Map<GameCommandTypes, Map<Plugin, TabExecutor>> commands = new HashMap<>();
     private final Map<Player, Plugin> playerPluginMap = new HashMap<>();
     private final Map<Plugin, String> pluginAliases = new HashMap<>();
+    private final List<Function<OfflinePlayer, ItemStack>> statsDisplayItems = new ArrayList<>();
 
     public void registerCommand(Plugin plugin, GameCommandTypes command, TabExecutor executor) {
         commands.computeIfAbsent(command, k -> new HashMap<>()).put(plugin, executor);
@@ -79,5 +83,17 @@ public class GameCommandManager {
 
     public void registerPluginAlias(Plugin plugin, String alias) {
         pluginAliases.put(plugin, alias);
+    }
+
+    public void registerStatsDisplayItem(Function<OfflinePlayer, ItemStack> itemSupplier) {
+        statsDisplayItems.add(itemSupplier);
+    }
+
+    public List<ItemStack> getStatsItems(OfflinePlayer player) {
+        List<ItemStack> items = new ArrayList<>();
+        for (Function<OfflinePlayer, ItemStack> itemSupplier : statsDisplayItems) {
+            items.add(itemSupplier.apply(player));
+        }
+        return items;
     }
 }

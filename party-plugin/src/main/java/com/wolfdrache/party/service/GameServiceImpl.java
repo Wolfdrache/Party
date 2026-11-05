@@ -1,7 +1,12 @@
 package com.wolfdrache.party.service;
 
+import java.util.List;
+import java.util.function.Function;
+
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
 import com.wolfdrache.party.gamemodes.GameCommandManager;
@@ -33,5 +38,15 @@ public class GameServiceImpl implements GameService {
     @Override
     public void registerPluginAlias(Plugin plugin, String alias) {
         gameCommandManager.registerPluginAlias(plugin, alias);
+    }
+
+    @Override 
+    public void registerStatsDisplayItem(Function<OfflinePlayer, ItemStack> itemSupplier) {
+        gameCommandManager.registerStatsDisplayItem(itemSupplier);
+    }
+
+    @Override
+    public List<ItemStack> getStatsItems(OfflinePlayer player) {
+        return gameCommandManager.getStatsItems(player);
     }
 }
