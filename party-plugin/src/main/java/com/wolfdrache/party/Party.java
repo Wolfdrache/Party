@@ -1,6 +1,7 @@
 package com.wolfdrache.party;
 
 import com.wolfdrache.friends.FriendsService;
+import com.wolfdrache.leaderboard.LeaderBoardListener;
 import com.wolfdrache.party.api.PartyService;
 import com.wolfdrache.party.friends.*;
 import com.wolfdrache.party.gamemodes.GameCommandManager;
@@ -76,6 +77,8 @@ public class Party extends JavaPlugin {
         }
         gameService.registerPluginAlias(this, "reports");
         gameService.registerCommand(this, CommandType.ADMIN, new ReportsTeamCommand(reportManager));
+
+        getServer().getPluginManager().registerEvents(new LeaderBoardListener(this), this);
 
         getLogger().info("Party has been enabled!");
     }
