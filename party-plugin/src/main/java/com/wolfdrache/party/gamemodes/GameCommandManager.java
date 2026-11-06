@@ -12,19 +12,19 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
-import com.wolfdrache.serverapi.gamemodes.GameCommandTypes;
+import com.wolfdrache.serverapi.gamemodes.GameService.CommandType;
 
 public class GameCommandManager {
-    private final Map<GameCommandTypes, Map<Plugin, TabExecutor>> commands = new HashMap<>();
+    private final Map<CommandType, Map<Plugin, TabExecutor>> commands = new HashMap<>();
     private final Map<Player, Plugin> playerPluginMap = new HashMap<>();
     private final Map<Plugin, String> pluginAliases = new HashMap<>();
     private final List<Function<OfflinePlayer, ItemStack>> statsDisplayItems = new ArrayList<>();
 
-    public void registerCommand(Plugin plugin, GameCommandTypes command, TabExecutor executor) {
+    public void registerCommand(Plugin plugin, CommandType command, TabExecutor executor) {
         commands.computeIfAbsent(command, k -> new HashMap<>()).put(plugin, executor);
     }
 
-    public List<String> getRegisteredPluginsForCommand(GameCommandTypes command) {
+    public List<String> getRegisteredPluginsForCommand(CommandType command) {
         Map<Plugin, TabExecutor> pluginMap = commands.get(command);
         if (pluginMap == null) {
             return new ArrayList<>();
@@ -40,7 +40,7 @@ public class GameCommandManager {
         return pluginNames;
     }
 
-    public Plugin getPluginForCommand(GameCommandTypes command, String pluginName) {
+    public Plugin getPluginForCommand(CommandType command, String pluginName) {
         Map<Plugin, TabExecutor> pluginMap = commands.get(command);
         if (pluginMap == null) {
             return null;
@@ -55,7 +55,7 @@ public class GameCommandManager {
         return null;
     }
 
-    public TabExecutor getExecutorForCommand(GameCommandTypes command, Plugin plugin) {
+    public TabExecutor getExecutorForCommand(CommandType command, Plugin plugin) {
         Map<Plugin, TabExecutor> pluginMap = commands.get(command);
         if (pluginMap == null) {
             return null;

@@ -1,15 +1,17 @@
 package com.wolfdrache.serverapi.gamemodes;
 
-public enum GameCommandTypes {
-    JOIN (true),
-    LEAVE (false),
-    START (false),
-    ADMIN (true),
-    STATS (true),
-    FORCEJOIN (true);
+import com.wolfdrache.serverapi.gamemodes.GameService.CommandType;
 
-    public final boolean requiresPlugin;
-    GameCommandTypes(boolean requiresPlugin) {
-        this.requiresPlugin = requiresPlugin;
+public enum GameCommandTypes {
+    JOIN (CommandType.JOIN),
+    LEAVE (CommandType.LEAVE),
+    START (CommandType.START),
+    ADMIN (CommandType.ADMIN),
+    STATS (CommandType.STATS),
+    FORCEJOIN (CommandType.FORCEJOIN);
+
+    public final GameService.CommandType commandType;
+    GameCommandTypes(CommandType commandType) {
+        this.commandType = commandType;
     }
 }

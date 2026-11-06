@@ -10,8 +10,8 @@ import com.wolfdrache.party.party.*;
 import com.wolfdrache.party.reports.*;
 import com.wolfdrache.party.reports.ui.*;
 import com.wolfdrache.party.service.*;
-import com.wolfdrache.serverapi.gamemodes.GameCommandTypes;
 import com.wolfdrache.serverapi.gamemodes.GameService;
+import com.wolfdrache.serverapi.gamemodes.GameService.CommandType;
 import com.wolfdrache.serverapi.reports.*;
 
 import org.bukkit.Bukkit;
@@ -71,11 +71,11 @@ public class Party extends JavaPlugin {
         this.gameService = new GameServiceImpl(gameManager);
         Bukkit.getServicesManager().register(GameService.class, this.gameService, this, ServicePriority.Normal);
 
-        for (GameCommandTypes commandType : GameCommandTypes.values()) {
+        for (CommandType commandType : CommandType.values()) {
             getCommand(commandType.name().toLowerCase()).setExecutor(new GameCommands(gameManager, commandType));
         }
         gameService.registerPluginAlias(this, "reports");
-        gameService.registerCommand(this, GameCommandTypes.ADMIN, new ReportsTeamCommand(reportManager));
+        gameService.registerCommand(this, CommandType.ADMIN, new ReportsTeamCommand(reportManager));
 
         getLogger().info("Party has been enabled!");
     }

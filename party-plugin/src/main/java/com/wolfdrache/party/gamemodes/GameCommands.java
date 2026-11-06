@@ -9,13 +9,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 import com.wolfdrache.party.general.MessageHelper;
-import com.wolfdrache.serverapi.gamemodes.GameCommandTypes;
+import com.wolfdrache.serverapi.gamemodes.GameService.CommandType;
 
 public class GameCommands implements TabExecutor {
     private final GameCommandManager gameCommandManager;
-    private final GameCommandTypes gameCommandType;
+    private final CommandType gameCommandType;
 
-    public GameCommands(GameCommandManager gameCommandManager, GameCommandTypes gameCommandType) {
+    public GameCommands(GameCommandManager gameCommandManager, CommandType gameCommandType) {
         this.gameCommandManager = gameCommandManager;
         this.gameCommandType = gameCommandType;
     }
@@ -40,7 +40,7 @@ public class GameCommands implements TabExecutor {
             }
             executor = gameCommandManager.getExecutorForCommand(gameCommandType, plugin);
             if (executor != null) {
-                return executor.onCommand(sender, command, label, args);
+                executor.onCommand(sender, command, label, args);
             }
         } else {
             plugin = gameCommandManager.getPluginForCommand(gameCommandType, args[0]);
@@ -52,7 +52,7 @@ public class GameCommands implements TabExecutor {
             if (executor != null) {
                 String[] subArgs = new String[args.length - 1];
                 System.arraycopy(args, 1, subArgs, 0, subArgs.length);
-                return executor.onCommand(sender, command, label, subArgs);
+                executor.onCommand(sender, command, label, subArgs);
             }
         }
         return true;

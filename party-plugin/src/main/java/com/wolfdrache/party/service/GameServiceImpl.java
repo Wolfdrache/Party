@@ -22,7 +22,7 @@ public class GameServiceImpl implements GameService {
 
     @Override
     public void registerCommand(Plugin plugin, GameCommandTypes command, TabExecutor executor) {
-        gameCommandManager.registerCommand(plugin, command, executor);
+        gameCommandManager.registerCommand(plugin, command.commandType, executor);
     }
 
     @Override
@@ -48,5 +48,10 @@ public class GameServiceImpl implements GameService {
     @Override
     public List<ItemStack> getStatsItems(OfflinePlayer player) {
         return gameCommandManager.getStatsItems(player);
+    }
+
+    @Override
+    public void registerCommand(Plugin plugin, GameService.CommandType command, TabExecutor executor) {
+        gameCommandManager.registerCommand(plugin, command, executor);
     }
 }
