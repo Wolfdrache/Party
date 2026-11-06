@@ -44,7 +44,7 @@ public class LeaderBoardManager {
         updateArmorstands();
     }
 
-    void removeOldArmorstands() {
+    public void removeOldArmorstands() {
         for (ArmorstandLB armLB : new ArmorstandLB[]{armorstandRank1, armorstandRank2, armorstandRank3}) {
             if (armLB == null || armLB.location == null || armLB.location.getWorld() == null) continue;
             Chunk armorstandChunk = armLB.location.getChunk();
@@ -57,7 +57,7 @@ public class LeaderBoardManager {
         }
     }
 
-    void onPlayerLoaded(Player player) {
+    public void onPlayerLoaded(Player player) {
         if (!leaderboard.contains(player.getUniqueId())) {
             leaderboard.add(player.getUniqueId());
             updateLeaderboard();
@@ -72,13 +72,13 @@ public class LeaderBoardManager {
         });
     }
 
-    void updateLeaderboard() {
+    public void updateLeaderboard() {
         sortLeaderboard();
 
         updateArmorstands();
     }
 
-    int getRank(OfflinePlayer player) {
+    public int getRank(OfflinePlayer player) {
         return leaderboard.indexOf(player.getUniqueId()) + 1;
     }
 
