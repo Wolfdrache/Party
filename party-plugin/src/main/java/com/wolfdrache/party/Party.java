@@ -63,10 +63,13 @@ public class Party extends JavaPlugin {
         this.reportsGui = new ReportsGui(reportManager);
         Bukkit.getServicesManager().register(ReportService.class, this.reportService, this, ServicePriority.Normal);
 
+        ReportsTeamCommand reportsTeamCommand = new ReportsTeamCommand(reportManager);
         getCommand("report").setExecutor(new ReportCommand(reportManager));
+        getCommand("reportsteam").setExecutor(reportsTeamCommand);
         getServer().getPluginManager().registerEvents(reportsGui, this);
         getServer().getPluginManager().registerEvents(playerReportsGui, this);
         getServer().getPluginManager().registerEvents(reportManagerGui, this);
+        getServer().getPluginManager().registerEvents(new ReportsCommandHider(), this);
 
         this.gameManager = new GameCommandManager();
         this.gameService = new GameServiceImpl(gameManager);
@@ -76,7 +79,7 @@ public class Party extends JavaPlugin {
             getCommand(commandType.name().toLowerCase()).setExecutor(new GameCommands(gameManager, commandType));
         }
         gameService.registerPluginAlias(this, "reports");
-        gameService.registerCommand(this, CommandType.ADMIN, new ReportsTeamCommand(reportManager));
+        gameService.registerCommand(this, CommandType.ADMIN, reportsTeamCommand);
 
         getServer().getPluginManager().registerEvents(new LeaderBoardListener(this), this);
 

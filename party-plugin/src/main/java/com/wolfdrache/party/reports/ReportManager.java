@@ -12,6 +12,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
+import com.wolfdrache.helper.Helper;
 import com.wolfdrache.party.general.FileManager;
 import com.wolfdrache.party.general.MessageHelper;
 import com.wolfdrache.serverapi.reports.ReportModel;
@@ -89,7 +90,7 @@ public class ReportManager {
 
         List<Player> onlineOperators = new ArrayList<>(Bukkit.getOnlinePlayers().stream().filter(p -> p.hasPermission("reports.manage")).toList());
         for (Player operator : onlineOperators) {
-            MessageHelper.sendMessage(operator, MessageHelper.Type.REPORT, "§8Neuer Report von §7" + reporter.getName() + "§8 für §c" + reported.getName());
+            MessageHelper.sendMessage(operator, MessageHelper.Type.REPORT, "§8Neuer Report von §7" + Helper.getPlayerRankName(reporter) + "§8 für §c" + Helper.getPlayerRankName(reported));
             MessageHelper.sendMessage(operator, MessageHelper.Type.REPORT, "§8Kategorie: §7" + category + " §8 Grund: §7" + reason);
         }
     }
@@ -144,7 +145,7 @@ public class ReportManager {
     public void closeReport(ReportModel report, Player player, String message) {
         if (report == null) return;
         if (report.operator != null) {
-            MessageHelper.sendMessage(player, MessageHelper.Type.REPORT, "§8Dieser Report wurde bereits von §7" + report.operator.getName() + "§8 bearbeitet.");
+            MessageHelper.sendMessage(player, MessageHelper.Type.REPORT, "§8Dieser Report wurde bereits von §7" + Helper.getPlayerRankName(report.operator) + "§8 bearbeitet.");
             return;
         }
         report.operator = player;
@@ -153,7 +154,7 @@ public class ReportManager {
         OfflinePlayer reporter = report.reporter;
         if (reporter.isOnline()) {
             Player reporterPlayer = Bukkit.getPlayer(reporter.getUniqueId());
-            MessageHelper.sendMessage(reporterPlayer, MessageHelper.Type.REPORT, "§8Dein Report an §c" + report.reportedPlayer.getName() + "§8 wurde bearbeitet.");
+            MessageHelper.sendMessage(reporterPlayer, MessageHelper.Type.REPORT, "§8Dein Report an §c" + Helper.getPlayerRankName(report.reportedPlayer) + "§8 wurde bearbeitet.");
         }
         OfflinePlayer reported = report.reportedPlayer;
         PlayerReports reportsForPlayer = playerReports.get(reported);

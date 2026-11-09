@@ -19,6 +19,10 @@ commands:
   report:
     description: reportCommand
     usage: /report <player> <category> <reason> <message>
+  reportsteam:
+    description: reportSteamCommand
+    usage: /reportsteam <subcommand> [args]
+    permission: reports.manage
 
   join:
     description: joinCommand for Game Modes

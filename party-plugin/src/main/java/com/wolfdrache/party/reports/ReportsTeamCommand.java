@@ -11,6 +11,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 
+import com.wolfdrache.helper.Helper;
 import com.wolfdrache.party.general.MessageHelper;
 import com.wolfdrache.party.reports.ui.ReportsGui;
 import com.wolfdrache.serverapi.reports.ReportModel;
@@ -54,7 +55,7 @@ public class ReportsTeamCommand implements TabExecutor {
                 }
                 String message = args.length >= 3 ? String.join(" ", Arrays.copyOfRange(args, 2, args.length)) : "";
                 reportManager.closeReports(target, player, message);
-                MessageHelper.sendMessage(player, MessageHelper.Type.REPORT, "§8Die Reports an " + target.getName() + " wurden erfolgreich geschlossen.");
+                MessageHelper.sendMessage(player, MessageHelper.Type.REPORT, "§8Die Reports an " + Helper.getPlayerRankName(target) + " wurden erfolgreich geschlossen.");
             }
             case "list" -> {
                 Map<OfflinePlayer, PlayerReports> reports = reportManager.getAllReports();
@@ -65,7 +66,7 @@ public class ReportsTeamCommand implements TabExecutor {
                         OfflinePlayer reported = entry.getKey();
                         PlayerReports playerReports = entry.getValue();
                         if (!playerReports.receivedReportsOpen.isEmpty()) {
-                            MessageHelper.sendMessage(player, MessageHelper.Type.REPORT, "§8Offene Reports an §7" + reported.getName() + "§8: §c" + playerReports.receivedReportsOpen.size());
+                            MessageHelper.sendMessage(player, MessageHelper.Type.REPORT, "§8Offene Reports an §7" + Helper.getPlayerRankName(reported) + "§8: §c" + playerReports.receivedReportsOpen.size());
                         }
                     }
                 }
@@ -92,14 +93,14 @@ public class ReportsTeamCommand implements TabExecutor {
                 }
 
                 if (!playerReports.receivedReportsOpen.isEmpty()) {
-                    MessageHelper.sendMessage(player, MessageHelper.Type.REPORT, "§cOffene Reports an §7" + target.getName() + "§8: §c" + playerReports.receivedReportsOpen.size());
+                    MessageHelper.sendMessage(player, MessageHelper.Type.REPORT, "§cOffene Reports an §7" + Helper.getPlayerRankName(target) + "§8: §c" + playerReports.receivedReportsOpen.size());
                 }
                 for (ReportModel report : playerReports.receivedReportsOpen) {
                     MessageHelper.sendReportMessage(player, report);
                 }
 
                 if (!playerReports.receivedReportsClosed.isEmpty()) {
-                    MessageHelper.sendMessage(player, MessageHelper.Type.REPORT, "§aGeschlossene Reports an §7" + target.getName() + "§8: §a" + playerReports.receivedReportsClosed.size());
+                    MessageHelper.sendMessage(player, MessageHelper.Type.REPORT, "§aGeschlossene Reports an §7" + Helper.getPlayerRankName(target) + "§8: §a" + playerReports.receivedReportsClosed.size());
                 }
                 for (ReportModel report : playerReports.receivedReportsClosed) {
                     MessageHelper.sendReportMessage(player, report);

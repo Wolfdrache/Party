@@ -5,6 +5,7 @@ import java.util.List;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
+import com.wolfdrache.friends.FriendData;
 import com.wolfdrache.friends.FriendsService;
 import com.wolfdrache.party.friends.FriendsManager;
 
@@ -16,17 +17,17 @@ public class FriendsServiceImpl implements FriendsService {
     }
 
     @Override 
-    public List<OfflinePlayer> getFriends(OfflinePlayer player) {
+    public List<FriendData> getFriends(OfflinePlayer player) {
         return friendsManager.getFriends(player);
     }
 
     @Override 
-    public List<OfflinePlayer> getFriendRequests(OfflinePlayer player) {
+    public List<FriendData> getFriendRequests(OfflinePlayer player) {
         return friendsManager.getPlayerFriends(player).incomingRequests.stream().toList();
     }
 
     @Override 
-    public List<OfflinePlayer> getSentFriendRequests(OfflinePlayer player) {
+    public List<FriendData> getSentFriendRequests(OfflinePlayer player) {
         return friendsManager.getPlayerFriends(player).sentRequests.stream().toList();
     }
 

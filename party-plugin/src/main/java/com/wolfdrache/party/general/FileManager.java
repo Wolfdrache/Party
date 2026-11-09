@@ -3,6 +3,7 @@ package com.wolfdrache.party.general;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -12,6 +13,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 
+import com.wolfdrache.friends.FriendData;
 import com.wolfdrache.party.Party;
 import com.wolfdrache.party.friends.PlayerFriends;
 import com.wolfdrache.serverapi.reports.ReportModel;
@@ -43,14 +45,29 @@ public class FileManager {
         UUID uuid = player.getUniqueId();
 
         boolean unlimitedPermission = config.getBoolean(uuid.toString() + ".unlimitedPermission", false);
-        List<String> friendsStrings = config.getStringList(uuid.toString() + ".friends");
-        List<String> requestsStrings = config.getStringList(uuid.toString() + ".requests");
-        List<String> sentStrings = config.getStringList(uuid.toString() + ".sent");
+        List<Map<?, ?>> friendsData = config.getMapList(uuid.toString() + ".friends");
+        List<Map<?, ?>> requestsData = config.getMapList(uuid.toString() + ".requests");
+        List<Map<?, ?>> sentData = config.getMapList(uuid.toString() + ".sent");
         List<String> newFriendRequestsStrings = config.getStringList(uuid.toString() + ".newFriendRequests");
 
-        Set<OfflinePlayer> friends = friendsStrings.stream().map(s -> plugin.getServer().getOfflinePlayer(UUID.fromString(s))).collect(Collectors.toSet());
-        Set<OfflinePlayer> requests = requestsStrings.stream().map(s -> plugin.getServer().getOfflinePlayer(UUID.fromString(s))).collect(Collectors.toSet());
-        Set<OfflinePlayer> sent = sentStrings.stream().map(s -> plugin.getServer().getOfflinePlayer(UUID.fromString(s))).collect(Collectors.toSet());
+        Set<FriendData> friends = friendsData.stream()
+            .map(map -> new FriendData(
+                plugin.getServer().getOfflinePlayer(UUID.fromString((String) map.get("uuid"))),
+                (String) map.get("timestamp")
+            ))
+            .collect(Collectors.toSet());
+        Set<FriendData> requests = requestsData.stream()
+            .map(map -> new FriendData(
+                plugin.getServer().getOfflinePlayer(UUID.fromString((String) map.get("uuid"))),
+                (String) map.get("timestamp")
+            ))
+            .collect(Collectors.toSet());
+        Set<FriendData> sent = sentData.stream()
+            .map(map -> new FriendData(
+                plugin.getServer().getOfflinePlayer(UUID.fromString((String) map.get("uuid"))),
+                (String) map.get("timestamp")
+            ))
+            .collect(Collectors.toSet());
         Set<OfflinePlayer> newFriendRequests = newFriendRequestsStrings.stream().map(s -> plugin.getServer().getOfflinePlayer(UUID.fromString(s))).collect(Collectors.toSet());
 
         return new PlayerFriends(unlimitedPermission, friends, requests, sent, newFriendRequests);
@@ -60,9 +77,19 @@ public class FileManager {
         YamlConfiguration config = YamlConfiguration.loadConfiguration(friendsFile);
         UUID uuid = player.getUniqueId();
 
-        List<String> friendsStrings = playerFriends.friends.stream().map(p -> p.getUniqueId().toString()).collect(Collectors.toList());
-        List<String> requestsStrings = playerFriends.incomingRequests.stream().map(p -> p.getUniqueId().toString()).collect(Collectors.toList());
-        List<String> sentStrings = playerFriends.sentRequests.stream().map(p -> p.getUniqueId().toString()).collect(Collectors.toList());
+        List<Map<String, String>> friendsStrings = playerFriends.friends.stream().map(fd -> Map.of(
+            "uuid", fd.friend.getUniqueId().toString(),
+            "timestamp", fd.timeStamp
+        )).collect(Collectors.toList());
+        List<Map<String, String>> requestsStrings = playerFriends.incomingRequests.stream().map(fd -> Map.of(
+            "uuid", fd.friend.getUniqueId().toString(),
+            "timestamp", fd.timeStamp
+        )).collect(Collectors.toList());
+        List<Map<String, String>> sentStrings = playerFriends.sentRequests.stream().map(fd -> Map.of(
+            "uuid", fd.friend.getUniqueId().toString(),
+            "timestamp", fd.timeStamp
+        )).collect(Collectors.toList());
+        
         List<String> newFriendRequestsStrings = playerFriends.newFriendRequests.stream().map(p -> p.getUniqueId().toString()).collect(Collectors.toList());
 
         config.set(uuid.toString() + ".name", player.getName());

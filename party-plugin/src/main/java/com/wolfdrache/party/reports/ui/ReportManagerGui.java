@@ -13,6 +13,7 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import com.wolfdrache.helper.Helper;
 import com.wolfdrache.party.general.ItemHelper;
 import com.wolfdrache.party.general.MessageHelper;
 import com.wolfdrache.party.general.NavItems;
@@ -38,7 +39,7 @@ public class ReportManagerGui implements Listener {
     }
 
     public void open(Player player, ReportModel report) {
-        Inventory gui = Bukkit.createInventory(null, 27, MessageHelper.createComponent("§cReport"));
+        Inventory gui = Bukkit.createInventory(null, 27, Helper.createComponent("§cReport"));
         for (int i = 0; i < gui.getSize(); i++) {
             gui.setItem(i, ItemHelper.createFillerItem(Material.GRAY_STAINED_GLASS_PANE));
         }

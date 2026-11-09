@@ -16,8 +16,8 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import com.wolfdrache.helper.Helper;
 import com.wolfdrache.party.general.ItemHelper;
-import com.wolfdrache.party.general.MessageHelper;
 import com.wolfdrache.party.general.NavItems;
 import com.wolfdrache.party.reports.PlayerReports;
 import com.wolfdrache.party.reports.ReportManager;
@@ -61,7 +61,7 @@ public class PlayerReportsGui implements Listener {
         reports = reports.subList(page * 45, Math.min((page + 1) * 45, reports.size()));
 
         int size = getSize(reports);
-        Inventory gui = Bukkit.createInventory(null, size, MessageHelper.createComponent("§cReports an: " + target.getName()));
+        Inventory gui = Bukkit.createInventory(null, size, Helper.createComponent("§cReports an: " + Helper.getPlayerRankName(target)));
         Map<Integer, ReportModel> slotToReport = new HashMap<>();
         for (int i = 0; i < reports.size(); i++) {
             slotToReport.put(i, reports.get(i));

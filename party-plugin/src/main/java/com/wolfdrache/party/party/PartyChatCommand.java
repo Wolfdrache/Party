@@ -7,6 +7,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 
+import com.wolfdrache.helper.Helper;
 import com.wolfdrache.party.general.MessageHelper;
 
 public class PartyChatCommand implements TabExecutor {
@@ -30,7 +31,7 @@ public class PartyChatCommand implements TabExecutor {
             String message = String.join(" ", args);
             message = message.replace("&", "§");
             for (Player member : partyManager.getPartyMembers(player)) {
-                MessageHelper.sendMessage(member, MessageHelper.Type.PARTY, player.getName() + ": " + message);
+                MessageHelper.sendMessage(member, MessageHelper.Type.PARTY, Helper.getPlayerRankName(player) + "§7: " + message);
             }
         }
         return true;

@@ -10,6 +10,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import com.wolfdrache.friends.FriendsUpdateEvent;
+import com.wolfdrache.helper.Helper;
 import com.wolfdrache.party.general.MessageHelper;
 
 public class FriendsListener implements Listener {
@@ -27,7 +28,7 @@ public class FriendsListener implements Listener {
         if (!onlineFriends.isEmpty()) {
             MessageHelper.sendMessage(player, MessageHelper.Type.FRIEND, "§a" + onlineFriends.size() + " deiner Freunde sind online.");
             for (Player friend : onlineFriends) {
-                MessageHelper.sendMessage(friend, MessageHelper.Type.FRIEND, "§e" + player.getName() + "§a ist nun online.");
+                MessageHelper.sendMessage(friend, MessageHelper.Type.FRIEND, "§e" + Helper.getPlayerRankName(player) + "§a ist nun online.");
                 friendsManager.fireFriendsUpdate(friend, player, FriendsUpdateEvent.FriendsUpdateType.FRIEND_ONLINE);
             }
         }
@@ -45,7 +46,7 @@ public class FriendsListener implements Listener {
         Player player = event.getPlayer();
         List<Player> onlineFriends = friendsManager.getOnlineFriends(player);
         for (Player friend : onlineFriends) {
-            MessageHelper.sendMessage(friend, MessageHelper.Type.FRIEND, "§e" + player.getName() + "§c ist nun offline.");
+            MessageHelper.sendMessage(friend, MessageHelper.Type.FRIEND, "§e" + Helper.getPlayerRankName(player) + "§c ist nun offline.");
             friendsManager.fireFriendsUpdate(friend, player, FriendsUpdateEvent.FriendsUpdateType.FRIEND_OFFLINE);
         }
         friendsManager.savePlayerFriends(player, true);

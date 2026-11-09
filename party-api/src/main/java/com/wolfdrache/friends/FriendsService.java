@@ -6,9 +6,9 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 public interface FriendsService {
-    List<OfflinePlayer> getFriends(OfflinePlayer player);
-    List<OfflinePlayer> getFriendRequests(OfflinePlayer player);
-    List<OfflinePlayer> getSentFriendRequests(OfflinePlayer player);
+    List<FriendData> getFriends(OfflinePlayer player);
+    List<FriendData> getFriendRequests(OfflinePlayer player);
+    List<FriendData> getSentFriendRequests(OfflinePlayer player);
     void cancelFriendRequest(Player player, OfflinePlayer target);
     void replyFriendRequest(Player player, OfflinePlayer requester, boolean accept);
     void sendFriendRequest(Player player, OfflinePlayer target);

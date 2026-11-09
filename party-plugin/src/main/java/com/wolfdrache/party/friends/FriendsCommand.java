@@ -102,26 +102,26 @@ public class FriendsCommand implements TabExecutor {
             PlayerFriends playerFriends = friendsManager.getPlayerFriends((Player) sender);
             if (subCommand.equalsIgnoreCase("add")) {
                 return Bukkit.getOnlinePlayers().stream()
-                        .map(Player::getName)
-                        .filter(name -> name.startsWith(args[1]))
-                        .filter(name -> !playerFriends.friends.contains(Bukkit.getOfflinePlayer(name)))
-                        .filter(name -> !playerFriends.sentRequests.contains(Bukkit.getOfflinePlayer(name)))
-                        .toList();
+                    .map(Player::getName)
+                    .filter(name -> name.startsWith(args[1]))
+                    .filter(name -> !playerFriends.friends.stream().map(fd -> fd.friend.getName()).toList().contains(name))
+                    .filter(name -> !playerFriends.sentRequests.stream().map(fd -> fd.friend.getName()).toList().contains(name))
+                    .toList();
             } else if (subCommand.equalsIgnoreCase("accept") || subCommand.equalsIgnoreCase("deny")) {
                 return playerFriends.incomingRequests.stream()
-                        .map(OfflinePlayer::getName)
-                        .filter(name -> name.startsWith(args[1]))
-                        .toList();
+                    .map(friendData -> friendData.friend.getName())
+                    .filter(name -> name.startsWith(args[1]))
+                    .toList();
             } else if (subCommand.equalsIgnoreCase("cancel")) {
                 return playerFriends.sentRequests.stream()
-                        .map(OfflinePlayer::getName)
-                        .filter(name -> name.startsWith(args[1]))
-                        .toList();
+                    .map(friendData -> friendData.friend.getName())
+                    .filter(name -> name.startsWith(args[1]))
+                    .toList();
             } else if (subCommand.equalsIgnoreCase("remove")) {
                 return playerFriends.friends.stream()
-                        .map(OfflinePlayer::getName)
-                        .filter(name -> name.startsWith(args[1]))
-                        .toList();
+                    .map(friendData -> friendData.friend.getName())
+                    .filter(name -> name.startsWith(args[1]))
+                    .toList();
             }
         }
         return List.of();

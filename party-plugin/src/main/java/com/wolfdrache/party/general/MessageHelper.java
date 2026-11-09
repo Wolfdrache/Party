@@ -5,13 +5,12 @@ import java.time.Duration;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
+import com.wolfdrache.helper.Helper;
 import com.wolfdrache.serverapi.reports.ReportModel;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextDecoration;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.kyori.adventure.title.Title;
 
 public class MessageHelper {
@@ -33,8 +32,8 @@ public class MessageHelper {
     }
     
     public static void sendTitle(Player player, String title, String subtitle, int fadeIn, int stay, int fadeOut) {
-        Component titleComponent = createComponent(title);
-        Component subtitleComponent = createComponent(subtitle);
+        Component titleComponent = Helper.createComponent(title);
+        Component subtitleComponent = Helper.createComponent(subtitle);
         Title titleObj = Title.title(titleComponent, subtitleComponent, Title.Times.times(Duration.ofMillis(fadeIn * 50), Duration.ofMillis(stay * 50), Duration.ofMillis(fadeOut * 50)));
         player.showTitle(titleObj);
     }
@@ -43,12 +42,8 @@ public class MessageHelper {
         sendTitle(player, title, subtitle, 10, 70, 20);
     }
 
-    public static Component createComponent(String text) {
-        return LegacyComponentSerializer.legacySection().deserialize(text).decoration(TextDecoration.ITALIC, false);
-    }
-
     public static void sendPartyInviteMessage(Player sender, Player target) {
-        Component message = createComponent("Du wurdest von " + sender.getName() + " zu einer Party eingeladen. ")
+        Component message = Helper.createComponent("Du wurdest von " + Helper.getPlayerRankName(sender) + " zu einer Party eingeladen. ")
             .append(
                 Component.text("[Annehmen]")
                     .color(NamedTextColor.GREEN)
@@ -60,12 +55,12 @@ public class MessageHelper {
                     .color(NamedTextColor.RED)
                     .clickEvent(ClickEvent.runCommand("/party decline " + sender.getName()))
             );
-        Component finalMessage = createComponent(Type.PARTY.prefix).append(message);
+        Component finalMessage = Helper.createComponent(Type.PARTY.prefix).append(message);
         target.sendMessage(finalMessage);
     }
 
     public static void sendFriendRequestMessage(OfflinePlayer sender, Player target) {
-        Component message = createComponent("Du hast eine Freundschaftsanfrage von " + sender.getName() + " erhalten. ")
+        Component message = Helper.createComponent("Du hast eine Freundschaftsanfrage von " + Helper.getPlayerRankName(sender) + " erhalten. ")
             .append(
                 Component.text("[Annehmen]")
                     .color(NamedTextColor.GREEN)
@@ -77,31 +72,31 @@ public class MessageHelper {
                     .color(NamedTextColor.RED)
                     .clickEvent(ClickEvent.runCommand("/friends deny " + sender.getName()))
             );
-        Component finalMessage = createComponent(Type.FRIEND.prefix).append(message);
+        Component finalMessage = Helper.createComponent(Type.FRIEND.prefix).append(message);
         target.sendMessage(finalMessage);
     }
 
     public static void sendReportMessage(Player player, ReportModel report) {
-        Component message = createComponent(Type.REPORT.prefix + 
+        Component message = Helper.createComponent(Type.REPORT.prefix + 
             "\n§8Kategorie: §7" + report.category + " §8Grund: §7" + report.reason + 
             (report.message != null && !report.message.isEmpty() ? "\n§8Nachricht: §7" + report.message : "") + 
-            "\n§8Gemeldet von: §7" + report.reporter.getName() + " §8Zeitpunkt: §7" + report.timestamp);
+            "\n§8Gemeldet von: §7" + Helper.getPlayerRankName(report.reporter) + " §8Zeitpunkt: §7" + report.timestamp);
 
         if (report.operator != null) {
-            message = message.append(createComponent(
-                "\n§8Operator: §a" + report.operator.getName() + " §8Bearbeitungszeit: §a" + report.handledTimestamp +
+            message = message.append(Helper.createComponent(
+                "\n§8Operator: §a" + Helper.getPlayerRankName(report.operator) + " §8Bearbeitungszeit: §a" + report.handledTimestamp +
                 "\n§8Fazit: §a" + report.conclusion));
         } else if (player.hasPermission("reports.manage")) {
-            message = message.append(createComponent("\n§8[§4Bann§8]")
-                .clickEvent(ClickEvent.runCommand("/reportsteam closeId " + report.getId() + " Bann"))).append(createComponent(" "));
-            message = message.append(createComponent("§8[§eMute§8]")
-                .clickEvent(ClickEvent.runCommand("/reportsteam closeId " + report.getId() + " Mute"))).append(createComponent(" "));
-            message = message.append(createComponent("§8[§aInkorrekt§8]")
+            message = message.append(Helper.createComponent("\n§8[§4Bann§8]")
+                .clickEvent(ClickEvent.runCommand("/reportsteam closeId " + report.getId() + " Bann"))).append(Helper.createComponent(" "));
+            message = message.append(Helper.createComponent("§8[§eMute§8]")
+                .clickEvent(ClickEvent.runCommand("/reportsteam closeId " + report.getId() + " Mute"))).append(Helper.createComponent(" "));
+            message = message.append(Helper.createComponent("§8[§aInkorrekt§8]")
                 .clickEvent(ClickEvent.runCommand("/reportsteam closeId " + report.getId() + " Inkorrekter Report")));
         }
 
         if (player.hasPermission("reports.delete")) {
-            message = message.append(createComponent("\n§8[§cLöschen§8]"))
+            message = message.append(Helper.createComponent("\n§8[§cLöschen§8]"))
                 .clickEvent(ClickEvent.runCommand("/reportsteam delete " + report.getId()));
         }
         

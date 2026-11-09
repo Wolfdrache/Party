@@ -1,5 +1,8 @@
 package com.wolfdrache.party.friends;
 
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -10,6 +13,8 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import com.wolfdrache.friends.FriendsUpdateEvent;
+import com.wolfdrache.friends.FriendData;
+import com.wolfdrache.helper.Helper;
 import com.wolfdrache.party.general.FileManager;
 import com.wolfdrache.party.general.MessageHelper;
 
@@ -51,17 +56,17 @@ public class FriendsManager {
         }
     }
 
-    public List<OfflinePlayer> getFriends(OfflinePlayer player) {
-        List<OfflinePlayer> friends = new ArrayList<>(getPlayerFriends(player).friends);
-        friends.sort((p1, p2) -> Boolean.compare(p2.isOnline(), p1.isOnline()));
+    public List<FriendData> getFriends(OfflinePlayer player) {
+        List<FriendData> friends = new ArrayList<>(getPlayerFriends(player).friends);
+        friends.sort((f1, f2) -> Boolean.compare(f2.friend.isOnline(), f1.friend.isOnline()));
         return friends;
     }
 
     public List<Player> getOnlineFriends(OfflinePlayer player) {
-        List<OfflinePlayer> friends = getFriends(player);
+        List<FriendData> friends = getFriends(player);
         List<Player> onlineFriends = friends.stream()
-            .filter(OfflinePlayer::isOnline)
-            .map(friend -> Bukkit.getPlayer(friend.getUniqueId()))
+            .filter(fd -> fd.friend.isOnline())
+            .map(fd -> Bukkit.getPlayer(fd.friend.getUniqueId()))
             .toList();
         return onlineFriends;
     }
@@ -69,21 +74,22 @@ public class FriendsManager {
     public void addFriend(Player player, OfflinePlayer target) {
         PlayerFriends playerFriends = getPlayerFriends(player);
         PlayerFriends targetFriends = getPlayerFriends(target);
-        if (playerFriends.friends.contains(target)) {
-            MessageHelper.sendMessage(player, MessageHelper.Type.FRIEND, "§cDu bist bereits mit §7" + target.getName() + "§c befreundet.");
+        if (playerFriends.friends.stream().map(fd -> fd.friend).toList().contains(target)) {
+            MessageHelper.sendMessage(player, MessageHelper.Type.FRIEND, "§cDu bist bereits mit §7" + Helper.getPlayerRankName(target) + "§c befreundet.");
             return;
-        } else if (playerFriends.sentRequests.contains(target)) {
-            MessageHelper.sendMessage(player, MessageHelper.Type.FRIEND, "§cDu hast bereits eine Freundschaftsanfrage an §7" + target.getName() + "§c gesendet.");
+        } else if (playerFriends.sentRequests.stream().map(fd -> fd.friend).toList().contains(target)) {
+            MessageHelper.sendMessage(player, MessageHelper.Type.FRIEND, "§cDu hast bereits eine Freundschaftsanfrage an §7" + Helper.getPlayerRankName(target) + "§c gesendet.");
             return;
-        } else if (playerFriends.incomingRequests.contains(target)) {
+        } else if (playerFriends.incomingRequests.stream().map(fd -> fd.friend).toList().contains(target)) {
             replyFriendRequest(player, target, true);
             return;
         }
         if (!playerFriends.unlimitedPermission && playerFriends.friends.size() >= fileManager.getFriendsConfig(FileManager.FriendsConfig.maxFriends)) {
-            MessageHelper.sendMessage(player, MessageHelper.Type.FRIEND, "§7" + target.getName() + "§c kann die Freundschaftsanfrage nicht annehmen, da du die maximale Anzahl an Freunden erreicht hast.");
+            MessageHelper.sendMessage(player, MessageHelper.Type.FRIEND, "§7" + Helper.getPlayerRankName(target) + "§c kann die Freundschaftsanfrage nicht annehmen, da du die maximale Anzahl an Freunden erreicht hast.");
         }
-        playerFriends.sentRequests.add(target);
-        targetFriends.incomingRequests.add(player);
+        String timestamp = Instant.now().atZone(ZoneId.of("Europe/Berlin")).format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm"));
+        playerFriends.sentRequests.add(new FriendData(target, timestamp));
+        targetFriends.incomingRequests.add(new FriendData(player, timestamp));
         if (target.isOnline()) {
             Player targetPlayer = (Player) target;
             MessageHelper.sendFriendRequestMessage(player, targetPlayer);
@@ -93,29 +99,29 @@ public class FriendsManager {
         }
         savePlayerFriends(player, playerFriends, false);
         savePlayerFriends(target, targetFriends, false);
-        MessageHelper.sendMessage(player, MessageHelper.Type.FRIEND, "§aDu hast eine Freundschaftsanfrage an §7" + target.getName() + "§a gesendet.");
+        MessageHelper.sendMessage(player, MessageHelper.Type.FRIEND, "§aDu hast eine Freundschaftsanfrage an §7" + Helper.getPlayerRankName(target) + "§a gesendet.");
     }
 
     public void removeFriend(Player player, OfflinePlayer target) {
         PlayerFriends playerFriends = getPlayerFriends(player);
         PlayerFriends targetFriends = getPlayerFriends(target);
-        if (!playerFriends.friends.contains(target)) {
+        if (!playerFriends.friends.stream().map(fd -> fd.friend).toList().contains(target)) {
             return;
         }
-        playerFriends.friends.remove(target);
-        targetFriends.friends.remove(player);
+        playerFriends.friends.removeIf(fd -> fd.friend.equals(target));
+        targetFriends.friends.removeIf(fd -> fd.friend.equals(player));
         savePlayerFriends(player, playerFriends, false);
         savePlayerFriends(target, targetFriends, false);
         if (target.isOnline()) {
             Player targetPlayer = (Player) target;
-            MessageHelper.sendMessage(targetPlayer, MessageHelper.Type.FRIEND, player.getName() + " §chat dich aus der Freundesliste entfernt.");
+            MessageHelper.sendMessage(targetPlayer, MessageHelper.Type.FRIEND, Helper.getPlayerRankName(player) + " §chat dich aus der Freundesliste entfernt.");
             fireFriendsUpdate(targetPlayer, player, FriendsUpdateEvent.FriendsUpdateType.FRIEND_REMOVED);
         }
-        MessageHelper.sendMessage(player, MessageHelper.Type.FRIEND, "§cDu bist nicht mehr mit §7" + target.getName() + "§c befreundet.");
+        MessageHelper.sendMessage(player, MessageHelper.Type.FRIEND, "§cDu bist nicht mehr mit §7" + Helper.getPlayerRankName(target) + "§c befreundet.");
     }
 
     public void listFriends(Player player, int page) {
-        List<OfflinePlayer> friends = getFriends(player);
+        List<FriendData> friends = getFriends(player);
         int maxFriendsPerPage = fileManager.getFriendsConfig(FileManager.FriendsConfig.maxFriendsPerPage);
         int totalPages = (int) Math.ceil((double) friends.size() / maxFriendsPerPage);
         if (page < 1 || page > totalPages) {
@@ -125,15 +131,15 @@ public class FriendsManager {
         int end = Math.min(start + maxFriendsPerPage, friends.size());
         MessageHelper.sendMessage(player, MessageHelper.Type.FRIEND, "§aDeine Freunde §7(Seite " + page + "/" + totalPages + "):");
         for (int i = start; i < end; i++) {
-            OfflinePlayer friend = friends.get(i);
-            MessageHelper.sendMessage(player, MessageHelper.Type.FRIEND, (friend.isOnline() ? "§a✔" : "§c✖") + "§7 " + friend.getName());
+            FriendData friend = friends.get(i);
+            MessageHelper.sendMessage(player, MessageHelper.Type.FRIEND, (friend.friend.isOnline() ? "§a✔" : "§c✖") + "§7 " + Helper.getPlayerRankName(friend.friend) + " §8(" + friend.timeStamp + ")");
         }
     }
 
     public void replyFriendRequest(Player player, OfflinePlayer target, boolean accept) {
         PlayerFriends playerFriends = getPlayerFriends(player);
         PlayerFriends targetFriends = getPlayerFriends(target);
-        if (!playerFriends.incomingRequests.contains(target)) {
+        if (!playerFriends.incomingRequests.stream().map(fd -> fd.friend).toList().contains(target)) {
             return;
         }
         if (accept) {
@@ -142,42 +148,43 @@ public class FriendsManager {
                 MessageHelper.sendMessage(player, MessageHelper.Type.FRIEND, "§cDu hast die maximale Anzahl an Freunden erreicht.");
                 return;
             } else if (!targetFriends.unlimitedPermission && targetFriends.friends.size() >= maxFriends) {
-                MessageHelper.sendMessage(player, MessageHelper.Type.FRIEND, "§7" + target.getName() + "§c hat die maximale Anzahl an Freunden erreicht.");
+                MessageHelper.sendMessage(player, MessageHelper.Type.FRIEND, "§7" + Helper.getPlayerRankName(target) + "§c hat die maximale Anzahl an Freunden erreicht.");
                 return;
             }
-            playerFriends.friends.add(target);
-            targetFriends.friends.add(player);
+            String timestamp = Instant.now().atZone(ZoneId.of("Europe/Berlin")).format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm"));
+            playerFriends.friends.add(new FriendData(target, timestamp));
+            targetFriends.friends.add(new FriendData(player, timestamp));
         }
-        playerFriends.incomingRequests.remove(target);
-        targetFriends.sentRequests.remove(player);
+        playerFriends.incomingRequests.removeIf(fd -> fd.friend.equals(target));
+        targetFriends.sentRequests.removeIf(fd -> fd.friend.equals(player));
         savePlayerFriends(player, playerFriends, false);
         savePlayerFriends(target, targetFriends, false);
         if (target.isOnline()) {
             Player targetPlayer = (Player) target;
-            MessageHelper.sendMessage(targetPlayer, MessageHelper.Type.FRIEND, player.getName() + (accept ? "§a hat deine Freundschaftsanfrage akzeptiert." : "§c hat deine Freundschaftsanfrage abgelehnt."));
+            MessageHelper.sendMessage(targetPlayer, MessageHelper.Type.FRIEND, Helper.getPlayerRankName(player) + (accept ? "§a hat deine Freundschaftsanfrage akzeptiert." : "§c hat deine Freundschaftsanfrage abgelehnt."));
             fireFriendsUpdate(targetPlayer, player, accept ? FriendsUpdateEvent.FriendsUpdateType.REQUEST_ACCEPTED : FriendsUpdateEvent.FriendsUpdateType.REQUEST_DECLINED);
         }
-        MessageHelper.sendMessage(player, MessageHelper.Type.FRIEND, (accept ? "§aDu hast die Freundschaftsanfrage von §7" + target.getName() + "§a akzeptiert." : "§cDu hast die Freundschaftsanfrage von §7" + target.getName() + "§c abgelehnt."));
+        MessageHelper.sendMessage(player, MessageHelper.Type.FRIEND, (accept ? "§aDu hast die Freundschaftsanfrage von §7" + Helper.getPlayerRankName(target) + "§a akzeptiert." : "§cDu hast die Freundschaftsanfrage von §7" + Helper.getPlayerRankName(target) + "§c abgelehnt."));
     }
 
     public void cancelFriendRequest(Player player, OfflinePlayer target) {
         PlayerFriends playerFriends = getPlayerFriends(player);
         PlayerFriends targetFriends = getPlayerFriends(target);
-        if (!playerFriends.sentRequests.contains(target)) {
+        if (!playerFriends.sentRequests.stream().map(fd -> fd.friend).toList().contains(target)) {
             return;
         }
-        playerFriends.sentRequests.remove(target);
-        targetFriends.incomingRequests.remove(player);
+        playerFriends.sentRequests.removeIf(fd -> fd.friend.equals(target));
+        targetFriends.incomingRequests.removeIf(fd -> fd.friend.equals(player));
         if (target.isOnline()) {
             Player targetPlayer = (Player) target;
-            MessageHelper.sendMessage(targetPlayer, MessageHelper.Type.FRIEND, player.getName() + "§c hat seine Freundschaftsanfrage zurückgezogen.");
+            MessageHelper.sendMessage(targetPlayer, MessageHelper.Type.FRIEND, Helper.getPlayerRankName(player) + "§c hat seine Freundschaftsanfrage zurückgezogen.");
             fireFriendsUpdate(targetPlayer, player, FriendsUpdateEvent.FriendsUpdateType.REQUEST_CANCELLED);
         } else {
             targetFriends.newFriendRequests.remove(player);
         }
         savePlayerFriends(player, playerFriends, false);
         savePlayerFriends(target, targetFriends, false);
-        MessageHelper.sendMessage(player, MessageHelper.Type.FRIEND, "§cDu hast die Freundschaftsanfrage an §7" + target.getName() + "§c zurückgezogen.");
+        MessageHelper.sendMessage(player, MessageHelper.Type.FRIEND, "§cDu hast die Freundschaftsanfrage an §7" + Helper.getPlayerRankName(target) + "§c zurückgezogen.");
     }
 
     public List<OfflinePlayer> getNewFriendRequests(Player player) {

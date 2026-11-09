@@ -9,6 +9,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 
+import com.wolfdrache.helper.Helper;
 import com.wolfdrache.party.general.MessageHelper;
 
 public class ReportCommand implements TabExecutor {
@@ -54,7 +55,7 @@ public class ReportCommand implements TabExecutor {
         OfflinePlayer reportedPlayer = Bukkit.getOfflinePlayer(target);
         reportManager.createReport(reportedPlayer, player, category, reason, message);
         
-        MessageHelper.sendMessage(player, MessageHelper.Type.REPORT, "§8Dein Report an §c" + reportedPlayer.getName() + " §8wurde erstellt.");
+        MessageHelper.sendMessage(player, MessageHelper.Type.REPORT, "§8Dein Report an §c" + Helper.getPlayerRankName(reportedPlayer) + " §8wurde erstellt.");
         MessageHelper.sendMessage(player, MessageHelper.Type.REPORT, "§cAusnutzen von Reports ist verboten.");
         return true;
     }
