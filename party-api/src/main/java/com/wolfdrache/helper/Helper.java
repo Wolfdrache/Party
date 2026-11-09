@@ -1,3 +1,4 @@
+
 package com.wolfdrache.helper;
 
 import org.bukkit.OfflinePlayer;
@@ -5,35 +6,76 @@ import org.bukkit.OfflinePlayer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
+import net.luckperms.api.model.user.User;
+import net.luckperms.api.model.group.Group;
 
 public class Helper {
-    private final static LuckPerms luckPerms = LuckPermsProvider.get();
+
+    private static final LuckPerms luckPerms = LuckPermsProvider.get();
+
+    private static User getUser(OfflinePlayer player) {
+        return luckPerms.getUserManager().getUser(player.getUniqueId());
+    }
 
     public static String getRankPrefix(OfflinePlayer player) {
-        return luckPerms.getPlayerAdapter(OfflinePlayer.class).getUser(player)
-                .getCachedData().getMetaData().getPrefix().replace("&", "§");
+        User user = getUser(player);
+
+        if (user == null) return "";
+
+        String prefix = user.getCachedData()
+                .getMetaData()
+                .getPrefix();
+
+        return prefix != null ? prefix.replace("&", "§") : "";
     }
 
     public static String getRankSuffix(OfflinePlayer player) {
-        return luckPerms.getPlayerAdapter(OfflinePlayer.class).getUser(player)
-                .getCachedData().getMetaData().getSuffix().replace("&", "§");
+        User user = getUser(player);
+
+        if (user == null) return "";
+
+        String suffix = user.getCachedData()
+                .getMetaData()
+                .getSuffix();
+
+        return suffix != null ? suffix.replace("&", "§") : "";
     }
 
     public static String getRankDisplayName(OfflinePlayer player) {
-        String playerGroup = luckPerms.getUserManager().getUser(player.getUniqueId()).getPrimaryGroup();
-        String rankName = luckPerms.getGroupManager().getGroup(playerGroup).getDisplayName();
-        return rankName != null ? rankName.replace("&", "§") : playerGroup;
+        User user = getUser(player);
+
+        if (user == null) return "";
+
+        String playerGroup = user.getPrimaryGroup();
+
+        Group group = luckPerms.getGroupManager().getGroup(playerGroup);
+
+        if (group == null) return playerGroup;
+
+        String rankName = group.getDisplayName();
+
+        return rankName != null
+                ? rankName.replace("&", "§")
+                : playerGroup;
     }
 
     public static String getPlayerRankName(OfflinePlayer player) {
         String prefix = getRankPrefix(player);
         String suffix = getRankSuffix(player);
-        return (prefix != null ? prefix : "") + player.getName() + (suffix != null ? suffix : "");
+
+        String name = player.getName() != null
+                ? player.getName()
+                : "Unknown";
+
+        return prefix + name + suffix;
     }
 
     public static Component createComponent(String text) {
-        return LegacyComponentSerializer.legacySection().deserialize(text).decoration(TextDecoration.ITALIC, false);
+        return LegacyComponentSerializer.legacySection()
+                .deserialize(text)
+                .decoration(TextDecoration.ITALIC, false);
     }
 }
