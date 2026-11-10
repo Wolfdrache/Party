@@ -20,6 +20,12 @@ public class Helper {
         return luckPerms.getUserManager().getUser(player.getUniqueId());
     }
 
+    public static String getRankColor(OfflinePlayer player) {
+        String color = getRankDisplayName(player);
+        if (color == null || color.isEmpty() || color.length() < 2) return "§7";
+        return color.substring(0, 2);
+    }
+
     public static String getRankPrefix(OfflinePlayer player) {
         User user = getUser(player);
 

@@ -6,11 +6,15 @@ import com.wolfdrache.party.api.PartyService;
 import com.wolfdrache.party.friends.*;
 import com.wolfdrache.party.gamemodes.GameCommandManager;
 import com.wolfdrache.party.gamemodes.GameCommands;
+import com.wolfdrache.party.general.ConfigurationManager;
 import com.wolfdrache.party.general.FileManager;
+import com.wolfdrache.party.msg.MsgCommand;
+import com.wolfdrache.party.msg.MsgManager;
 import com.wolfdrache.party.party.*;
 import com.wolfdrache.party.reports.*;
 import com.wolfdrache.party.reports.ui.*;
 import com.wolfdrache.party.service.*;
+import com.wolfdrache.serverapi.configuration.ConfigurationService;
 import com.wolfdrache.serverapi.gamemodes.GameService;
 import com.wolfdrache.serverapi.gamemodes.GameService.CommandType;
 import com.wolfdrache.serverapi.reports.*;
@@ -37,11 +41,27 @@ public class Party extends JavaPlugin {
     private GameService gameService;
     private GameCommandManager gameManager;
 
+    private MsgManager msgManager;
+
+    private ConfigurationService configurationService;
+    private ConfigurationManager configurationManager;
+
     @Override
     public void onEnable() {
         this.fileManager = new FileManager(this);
+        this.configurationManager = new ConfigurationManager(fileManager);
+        this.configurationService = new ConfigurationServiceImpl(configurationManager);
+        Bukkit.getServicesManager().register(ConfigurationService.class, this.configurationService, this, ServicePriority.Normal);
 
-        this.partyManager = new PartyManager();
+        this.friendsManager = new FriendsManager(fileManager, configurationManager);
+        this.friendsService = new FriendsServiceImpl(friendsManager);
+        Bukkit.getServicesManager().register(FriendsService.class, this.friendsService, this, ServicePriority.Normal);
+
+        getCommand("friends").setExecutor(new FriendsCommand(friendsManager));
+        getServer().getPluginManager().registerEvents(new FriendsListener(friendsManager), this);
+
+        this.partyManager = new PartyManager(configurationManager, friendsManager);
+        friendsManager.setPartyManager(partyManager);
         this.partyService = new PartyServiceImpl(partyManager);
         Bukkit.getServicesManager().register(PartyService.class, this.partyService, this, ServicePriority.Normal);
         
@@ -49,12 +69,8 @@ public class Party extends JavaPlugin {
         getCommand("partychat").setExecutor(new PartyChatCommand(partyManager));
         getServer().getPluginManager().registerEvents(new PartyListener(partyManager), this);
 
-        this.friendsManager = new FriendsManager(fileManager);
-        this.friendsService = new FriendsServiceImpl(friendsManager);
-        Bukkit.getServicesManager().register(FriendsService.class, this.friendsService, this, ServicePriority.Normal);
-
-        getCommand("friends").setExecutor(new FriendsCommand(friendsManager));
-        getServer().getPluginManager().registerEvents(new FriendsListener(friendsManager), this);
+        this.msgManager = new MsgManager(configurationManager, friendsManager, partyManager);
+        getCommand("msg").setExecutor(new MsgCommand(msgManager));
 
         this.reportManager = new ReportManager(fileManager);
         this.reportService = new ReportServiceImpl(reportManager);

@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -15,16 +17,25 @@ import org.bukkit.entity.Player;
 import com.wolfdrache.friends.FriendsUpdateEvent;
 import com.wolfdrache.friends.FriendData;
 import com.wolfdrache.helper.Helper;
+import com.wolfdrache.party.general.ConfigurationManager;
+import com.wolfdrache.party.general.ConfigurationManager.PlayerConfiguration;
 import com.wolfdrache.party.general.FileManager;
 import com.wolfdrache.party.general.MessageHelper;
+import com.wolfdrache.party.party.PartyManager;
 
 public class FriendsManager {
     private final FileManager fileManager;
+    private final ConfigurationManager configurationManager;
+    private PartyManager partyManager;
 
     private final Map<OfflinePlayer, PlayerFriends> playerFriendsCache = new HashMap<>();
 
-    public FriendsManager(FileManager fileManager) {
+    public FriendsManager(FileManager fileManager, ConfigurationManager configurationManager) {
         this.fileManager = fileManager;
+        this.configurationManager = configurationManager;
+    }
+    public void setPartyManager(PartyManager partyManager) {
+        this.partyManager = partyManager;
     }
 
     public void loadPlayerInCache(Player player) {
@@ -72,6 +83,32 @@ public class FriendsManager {
     }
 
     public void addFriend(Player player, OfflinePlayer target) {
+        if (player.getUniqueId().equals(target.getUniqueId())) {
+            MessageHelper.sendMessage(player, MessageHelper.Type.FRIEND, "§cDu kannst dich nicht selbst als Freund hinzufügen.");
+            return;
+        }
+        PlayerConfiguration targetConfig = configurationManager.getPlayerConfiguration(target);
+        switch (targetConfig.friendRequestMode) {
+            case NONE:
+                MessageHelper.sendMessage(player, MessageHelper.Type.FRIEND, "§7" + Helper.getPlayerRankName(target) + "§c akzeptiert keine Freundschaftsanfragen.");
+                return;
+            case COMMON_FRIEND:
+                if (!haveCommonFriends(player, target)) {
+                    MessageHelper.sendMessage(player, MessageHelper.Type.FRIEND, "§7" + Helper.getPlayerRankName(target) + "§c akzeptiert nur Freundschaftsanfragen von gemeinsamen Freunden.");
+                    return;
+                }
+                break;
+            case PARTY:
+                Player targetPlayer = Bukkit.getPlayer(target.getUniqueId());
+                if (targetPlayer == null) break;
+                if (!partyManager.areInSameParty(player, targetPlayer)) {
+                    MessageHelper.sendMessage(player, MessageHelper.Type.FRIEND, "§7" + Helper.getPlayerRankName(target) + "§c akzeptiert nur Freundschaftsanfragen von Party-Mitgliedern.");
+                    return;
+                }
+                break;
+            case ALL:
+                break;
+        }
         PlayerFriends playerFriends = getPlayerFriends(player);
         PlayerFriends targetFriends = getPlayerFriends(target);
         if (playerFriends.friends.stream().map(fd -> fd.friend).toList().contains(target)) {
@@ -196,5 +233,19 @@ public class FriendsManager {
     public void fireFriendsUpdate(Player player, OfflinePlayer target, FriendsUpdateEvent.FriendsUpdateType updateType) {
         FriendsUpdateEvent updateEvent = new FriendsUpdateEvent(player, target, updateType);
         Bukkit.getPluginManager().callEvent(updateEvent);
+    }
+
+    public boolean areFriends(Player player, OfflinePlayer target) {
+        PlayerFriends playerFriends = getPlayerFriends(player);
+        return playerFriends.friends.stream().map(fd -> fd.friend).toList().contains(target);
+    }
+
+    public boolean haveCommonFriends(Player player, OfflinePlayer target) {
+        PlayerFriends playerFriends = getPlayerFriends(player);
+        PlayerFriends targetFriends = getPlayerFriends(target);
+        Set<OfflinePlayer> playerFriendSet = playerFriends.friends.stream().map(fd -> fd.friend).collect(Collectors.toSet());
+        Set<OfflinePlayer> targetFriendSet = targetFriends.friends.stream().map(fd -> fd.friend).collect(Collectors.toSet());
+        playerFriendSet.retainAll(targetFriendSet);
+        return !playerFriendSet.isEmpty();
     }
 }

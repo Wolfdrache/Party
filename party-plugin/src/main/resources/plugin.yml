@@ -23,6 +23,10 @@ commands:
     description: reportSteamCommand
     usage: /reportsteam <subcommand> [args]
     permission: reports.manage
+  msg:
+    description: msgCommand
+    usage: /msg <player> <message>
+    aliases: [tell, w]
 
   join:
     description: joinCommand for Game Modes
@@ -61,6 +65,10 @@ permissions:
   social.friends.unlimited:
     description: Allows unlimited friends
     default: false
+  social.msgAllways:
+    description: Allows sending messages regardless of recipient's msg mode
+    default: false
+    
   reports.manage:
     description: Allows managing reports
     default: false

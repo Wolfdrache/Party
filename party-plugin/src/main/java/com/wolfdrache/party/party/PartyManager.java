@@ -12,17 +12,48 @@ import org.bukkit.entity.Player;
 
 import com.wolfdrache.helper.Helper;
 import com.wolfdrache.party.api.PartyUpdateEvent;
+import com.wolfdrache.party.friends.FriendsManager;
+import com.wolfdrache.party.general.ConfigurationManager;
 import com.wolfdrache.party.general.MessageHelper;
+import com.wolfdrache.party.general.ConfigurationManager.PlayerConfiguration;
 
 public class PartyManager {
+    private final ConfigurationManager configurationManager;
+    private final FriendsManager friendsManager;
+
     private final Map<Player, PartyData> partyDataMap = new HashMap<>();
     private final Map<Player, Set<Player>> pendingInvites = new HashMap<>();
+
+    public PartyManager(ConfigurationManager configurationManager, FriendsManager friendsManager) {
+        this.configurationManager = configurationManager;
+        this.friendsManager = friendsManager;
+    }
 
     private void firePartyUpdate(Player player, Player target, PartyUpdateEvent.PartyUpdateType updateType) {
         Bukkit.getPluginManager().callEvent(new PartyUpdateEvent(player, target, updateType));
     }
 
     public void invitePlayer(Player player, Player invitedPlayer) {
+        PlayerConfiguration invitedPlayerConfig = configurationManager.getPlayerConfiguration(invitedPlayer);
+        switch (invitedPlayerConfig.partyInviteMode) {
+            case ALL:
+                break;
+            case COMMON_FRIEND:
+                if (!friendsManager.haveCommonFriends(player, invitedPlayer) && !friendsManager.areFriends(player, invitedPlayer)) {
+                    MessageHelper.sendMessage(player, MessageHelper.Type.PARTY, "§7" + Helper.getPlayerRankName(invitedPlayer) + "§c akzeptiert nur Party-Einladungen von gemeinsamen Freunden.");
+                    return;
+                }
+                break;
+            case FRIENDS:
+                if (!friendsManager.areFriends(player, invitedPlayer)) {
+                    MessageHelper.sendMessage(player, MessageHelper.Type.PARTY, "§7" + Helper.getPlayerRankName(invitedPlayer) + "§c akzeptiert nur Party-Einladungen von Freunden.");
+                    return;
+                }
+                break;
+            case NONE:
+                MessageHelper.sendMessage(player, MessageHelper.Type.PARTY, "§7" + Helper.getPlayerRankName(invitedPlayer) + "§c akzeptiert keine Party-Einladungen.");
+                return;
+        }
         PartyData partyData = partyDataMap.get(player);
         if (partyData == null) {
             partyData = new PartyData(player);
@@ -210,5 +241,11 @@ public class PartyManager {
                 }
             }
         }
+    }
+
+    public boolean areInSameParty(Player player, Player target) {
+        PartyData playerParty = partyDataMap.get(player);
+        PartyData targetParty = partyDataMap.get(target);
+        return playerParty != null && targetParty != null && playerParty == targetParty;
     }
 }

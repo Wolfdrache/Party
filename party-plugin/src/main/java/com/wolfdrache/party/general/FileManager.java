@@ -16,6 +16,10 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import com.wolfdrache.friends.FriendData;
 import com.wolfdrache.party.Party;
 import com.wolfdrache.party.friends.PlayerFriends;
+import com.wolfdrache.party.general.ConfigurationManager.PlayerConfiguration;
+import com.wolfdrache.serverapi.configuration.ConfigurationService.FriendRequestMode;
+import com.wolfdrache.serverapi.configuration.ConfigurationService.MsgMode;
+import com.wolfdrache.serverapi.configuration.ConfigurationService.PartyInviteMode;
 import com.wolfdrache.serverapi.reports.ReportModel;
 
 public class FileManager {
@@ -33,11 +37,13 @@ public class FileManager {
 
     private final File friendsFile;
     private final File reportsFile;
+    private final File configurationFile;
 
     public FileManager(Party plugin) {
         this.plugin = plugin;
         this.friendsFile = new File(plugin.getDataFolder(), "friends.yml");
         this.reportsFile = new File(plugin.getDataFolder(), "reports.yml");
+        this.configurationFile = new File(plugin.getDataFolder(), "configuration.yml");
     }
 
     public PlayerFriends getPlayerFriends(OfflinePlayer player) {
@@ -244,4 +250,36 @@ public class FileManager {
     }
     return nextId;
 }
+
+    public PlayerConfiguration getPlayerConfiguration(OfflinePlayer player) {
+        YamlConfiguration config = YamlConfiguration.loadConfiguration(configurationFile);
+
+        String uuid = player.getUniqueId().toString();
+
+        String msgModeStrg = config.getString(uuid + ".msgMode", "All");
+        String partyInviteModeStrg = config.getString(uuid + ".partyInviteMode", "All");
+        String friendRequestModeStrg = config.getString(uuid + ".friendRequestMode", "All");
+
+        MsgMode msgMode = MsgMode.valueOf(msgModeStrg);
+        PartyInviteMode partyInviteMode = PartyInviteMode.valueOf(partyInviteModeStrg);
+        FriendRequestMode friendRequestMode = FriendRequestMode.valueOf(friendRequestModeStrg);
+
+        return new PlayerConfiguration(msgMode, partyInviteMode, friendRequestMode);
+    }
+
+    public void savePlayerConfiguration(OfflinePlayer player, PlayerConfiguration configuration) {
+        YamlConfiguration config = YamlConfiguration.loadConfiguration(configurationFile);
+
+        String uuid = player.getUniqueId().toString();
+
+        config.set(uuid + ".msgMode", configuration.msgMode.name());
+        config.set(uuid + ".partyInviteMode", configuration.partyInviteMode.name());
+        config.set(uuid + ".friendRequestMode", configuration.friendRequestMode.name());
+
+        try {
+            config.save(configurationFile);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }
