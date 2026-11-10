@@ -256,9 +256,9 @@ public class FileManager {
 
         String uuid = player.getUniqueId().toString();
 
-        String msgModeStrg = config.getString(uuid + ".msgMode", "All");
-        String partyInviteModeStrg = config.getString(uuid + ".partyInviteMode", "All");
-        String friendRequestModeStrg = config.getString(uuid + ".friendRequestMode", "All");
+        String msgModeStrg = config.getString(uuid + ".msgMode", "ALL");
+        String partyInviteModeStrg = config.getString(uuid + ".partyInviteMode", "ALL");
+        String friendRequestModeStrg = config.getString(uuid + ".friendRequestMode", "ALL");
 
         MsgMode msgMode = MsgMode.valueOf(msgModeStrg);
         PartyInviteMode partyInviteMode = PartyInviteMode.valueOf(partyInviteModeStrg);
