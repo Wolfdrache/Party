@@ -3,9 +3,11 @@ package com.wolfdrache.party.general;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
+import com.wolfdrache.serverapi.configuration.ConfigurationService.ConfigurationKey;
 import com.wolfdrache.serverapi.configuration.ConfigurationService.FriendRequestMode;
 import com.wolfdrache.serverapi.configuration.ConfigurationService.MsgMode;
 import com.wolfdrache.serverapi.configuration.ConfigurationService.PartyInviteMode;
+import com.wolfdrache.serverapi.configuration.ConfigurationService.Status;
 
 public class ConfigurationManager {
     public static class PlayerConfiguration {
@@ -52,5 +54,18 @@ public class ConfigurationManager {
         configuration.friendRequestMode = FriendRequestMode.values()[(configuration.friendRequestMode.ordinal() + 1) % FriendRequestMode.values().length];
         savePlayerConfiguration(player, configuration);
         return configuration.friendRequestMode;
+    }
+
+    public Status rotateStatus(Player player, ConfigurationKey key) {
+        switch (key) {
+            case MSG:
+                return rotateMsgStatus(player);
+            case PARTY:
+                return rotatePartyInviteStatus(player);
+            case FRIEND:
+                return rotateFriendRequestStatus(player);
+            default:
+                throw new IllegalArgumentException("Unknown ConfigurationKey: " + key);
+        }
     }
 }

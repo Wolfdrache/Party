@@ -5,9 +5,13 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 public interface ConfigurationService {
+    public enum ConfigurationKey {
+        PARTY, MSG, FRIEND
+    }
     public interface Status {
         Material getMaterial();
         String getDisplayName();
+        ConfigurationKey getConfigurationKey();
     }
     public enum MsgMode implements Status {
         ALL (Material.LIGHT_BLUE_DYE, "§bAlle"), FRIENDS_PARTY (Material.CYAN_DYE, "§3Freunde & Party"), FRIENDS (Material.LIME_DYE, "§aFreunde"), COMMON_FRIEND (Material.GREEN_DYE, "§2Gemeinsame Freunde"), PARTY (Material.BLUE_DYE, "§9Party"), NONE (Material.GRAY_DYE, "§7Keine");
@@ -24,6 +28,10 @@ public interface ConfigurationService {
         @Override
         public String getDisplayName() {
             return displayName;
+        }
+        @Override
+        public ConfigurationKey getConfigurationKey() {
+            return ConfigurationKey.MSG;
         }
     }
     public enum PartyInviteMode implements Status {
@@ -42,6 +50,10 @@ public interface ConfigurationService {
         public String getDisplayName() {
             return displayName;
         }
+        @Override
+        public ConfigurationKey getConfigurationKey() {
+            return ConfigurationKey.PARTY;
+        }
     }
     public enum FriendRequestMode implements Status {
         ALL (Material.LIGHT_BLUE_DYE, "§bAlle"), COMMON_FRIEND (Material.GREEN_DYE, "§2Gemeinsame Freunde"), PARTY (Material.BLUE_DYE, "§9Party"), NONE (Material.GRAY_DYE, "§7Keine");
@@ -59,6 +71,10 @@ public interface ConfigurationService {
         public String getDisplayName() {
             return displayName;
         }
+        @Override
+        public ConfigurationKey getConfigurationKey() {
+            return ConfigurationKey.FRIEND;
+        }
     }
     void setMsgStatus(Player player, MsgMode mode);
     void setPartyInviteStatus(Player player, PartyInviteMode mode);
@@ -71,4 +87,5 @@ public interface ConfigurationService {
     MsgMode rotateMsgStatus(Player player);
     PartyInviteMode rotatePartyInviteStatus(Player player);
     FriendRequestMode rotateFriendRequestStatus(Player player);
+    Status rotateStatus(Player player, ConfigurationKey key);
 }

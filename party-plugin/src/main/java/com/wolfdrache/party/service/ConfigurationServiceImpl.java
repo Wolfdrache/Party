@@ -66,4 +66,9 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     public FriendRequestMode rotateFriendRequestStatus(Player player) {
         return configurationManager.rotateFriendRequestStatus(player);
     }
+    
+    @Override
+    public Status rotateStatus(Player player, ConfigurationKey key) {
+        return configurationManager.rotateStatus(player, key);
+    }
 }
