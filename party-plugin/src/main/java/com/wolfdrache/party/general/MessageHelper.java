@@ -15,11 +15,11 @@ import net.kyori.adventure.title.Title;
 
 public class MessageHelper {
     public enum Type {
-        PARTY("§9§lParty §7 >> §r"),
-        FRIEND("§a§lFreunde §7 >> §r"),
-        REPORT("§4§lReports §7 >> §r"),
-        SYSTEM("§e§lSystem §7 >> §r"),
-        MSG("§3§lMSG §7 >> §r");
+        PARTY("§9§lParty §7» §r"),
+        FRIEND("§a§lFreunde §7» §r"),
+        REPORT("§4§lReports §7» §r"),
+        SYSTEM("§e§lSystem §7» §r"),
+        MSG("§3§lMSG §7§l» §r");
 
         public final String prefix;
 
@@ -105,7 +105,7 @@ public class MessageHelper {
     }
 
     public static void sendMsgMessage(Player player, Player target, String message) {
-        String completeMessage = Helper.getRankColor(player) + player.getName() + " §7§l➜ " + Helper.getRankColor(target) + target.getName() + " §7» §r" + message.replace("&", "§");
+        String completeMessage = Helper.getRankColor(player) + player.getName() + " §7§l➜ " + Helper.getRankColor(target) + target.getName() + " §8: §r" + message.replace("&", "§");
         sendMessage(player, Type.MSG, completeMessage);
         sendMessage(target, Type.MSG, completeMessage);
     }
