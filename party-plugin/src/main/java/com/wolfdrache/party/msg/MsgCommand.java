@@ -37,6 +37,12 @@ public class MsgCommand implements TabExecutor {
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+        if (args.length == 1) {
+            return Bukkit.getOnlinePlayers().stream()
+                .map(Player::getName)
+                .filter(name -> name.toLowerCase().startsWith(args[0].toLowerCase()))
+                .toList();
+        }
         return List.of();
     }
 }

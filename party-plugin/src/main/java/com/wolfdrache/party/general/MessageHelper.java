@@ -105,7 +105,7 @@ public class MessageHelper {
     }
 
     public static void sendMsgMessage(Player player, Player target, String message) {
-        String completeMessage = Helper.getRankColor(player) + player.getName() + " §7§l➜ " + Helper.getRankColor(target) + target.getName() + " §8: §r" + message.replace("&", "§");
+        String completeMessage = Helper.getRankColor(player) + player.getName() + " §7➜ " + Helper.getRankColor(target) + target.getName() + "§8: §r" + message.replace("&", "§");
         sendMessage(player, Type.MSG, completeMessage);
         sendMessage(target, Type.MSG, completeMessage);
     }
