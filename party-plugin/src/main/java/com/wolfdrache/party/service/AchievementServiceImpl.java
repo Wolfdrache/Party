@@ -30,13 +30,13 @@ public class AchievementServiceImpl implements AchievementService {
     }
 
     @Override
-    public void unlockAchievement(Player player, IAchievement achievement, AchievementCategory category) {
-        achievementManager.unlockAchievement(player, achievement, category);
+    public boolean unlockAchievement(Player player, IAchievement achievement, AchievementCategory category) {
+        return achievementManager.unlockAchievement(player, achievement, category);
     }
 
     @Override
-    public void updateAchievementProgress(Player player, IAchievement achievement, int progress, AchievementCategory category) {
-        achievementManager.updateAchievementProgress(player, achievement, category, progress);
+    public boolean updateAchievementProgress(Player player, IAchievement achievement, int progress, AchievementCategory category) {
+        return achievementManager.updateAchievementProgress(player, achievement, category, progress);
     }
 
     @Override

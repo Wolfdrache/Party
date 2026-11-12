@@ -32,31 +32,35 @@ public class AchievementManager {
         achievement.setProgress(fileManager.getAchievementProgress(category, nextId));
     }
 
-    public void updateAchievementProgress(Player player, IAchievement achievement, AchievementCategory category, int progress) {
+    public boolean updateAchievementProgress(Player player, IAchievement achievement, AchievementCategory category, int progress) {
         if (achievement.isCompleted(player)) {
-            return;
+            return false;
         }
         Map<OfflinePlayer, AchievementProgress> progressMap = achievement.getProgress();
         AchievementProgress currentProgress = progressMap.getOrDefault(player, new AchievementProgress(player, 0, false));
         int newProgress = currentProgress.getProgress() + progress;
         progressMap.put(player, new AchievementProgress(player, newProgress, currentProgress.isCompleted()));
-        if (newProgress >= achievement.getMaxProgress()) {
-            unlockAchievement(player, achievement, category);
-        }
         fileManager.saveAchievementProgress(category, achievement);
+        if (newProgress >= achievement.getMaxProgress()) {
+            return unlockAchievement(player, achievement, category);
+        }
+        return false;
     }
 
     public void registerCategory(AchievementCategory category) {
         achievements.putIfAbsent(category, new ArrayList<>());
     }
 
-    public void unlockAchievement(Player player, IAchievement achievement, AchievementCategory category) {
+    public boolean unlockAchievement(Player player, IAchievement achievement, AchievementCategory category) {
         if (!achievement.isCompleted(player)) {
             AchievementProgress currentProgress = achievement.getProgress().getOrDefault(player, new AchievementProgress(player, 0, false));
             achievement.getProgress().put(player, new AchievementProgress(player, currentProgress.getProgress(), true));
             coinManager.depositCoins(player, achievement.getReward());
             fileManager.saveAchievementProgress(category, achievement);
+
+            return true;
         }
+        return false;
     }
 
     public List<IAchievement> getAchievements(AchievementCategory category) {
