@@ -12,4 +12,5 @@ public interface AchievementService {
     void updateAchievementProgress(Player player, Achievement achievement, int progress, AchievementCategory category);
     List<Achievement> getAchievements(AchievementCategory category);
     List<AchievementCategory> getCategories();
+    int getAmountDone(Player player, AchievementCategory category);
 }

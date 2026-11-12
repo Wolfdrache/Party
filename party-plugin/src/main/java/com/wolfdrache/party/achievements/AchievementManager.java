@@ -70,4 +70,15 @@ public class AchievementManager {
     public List<AchievementCategory> getCategories() {
         return new ArrayList<>(achievements.keySet());
     }
+
+    public int getAmountDone(Player player, AchievementCategory category) {
+        int amountDone = 0;
+        List<Achievement> achievementList = achievements.getOrDefault(category, new ArrayList<>());
+        for (Achievement achievement : achievementList) {
+            if (achievement.isCompleted(player)) {
+                amountDone++;
+            }
+        }
+        return amountDone;
+    }
 }

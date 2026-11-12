@@ -49,4 +49,8 @@ public class AchievementServiceImpl implements AchievementService {
         return achievementManager.getCategories();
     }
     
+    @Override
+    public int getAmountDone(Player player, AchievementCategory category) {
+        return achievementManager.getAmountDone(player, category);
+    }
 }
