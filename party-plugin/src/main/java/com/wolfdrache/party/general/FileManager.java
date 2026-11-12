@@ -20,7 +20,7 @@ import com.wolfdrache.party.friends.PlayerFriends;
 import com.wolfdrache.party.general.ConfigurationManager.PlayerConfiguration;
 import com.wolfdrache.serverapi.achievements.AchievementCategory;
 import com.wolfdrache.serverapi.achievements.AchievementProgress;
-import com.wolfdrache.serverapi.achievements.IAchievement;
+import com.wolfdrache.serverapi.achievements.Achievement;
 import com.wolfdrache.serverapi.configuration.ConfigurationService.FriendRequestMode;
 import com.wolfdrache.serverapi.configuration.ConfigurationService.MsgMode;
 import com.wolfdrache.serverapi.configuration.ConfigurationService.PartyInviteMode;
@@ -323,7 +323,7 @@ public class FileManager {
         return progressMap;
     }
 
-    public void saveAchievementProgress(AchievementCategory category, IAchievement achievement) {
+    public void saveAchievementProgress(AchievementCategory category, Achievement achievement) {
         File achievementFile = new File(achievementsFolder, category.getName() + ".yml");
         YamlConfiguration config = YamlConfiguration.loadConfiguration(achievementFile);
 

@@ -19,7 +19,8 @@ public class MessageHelper {
         FRIEND("§a§lFreunde §7» §r"),
         REPORT("§4§lReports §7» §r"),
         SYSTEM("§e§lSystem §7» §r"),
-        MSG("§3§lMSG §7§l» §r");
+        MSG("§3§lMSG §7§l» §r"), 
+        ACHIEVEMENT("§6§lAchievement §7» §r");
 
         public final String prefix;
 

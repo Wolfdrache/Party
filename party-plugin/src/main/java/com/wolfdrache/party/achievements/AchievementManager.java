@@ -10,31 +10,33 @@ import org.bukkit.entity.Player;
 
 import com.wolfdrache.party.general.CoinManager;
 import com.wolfdrache.party.general.FileManager;
+import com.wolfdrache.party.general.MessageHelper;
 import com.wolfdrache.serverapi.achievements.AchievementCategory;
 import com.wolfdrache.serverapi.achievements.AchievementProgress;
-import com.wolfdrache.serverapi.achievements.IAchievement;
+import com.wolfdrache.serverapi.achievements.Achievement;
 
 public class AchievementManager {
     private final FileManager fileManager;
     private final CoinManager coinManager;
     
-    private final Map<AchievementCategory, List<IAchievement>> achievements = new HashMap<>();
+    private final Map<AchievementCategory, List<Achievement>> achievements = new HashMap<>();
 
     public AchievementManager(FileManager fileManager, CoinManager coinManager) {
         this.fileManager = fileManager;
         this.coinManager = coinManager;
     }
 
-    public void registerAchievement(AchievementCategory category, IAchievement achievement) {
-        int nextId = achievements.computeIfAbsent(category, k -> new ArrayList<>()).size();
+    public boolean registerAchievement(AchievementCategory category, Achievement achievement) {
+        if (category.hasAchievement(achievement.getId())) return false;
         achievements.get(category).add(achievement);
-        achievement.setId(nextId);
-        achievement.setProgress(fileManager.getAchievementProgress(category, nextId));
+        achievement.setProgress(fileManager.getAchievementProgress(category, achievement.getId()));
+        category.addAchievement(achievement.getId());
+        return true;
     }
 
-    public boolean updateAchievementProgress(Player player, IAchievement achievement, AchievementCategory category, int progress) {
+    public void updateAchievementProgress(Player player, Achievement achievement, AchievementCategory category, int progress) {
         if (achievement.isCompleted(player)) {
-            return false;
+            return;
         }
         Map<OfflinePlayer, AchievementProgress> progressMap = achievement.getProgress();
         AchievementProgress currentProgress = progressMap.getOrDefault(player, new AchievementProgress(player, 0, false));
@@ -42,28 +44,26 @@ public class AchievementManager {
         progressMap.put(player, new AchievementProgress(player, newProgress, currentProgress.isCompleted()));
         fileManager.saveAchievementProgress(category, achievement);
         if (newProgress >= achievement.getMaxProgress()) {
-            return unlockAchievement(player, achievement, category);
+            unlockAchievement(player, achievement, category);
         }
-        return false;
     }
 
     public void registerCategory(AchievementCategory category) {
         achievements.putIfAbsent(category, new ArrayList<>());
     }
 
-    public boolean unlockAchievement(Player player, IAchievement achievement, AchievementCategory category) {
+    public void unlockAchievement(Player player, Achievement achievement, AchievementCategory category) {
         if (!achievement.isCompleted(player)) {
             AchievementProgress currentProgress = achievement.getProgress().getOrDefault(player, new AchievementProgress(player, 0, false));
             achievement.getProgress().put(player, new AchievementProgress(player, currentProgress.getProgress(), true));
             coinManager.depositCoins(player, achievement.getReward());
             fileManager.saveAchievementProgress(category, achievement);
-
-            return true;
+            MessageHelper.sendMessage(player, MessageHelper.Type.ACHIEVEMENT, "§7Du hast das Achievement§8: §e" + achievement.getName() + " §7freigeschaltet!");
+            MessageHelper.sendMessage(player, MessageHelper.Type.ACHIEVEMENT, "§7Du erhältst §6" + achievement.getReward() + " §7Coins!");
         }
-        return false;
     }
 
-    public List<IAchievement> getAchievements(AchievementCategory category) {
+    public List<Achievement> getAchievements(AchievementCategory category) {
         return achievements.getOrDefault(category, new ArrayList<>());
     }
 

@@ -8,7 +8,7 @@ import org.bukkit.entity.Player;
 import com.wolfdrache.party.achievements.AchievementManager;
 import com.wolfdrache.serverapi.achievements.AchievementCategory;
 import com.wolfdrache.serverapi.achievements.AchievementService;
-import com.wolfdrache.serverapi.achievements.IAchievement;
+import com.wolfdrache.serverapi.achievements.Achievement;
 
 public class AchievementServiceImpl implements AchievementService {
     private final AchievementManager achievementManager;
@@ -18,29 +18,29 @@ public class AchievementServiceImpl implements AchievementService {
     }
 
     @Override 
-    public AchievementCategory registerAchievementCategory(String name, Material icon) {
-        AchievementCategory category = new AchievementCategory(name, icon);
+    public AchievementCategory registerAchievementCategory(String name, Material icon, String displayName) {
+        AchievementCategory category = new AchievementCategory(name, icon, displayName);
         achievementManager.registerCategory(category);
         return category;
     }
 
     @Override
-    public void registerAchievement(IAchievement achievement, AchievementCategory category) {
-        achievementManager.registerAchievement(category, achievement);
+    public boolean registerAchievement(Achievement achievement, AchievementCategory category) {
+        return achievementManager.registerAchievement(category, achievement);
     }
 
     @Override
-    public boolean unlockAchievement(Player player, IAchievement achievement, AchievementCategory category) {
-        return achievementManager.unlockAchievement(player, achievement, category);
+    public void unlockAchievement(Player player, Achievement achievement, AchievementCategory category) {
+        achievementManager.unlockAchievement(player, achievement, category);
     }
 
     @Override
-    public boolean updateAchievementProgress(Player player, IAchievement achievement, int progress, AchievementCategory category) {
-        return achievementManager.updateAchievementProgress(player, achievement, category, progress);
+    public void updateAchievementProgress(Player player, Achievement achievement, int progress, AchievementCategory category) {
+        achievementManager.updateAchievementProgress(player, achievement, category, progress);
     }
 
     @Override
-    public List<IAchievement> getAchievements(AchievementCategory category) {
+    public List<Achievement> getAchievements(AchievementCategory category) {
         return achievementManager.getAchievements(category);
     }
 
