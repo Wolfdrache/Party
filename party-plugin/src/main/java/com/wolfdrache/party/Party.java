@@ -2,10 +2,12 @@ package com.wolfdrache.party;
 
 import com.wolfdrache.friends.FriendsService;
 import com.wolfdrache.leaderboard.LeaderBoardListener;
+import com.wolfdrache.party.achievements.AchievementManager;
 import com.wolfdrache.party.api.PartyService;
 import com.wolfdrache.party.friends.*;
 import com.wolfdrache.party.gamemodes.GameCommandManager;
 import com.wolfdrache.party.gamemodes.GameCommands;
+import com.wolfdrache.party.general.CoinManager;
 import com.wolfdrache.party.general.ConfigurationManager;
 import com.wolfdrache.party.general.FileManager;
 import com.wolfdrache.party.msg.MsgCommand;
@@ -14,16 +16,23 @@ import com.wolfdrache.party.party.*;
 import com.wolfdrache.party.reports.*;
 import com.wolfdrache.party.reports.ui.*;
 import com.wolfdrache.party.service.*;
+import com.wolfdrache.serverapi.achievements.AchievementService;
 import com.wolfdrache.serverapi.configuration.ConfigurationService;
 import com.wolfdrache.serverapi.gamemodes.GameService;
 import com.wolfdrache.serverapi.gamemodes.GameService.CommandType;
 import com.wolfdrache.serverapi.reports.*;
 
+import net.milkbowl.vault.economy.Economy;
+
 import org.bukkit.Bukkit;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class Party extends JavaPlugin {
+    private Economy economy;
+    
+    private CoinManager coinManager;
     private FileManager fileManager;
 
     private PartyService partyService;
@@ -46,9 +55,20 @@ public class Party extends JavaPlugin {
     private ConfigurationService configurationService;
     private ConfigurationManager configurationManager;
 
+    private AchievementManager achievementManager;
+    private AchievementService achievementService;
+
     @Override
     public void onEnable() {
+        economy = setupService(Economy.class);
+        if (economy == null) {
+            getLogger().severe("Vault economy service not found! Disabling plugin.");
+            getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
         this.fileManager = new FileManager(this);
+        this.coinManager = new CoinManager(economy);
+
         this.configurationManager = new ConfigurationManager(fileManager);
         this.configurationService = new ConfigurationServiceImpl(configurationManager);
         Bukkit.getServicesManager().register(ConfigurationService.class, this.configurationService, this, ServicePriority.Normal);
@@ -99,6 +119,10 @@ public class Party extends JavaPlugin {
 
         getServer().getPluginManager().registerEvents(new LeaderBoardListener(this), this);
 
+        this.achievementManager = new AchievementManager(fileManager, coinManager);
+        this.achievementService = new AchievementServiceImpl(achievementManager);
+        Bukkit.getServicesManager().register(AchievementService.class, this.achievementService, this, ServicePriority.Normal);
+
         getLogger().info("Party has been enabled!");
     }
 
@@ -108,6 +132,18 @@ public class Party extends JavaPlugin {
         Bukkit.getServicesManager().unregister(FriendsService.class, this.friendsService);
         Bukkit.getServicesManager().unregister(ReportService.class, this.reportService);
         Bukkit.getServicesManager().unregister(GameService.class, this.gameService);
+        Bukkit.getServicesManager().unregister(AchievementService.class, this.achievementService);
         getLogger().info("Party has been disabled!");
+    }
+
+    private <T> T setupService(Class<T> serviceClass) {
+        RegisteredServiceProvider<T> rsp =
+                getServer().getServicesManager().getRegistration(serviceClass);
+
+        if (rsp == null) {
+            return null;
+        }
+
+        return rsp.getProvider();
     }
 }

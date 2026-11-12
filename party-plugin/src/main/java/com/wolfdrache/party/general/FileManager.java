@@ -2,6 +2,7 @@ package com.wolfdrache.party.general;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -17,6 +18,9 @@ import com.wolfdrache.friends.FriendData;
 import com.wolfdrache.party.Party;
 import com.wolfdrache.party.friends.PlayerFriends;
 import com.wolfdrache.party.general.ConfigurationManager.PlayerConfiguration;
+import com.wolfdrache.serverapi.achievements.AchievementCategory;
+import com.wolfdrache.serverapi.achievements.AchievementProgress;
+import com.wolfdrache.serverapi.achievements.IAchievement;
 import com.wolfdrache.serverapi.configuration.ConfigurationService.FriendRequestMode;
 import com.wolfdrache.serverapi.configuration.ConfigurationService.MsgMode;
 import com.wolfdrache.serverapi.configuration.ConfigurationService.PartyInviteMode;
@@ -38,12 +42,17 @@ public class FileManager {
     private final File friendsFile;
     private final File reportsFile;
     private final File configurationFile;
+    private final File achievementsFolder;
 
     public FileManager(Party plugin) {
         this.plugin = plugin;
         this.friendsFile = new File(plugin.getDataFolder(), "friends.yml");
         this.reportsFile = new File(plugin.getDataFolder(), "reports.yml");
         this.configurationFile = new File(plugin.getDataFolder(), "configuration.yml");
+        this.achievementsFolder = new File(plugin.getDataFolder(), "achievements");
+        if (!this.achievementsFolder.exists()) {
+            this.achievementsFolder.mkdirs();
+        }
     }
 
     public PlayerFriends getPlayerFriends(OfflinePlayer player) {
@@ -278,6 +287,59 @@ public class FileManager {
 
         try {
             config.save(configurationFile);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public Map<OfflinePlayer, AchievementProgress> getAchievementProgress(AchievementCategory category, int nextId) {
+        File achievementFile = new File(achievementsFolder, category.getName() + ".yml");
+        if (!achievementFile.exists()) {
+            try {
+                achievementFile.createNewFile();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return new HashMap<>();
+        }
+        YamlConfiguration config = YamlConfiguration.loadConfiguration(achievementFile);
+
+        ConfigurationSection achievementSection = config.getConfigurationSection(String.valueOf(nextId));
+        if (achievementSection == null) {
+            return new HashMap<>();
+        }
+
+        Map<OfflinePlayer, AchievementProgress> progressMap = new HashMap<>();
+        for (String key : achievementSection.getKeys(false)) {
+            try {
+                OfflinePlayer player = Bukkit.getOfflinePlayer(UUID.fromString(key));
+                int progress = achievementSection.getInt(key + ".progress", 0);
+                boolean completed = achievementSection.getBoolean(key + ".completed", false);
+                progressMap.put(player, new AchievementProgress(player, progress, completed));
+            } catch (IllegalArgumentException ignored) {
+                // skip malformed entries
+            }
+        }
+        return progressMap;
+    }
+
+    public void saveAchievementProgress(AchievementCategory category, IAchievement achievement) {
+        File achievementFile = new File(achievementsFolder, category.getName() + ".yml");
+        YamlConfiguration config = YamlConfiguration.loadConfiguration(achievementFile);
+
+        String achievementId = String.valueOf(achievement.getId());
+        ConfigurationSection achievementSection = config.getConfigurationSection(achievementId);
+        if (achievementSection == null) {
+            achievementSection = config.createSection(achievementId);
+        }
+
+        for (Map.Entry<OfflinePlayer, AchievementProgress> entry : achievement.getProgress().entrySet()) {
+            achievementSection.set(entry.getKey().getUniqueId().toString() + ".progress", entry.getValue().getProgress());
+            achievementSection.set(entry.getKey().getUniqueId().toString() + ".completed", entry.getValue().isCompleted());
+        }
+
+        try {
+            config.save(achievementFile);
         } catch (Exception e) {
             e.printStackTrace();
         }
