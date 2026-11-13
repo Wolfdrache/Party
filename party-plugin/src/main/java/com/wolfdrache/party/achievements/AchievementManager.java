@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import com.wolfdrache.party.general.CoinManager;
@@ -35,7 +36,31 @@ public class AchievementManager {
             typeList.add(achievement);
         }
         category.addAchievement(achievement.getId());
+        if (checkPlayerUnlocks(category, achievement)) {
+            fileManager.saveAchievementProgress(category);
+        }
         return true;
+    }
+
+    private boolean checkPlayerUnlocks(AchievementCategory category, Achievement achievement) {
+        Map<OfflinePlayer, AchievementProgress> progressMap = category.getProgress();
+        boolean anyUnlocked = false;
+        for (Map.Entry<OfflinePlayer, AchievementProgress> entry : progressMap.entrySet()) {
+            OfflinePlayer player = entry.getKey();
+            AchievementProgress playerProgress = entry.getValue();
+            boolean completed = true;
+            for (IAchievementType type : achievement.getTypes()) {
+                if (playerProgress.getProgress(type) < achievement.getMaxProgress(type)) {
+                    completed = false;
+                    break;
+                }
+            }
+            if (completed) {
+                unlockAchievement(player, achievement, category);
+                anyUnlocked = true;
+            }
+        }
+        return anyUnlocked;
     }
 
     public void updateAchievementProgress(Player player, AchievementCategory category, IAchievementType type, int progress) {
@@ -64,11 +89,14 @@ public class AchievementManager {
         category.setProgress(fileManager.getAchievementProgress(category));
     }
 
-    public void unlockAchievement(Player player, Achievement achievement, AchievementCategory category) {
+    public void unlockAchievement(OfflinePlayer player, Achievement achievement, AchievementCategory category) {
             category.completeAchievement(player, achievement);
             coinManager.depositCoins(player, achievement.getReward());
-            MessageHelper.sendMessage(player, MessageHelper.Type.ACHIEVEMENT, "§7Du hast das Achievement§8: §e" + achievement.getName() + " §7freigeschaltet!");
-            MessageHelper.sendMessage(player, MessageHelper.Type.ACHIEVEMENT, "§7Du erhältst §6" + achievement.getReward() + " §7Coins!");
+            if (player instanceof Player) {
+                Player onlinePlayer = (Player) player;
+                MessageHelper.sendMessage(onlinePlayer, MessageHelper.Type.ACHIEVEMENT, "§7Du hast das Achievement§8: §e" + achievement.getName() + " §7freigeschaltet!");
+                MessageHelper.sendMessage(onlinePlayer, MessageHelper.Type.ACHIEVEMENT, "§7Du erhältst §6" + achievement.getReward() + " §7Coins!");
+            }
     }
 
     public List<Achievement> getAchievements(AchievementCategory category) {

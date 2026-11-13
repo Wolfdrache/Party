@@ -82,7 +82,7 @@ public class AchievementCategory {
         return playerProgress.isCompleted(achievement.getId());
     }
 
-    public void completeAchievement(Player player, Achievement achievement) {
+    public void completeAchievement(OfflinePlayer player, Achievement achievement) {
         AchievementProgress playerProgress = getProgress(player);
         playerProgress.markCompleted(achievement.getId());
     }

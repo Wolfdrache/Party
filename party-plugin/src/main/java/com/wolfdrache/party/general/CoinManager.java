@@ -1,5 +1,6 @@
 package com.wolfdrache.party.general;
 
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import net.milkbowl.vault.economy.Economy;
@@ -11,7 +12,7 @@ public class CoinManager {
         this.economy = economy;
     }
     
-    public void depositCoins(Player player, double amount) {
+    public void depositCoins(OfflinePlayer player, double amount) {
         economy.depositPlayer(player, amount);
     }
 
