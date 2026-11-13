@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import com.wolfdrache.party.achievements.AchievementManager;
 import com.wolfdrache.serverapi.achievements.AchievementCategory;
 import com.wolfdrache.serverapi.achievements.AchievementService;
+import com.wolfdrache.serverapi.achievements.Achievement.IAchievementTye;
 import com.wolfdrache.serverapi.achievements.Achievement;
 
 public class AchievementServiceImpl implements AchievementService {
@@ -30,13 +31,13 @@ public class AchievementServiceImpl implements AchievementService {
     }
 
     @Override
-    public void unlockAchievement(Player player, Achievement achievement, AchievementCategory category) {
-        achievementManager.unlockAchievement(player, achievement, category);
+    public void unlockAchievementType(Player player, Achievement achievement, AchievementCategory category, IAchievementTye type) {
+        achievementManager.unlockAchievementType(player, achievement, category, type);
     }
 
     @Override
-    public void updateAchievementProgress(Player player, Achievement achievement, int progress, AchievementCategory category) {
-        achievementManager.updateAchievementProgress(player, achievement, category, progress);
+    public void updateAchievementProgress(Player player, Achievement achievement, AchievementCategory category, IAchievementTye type, int progress) {
+        achievementManager.updateAchievementProgress(player, achievement, category, type, progress);
     }
 
     @Override

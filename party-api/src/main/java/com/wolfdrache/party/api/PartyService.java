@@ -22,5 +22,7 @@ public interface PartyService {
     void disbandParty(Player player);
 
     void acceptInvite(Player player, Player invitingPlayer);
+
+    boolean areSameParty(Player player1, Player player2);
 }
 

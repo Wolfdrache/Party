@@ -13,6 +13,7 @@ import com.wolfdrache.party.general.FileManager;
 import com.wolfdrache.party.general.MessageHelper;
 import com.wolfdrache.serverapi.achievements.AchievementCategory;
 import com.wolfdrache.serverapi.achievements.AchievementProgress;
+import com.wolfdrache.serverapi.achievements.Achievement.IAchievementTye;
 import com.wolfdrache.serverapi.achievements.Achievement;
 
 public class AchievementManager {
@@ -34,17 +35,19 @@ public class AchievementManager {
         return true;
     }
 
-    public void updateAchievementProgress(Player player, Achievement achievement, AchievementCategory category, int progress) {
+    public void updateAchievementProgress(Player player, Achievement achievement, AchievementCategory category, IAchievementTye type, int progress) {
         if (achievement.isCompleted(player)) {
             return;
         }
-        Map<OfflinePlayer, AchievementProgress> progressMap = achievement.getProgress();
-        AchievementProgress currentProgress = progressMap.getOrDefault(player, new AchievementProgress(player, 0, false));
+        Map<OfflinePlayer, Map<String, AchievementProgress>> progressMap = achievement.getProgress();
+        Map<String, AchievementProgress> playerProgress = progressMap.getOrDefault(player, new HashMap<>());
+        AchievementProgress currentProgress = playerProgress.getOrDefault(type.getName(), new AchievementProgress(player, 0, false));
         int newProgress = currentProgress.getProgress() + progress;
-        progressMap.put(player, new AchievementProgress(player, newProgress, currentProgress.isCompleted()));
+        playerProgress.put(type.getName(), new AchievementProgress(player, newProgress, currentProgress.isCompleted()));
+        progressMap.put(player, playerProgress);
         fileManager.saveAchievementProgress(category, achievement);
-        if (newProgress >= achievement.getMaxProgress()) {
-            unlockAchievement(player, achievement, category);
+        if (newProgress >= achievement.getMaxProgress(type)) {
+            unlockAchievementType(player, achievement, category, type);
         }
     }
 
@@ -52,14 +55,18 @@ public class AchievementManager {
         achievements.putIfAbsent(category, new ArrayList<>());
     }
 
-    public void unlockAchievement(Player player, Achievement achievement, AchievementCategory category) {
+    public void unlockAchievementType(Player player, Achievement achievement, AchievementCategory category, IAchievementTye type) {
         if (!achievement.isCompleted(player)) {
-            AchievementProgress currentProgress = achievement.getProgress().getOrDefault(player, new AchievementProgress(player, 0, false));
-            achievement.getProgress().put(player, new AchievementProgress(player, currentProgress.getProgress(), true));
-            coinManager.depositCoins(player, achievement.getReward());
+            Map<String, AchievementProgress> playerProgress = achievement.getProgress().getOrDefault(player, new HashMap<>());
+            AchievementProgress currentProgress = playerProgress.getOrDefault(type.getName(), new AchievementProgress(player, 0, false));
+            playerProgress.put(type.getName(), new AchievementProgress(player, currentProgress.getProgress(), true));
+            achievement.getProgress().put(player, playerProgress);
             fileManager.saveAchievementProgress(category, achievement);
-            MessageHelper.sendMessage(player, MessageHelper.Type.ACHIEVEMENT, "§7Du hast das Achievement§8: §e" + achievement.getName() + " §7freigeschaltet!");
-            MessageHelper.sendMessage(player, MessageHelper.Type.ACHIEVEMENT, "§7Du erhältst §6" + achievement.getReward() + " §7Coins!");
+            if (achievement.isCompleted(player)) {
+                coinManager.depositCoins(player, achievement.getReward());
+                MessageHelper.sendMessage(player, MessageHelper.Type.ACHIEVEMENT, "§7Du hast das Achievement§8: §e" + achievement.getName() + " §7freigeschaltet!");
+                MessageHelper.sendMessage(player, MessageHelper.Type.ACHIEVEMENT, "§7Du erhältst §6" + achievement.getReward() + " §7Coins!");
+            }
         }
     }
 

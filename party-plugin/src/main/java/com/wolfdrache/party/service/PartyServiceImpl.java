@@ -57,4 +57,9 @@ public class PartyServiceImpl implements PartyService {
     public List<Player> getPartyMembers(Player player) {
         return partyManager.getPartyMembers(player);
     }
+
+    @Override
+    public boolean areSameParty(Player player1, Player player2) {
+        return partyManager.areInSameParty(player1, player2);
+    }
 }

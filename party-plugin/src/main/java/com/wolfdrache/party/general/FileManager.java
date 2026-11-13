@@ -292,7 +292,7 @@ public class FileManager {
         }
     }
 
-    public Map<OfflinePlayer, AchievementProgress> getAchievementProgress(AchievementCategory category, int nextId) {
+    public Map<OfflinePlayer, Map<String, AchievementProgress>> getAchievementProgress(AchievementCategory category, int nextId) {
         File achievementFile = new File(achievementsFolder, category.getName() + ".yml");
         if (!achievementFile.exists()) {
             try {
@@ -309,13 +309,16 @@ public class FileManager {
             return new HashMap<>();
         }
 
-        Map<OfflinePlayer, AchievementProgress> progressMap = new HashMap<>();
+        Map<OfflinePlayer, Map<String, AchievementProgress>> progressMap = new HashMap<>();
         for (String key : achievementSection.getKeys(false)) {
             try {
                 OfflinePlayer player = Bukkit.getOfflinePlayer(UUID.fromString(key));
-                int progress = achievementSection.getInt(key + ".progress", 0);
-                boolean completed = achievementSection.getBoolean(key + ".completed", false);
-                progressMap.put(player, new AchievementProgress(player, progress, completed));
+                ConfigurationSection playerSection = achievementSection.getConfigurationSection(key);
+                for (String typeKey : playerSection.getKeys(false)) {
+                    int progress = playerSection.getInt(typeKey + ".progress", 0);
+                    boolean completed = playerSection.getBoolean(typeKey + ".completed", false);
+                    progressMap.computeIfAbsent(player, k -> new HashMap<>()).put(typeKey, new AchievementProgress(player, progress, completed));
+                }
             } catch (IllegalArgumentException ignored) {
                 // skip malformed entries
             }
@@ -333,9 +336,15 @@ public class FileManager {
             achievementSection = config.createSection(achievementId);
         }
 
-        for (Map.Entry<OfflinePlayer, AchievementProgress> entry : achievement.getProgress().entrySet()) {
-            achievementSection.set(entry.getKey().getUniqueId().toString() + ".progress", entry.getValue().getProgress());
-            achievementSection.set(entry.getKey().getUniqueId().toString() + ".completed", entry.getValue().isCompleted());
+        for (Map.Entry<OfflinePlayer, Map<String, AchievementProgress>> entry : achievement.getProgress().entrySet()) {
+            OfflinePlayer player = entry.getKey();
+            Map<String, AchievementProgress> playerProgress = entry.getValue();
+            for (Map.Entry<String, AchievementProgress> typeEntry : playerProgress.entrySet()) {
+                String typeKey = typeEntry.getKey();
+                AchievementProgress progress = typeEntry.getValue();
+                achievementSection.set(player.getUniqueId().toString() + "." + typeKey + ".progress", progress.getProgress());
+                achievementSection.set(player.getUniqueId().toString() + "." + typeKey + ".completed", progress.isCompleted());
+            }
         }
 
         try {

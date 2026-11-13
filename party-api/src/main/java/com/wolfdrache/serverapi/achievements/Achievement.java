@@ -7,15 +7,19 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Achievement {
-    private int id;
+    public static interface IAchievementTye{
+        String getName();
+    }
+
+    private final int id;
     private final String name;
     private final String description;
     private final Material material;
-    private final int maxProgress;
+    private final Map<String, Integer> maxProgress;
     private final int reward;
-    private final Map<OfflinePlayer, AchievementProgress> progress = new HashMap<>();
+    private final Map<OfflinePlayer, Map<String, AchievementProgress>> progress = new HashMap<>();
 
-    public Achievement(int id, String name, String description, Material material, int maxProgress, int reward) {
+    public Achievement(int id, String name, String description, Material material, Map<String, Integer> maxProgress, int reward) {
         this.name = name;
         this.description = description;
         this.material = material;
@@ -24,8 +28,9 @@ public class Achievement {
         this.id = id;
     }
 
-    public int getCurrentProgress(OfflinePlayer player) {
-        AchievementProgress ap = progress.get(player);
+    public int getCurrentProgress(OfflinePlayer player, IAchievementTye type) {
+        Map<String, AchievementProgress> playerProgress = progress.get(player);
+        AchievementProgress ap = playerProgress != null ? playerProgress.get(type.getName()) : null;
         return ap != null ? ap.getProgress() : 0;
     }
 
@@ -41,15 +46,15 @@ public class Achievement {
         return material;
     }
 
-    public int getMaxProgress() {
-        return maxProgress;
+    public int getMaxProgress(IAchievementTye type) {
+        return maxProgress.get(type.getName());
     }
 
     public String getName() {
         return name;
     }
 
-    public Map<OfflinePlayer, AchievementProgress> getProgress() {
+    public Map<OfflinePlayer, Map<String, AchievementProgress>> getProgress() {
         return progress;
     }
 
@@ -58,11 +63,22 @@ public class Achievement {
     }
 
     public boolean isCompleted(OfflinePlayer player) {
-        AchievementProgress ap = progress.get(player);
-        return ap != null && ap.isCompleted();
+        Map<String, AchievementProgress> playerProgress = progress.get(player);
+        boolean completed = true;
+        if (playerProgress != null) {
+            for (AchievementProgress ap : playerProgress.values()) {
+                if (!ap.isCompleted()) {
+                    completed = false;
+                    break;
+                }
+            }
+        } else {
+            completed = true;
+        }
+        return completed;
     }
 
-    public void setProgress(Map<OfflinePlayer, AchievementProgress> progress) {
+    public void setProgress(Map<OfflinePlayer, Map<String, AchievementProgress>> progress) {
         this.progress.clear();
         this.progress.putAll(progress);
     }
