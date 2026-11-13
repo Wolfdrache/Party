@@ -29,7 +29,10 @@ public class AchievementProgress {
         return completed.contains(achievementId);
     }
     public int getProgress(Achievement.IAchievementType type) {
-        return progress.getOrDefault(type, 0);
+        if (type.getSyncFunction() == null) {
+            return progress.getOrDefault(type, 0);
+        }
+        return type.getSyncFunction().apply(player);
     }
     public void setProgress(Achievement.IAchievementType type, int value) {
         progress.put(type, value);

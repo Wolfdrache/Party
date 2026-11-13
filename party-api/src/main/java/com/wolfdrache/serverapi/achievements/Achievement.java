@@ -1,14 +1,17 @@
 package com.wolfdrache.serverapi.achievements;
 
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 public class Achievement {
     public static interface IAchievementType{
         String getName();
+        Function<OfflinePlayer, Integer> getSyncFunction();
     }
 
     private final int id;
