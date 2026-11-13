@@ -2,16 +2,12 @@ package com.wolfdrache.party;
 
 import com.wolfdrache.friends.FriendsService;
 import com.wolfdrache.leaderboard.LeaderBoardListener;
-import com.wolfdrache.party.achievements.AchievementManager;
+import com.wolfdrache.party.achievements.*;
 import com.wolfdrache.party.api.PartyService;
 import com.wolfdrache.party.friends.*;
-import com.wolfdrache.party.gamemodes.GameCommandManager;
-import com.wolfdrache.party.gamemodes.GameCommands;
-import com.wolfdrache.party.general.CoinManager;
-import com.wolfdrache.party.general.ConfigurationManager;
-import com.wolfdrache.party.general.FileManager;
-import com.wolfdrache.party.msg.MsgCommand;
-import com.wolfdrache.party.msg.MsgManager;
+import com.wolfdrache.party.gamemodes.*;
+import com.wolfdrache.party.general.*;
+import com.wolfdrache.party.msg.*;
 import com.wolfdrache.party.party.*;
 import com.wolfdrache.party.reports.*;
 import com.wolfdrache.party.reports.ui.*;
@@ -122,6 +118,7 @@ public class Party extends JavaPlugin {
         this.achievementManager = new AchievementManager(fileManager, coinManager);
         this.achievementService = new AchievementServiceImpl(achievementManager);
         Bukkit.getServicesManager().register(AchievementService.class, this.achievementService, this, ServicePriority.Normal);
+        getServer().getPluginManager().registerEvents(new AchievemetsListener(achievementManager), this);
 
         getLogger().info("Party has been enabled!");
     }
