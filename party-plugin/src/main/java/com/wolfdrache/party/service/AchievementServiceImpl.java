@@ -8,7 +8,7 @@ import org.bukkit.entity.Player;
 import com.wolfdrache.party.achievements.AchievementManager;
 import com.wolfdrache.serverapi.achievements.AchievementCategory;
 import com.wolfdrache.serverapi.achievements.AchievementService;
-import com.wolfdrache.serverapi.achievements.Achievement.IAchievementTye;
+import com.wolfdrache.serverapi.achievements.Achievement.IAchievementType;
 import com.wolfdrache.serverapi.achievements.Achievement;
 
 public class AchievementServiceImpl implements AchievementService {
@@ -31,12 +31,12 @@ public class AchievementServiceImpl implements AchievementService {
     }
 
     @Override
-    public void unlockAchievementType(Player player, Achievement achievement, AchievementCategory category, IAchievementTye type) {
+    public void unlockAchievementType(Player player, Achievement achievement, AchievementCategory category, IAchievementType type) {
         achievementManager.unlockAchievementType(player, achievement, category, type);
     }
 
     @Override
-    public void updateAchievementProgress(Player player, Achievement achievement, AchievementCategory category, IAchievementTye type, int progress) {
+    public void updateAchievementProgress(Player player, Achievement achievement, AchievementCategory category, IAchievementType type, int progress) {
         achievementManager.updateAchievementProgress(player, achievement, category, type, progress);
     }
 
@@ -53,5 +53,10 @@ public class AchievementServiceImpl implements AchievementService {
     @Override
     public int getAmountDone(Player player, AchievementCategory category) {
         return achievementManager.getAmountDone(player, category);
+    }
+
+    @Override
+    public IAchievementType getAchievementType(Achievement achievement, String typeName) {
+        return achievement.getAchievementType(typeName);
     }
 }

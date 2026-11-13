@@ -13,7 +13,7 @@ import com.wolfdrache.party.general.FileManager;
 import com.wolfdrache.party.general.MessageHelper;
 import com.wolfdrache.serverapi.achievements.AchievementCategory;
 import com.wolfdrache.serverapi.achievements.AchievementProgress;
-import com.wolfdrache.serverapi.achievements.Achievement.IAchievementTye;
+import com.wolfdrache.serverapi.achievements.Achievement.IAchievementType;
 import com.wolfdrache.serverapi.achievements.Achievement;
 
 public class AchievementManager {
@@ -30,20 +30,20 @@ public class AchievementManager {
     public boolean registerAchievement(AchievementCategory category, Achievement achievement) {
         if (category.hasAchievement(achievement.getId())) return false;
         achievements.get(category).add(achievement);
-        achievement.setProgress(fileManager.getAchievementProgress(category, achievement.getId()));
+        achievement.setProgress(fileManager.getAchievementProgress(category, achievement));
         category.addAchievement(achievement.getId());
         return true;
     }
 
-    public void updateAchievementProgress(Player player, Achievement achievement, AchievementCategory category, IAchievementTye type, int progress) {
+    public void updateAchievementProgress(Player player, Achievement achievement, AchievementCategory category, IAchievementType type, int progress) {
         if (achievement.isCompleted(player)) {
             return;
         }
-        Map<OfflinePlayer, Map<String, AchievementProgress>> progressMap = achievement.getProgress();
-        Map<String, AchievementProgress> playerProgress = progressMap.getOrDefault(player, new HashMap<>());
-        AchievementProgress currentProgress = playerProgress.getOrDefault(type.getName(), new AchievementProgress(player, 0, false));
+        Map<OfflinePlayer, Map<IAchievementType, AchievementProgress>> progressMap = achievement.getProgress();
+        Map<IAchievementType, AchievementProgress> playerProgress = progressMap.getOrDefault(player, new HashMap<>());
+        AchievementProgress currentProgress = playerProgress.getOrDefault(type, new AchievementProgress(player, 0, false));
         int newProgress = currentProgress.getProgress() + progress;
-        playerProgress.put(type.getName(), new AchievementProgress(player, newProgress, currentProgress.isCompleted()));
+        playerProgress.put(type, new AchievementProgress(player, newProgress, currentProgress.isCompleted()));
         progressMap.put(player, playerProgress);
         fileManager.saveAchievementProgress(category, achievement);
         if (newProgress >= achievement.getMaxProgress(type)) {
@@ -55,11 +55,11 @@ public class AchievementManager {
         achievements.putIfAbsent(category, new ArrayList<>());
     }
 
-    public void unlockAchievementType(Player player, Achievement achievement, AchievementCategory category, IAchievementTye type) {
+    public void unlockAchievementType(Player player, Achievement achievement, AchievementCategory category, IAchievementType type) {
         if (!achievement.isCompleted(player)) {
-            Map<String, AchievementProgress> playerProgress = achievement.getProgress().getOrDefault(player, new HashMap<>());
-            AchievementProgress currentProgress = playerProgress.getOrDefault(type.getName(), new AchievementProgress(player, 0, false));
-            playerProgress.put(type.getName(), new AchievementProgress(player, currentProgress.getProgress(), true));
+            Map<IAchievementType, AchievementProgress> playerProgress = achievement.getProgress().getOrDefault(player, new HashMap<>());
+            AchievementProgress currentProgress = playerProgress.getOrDefault(type, new AchievementProgress(player, 0, false));
+            playerProgress.put(type, new AchievementProgress(player, currentProgress.getProgress(), true));
             achievement.getProgress().put(player, playerProgress);
             fileManager.saveAchievementProgress(category, achievement);
             if (achievement.isCompleted(player)) {
