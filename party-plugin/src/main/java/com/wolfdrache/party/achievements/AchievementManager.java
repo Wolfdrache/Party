@@ -1,6 +1,7 @@
 package com.wolfdrache.party.achievements;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,6 +48,7 @@ public class AchievementManager {
         boolean anyUnlocked = false;
         for (Map.Entry<OfflinePlayer, AchievementProgress> entry : progressMap.entrySet()) {
             OfflinePlayer player = entry.getKey();
+            if (category.isCompleted(player, achievement)) continue;
             AchievementProgress playerProgress = entry.getValue();
             boolean completed = true;
             for (IAchievementType type : achievement.getTypes()) {
@@ -100,7 +102,9 @@ public class AchievementManager {
     }
 
     public List<Achievement> getAchievements(AchievementCategory category) {
-        return new ArrayList<>(achievements.getOrDefault(category, new HashMap<>()).values().stream().flatMap(List::stream).collect(Collectors.toSet()));
+        List<Achievement> achievementList = new ArrayList<>(achievements.getOrDefault(category, new HashMap<>()).values().stream().flatMap(List::stream).collect(Collectors.toSet()));
+        achievementList.sort(Comparator.comparing(Achievement::getId));
+        return achievementList;
     }
 
     public List<AchievementCategory> getCategories() {

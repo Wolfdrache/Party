@@ -9,7 +9,6 @@ import java.util.Set;
 
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Player;
 
 import com.wolfdrache.serverapi.achievements.Achievement.IAchievementType;
 
@@ -77,7 +76,7 @@ public class AchievementCategory {
         return types.get(typeName);
     }
 
-    public boolean isCompleted(Player player, Achievement achievement) {
+    public boolean isCompleted(OfflinePlayer player, Achievement achievement) {
         AchievementProgress playerProgress = getProgress(player);
         return playerProgress.isCompleted(achievement.getId());
     }
