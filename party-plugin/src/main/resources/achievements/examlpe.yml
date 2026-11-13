@@ -1,5 +1,5 @@
-<achievement-id>:
-  <player-uuid>:
-    <IAchievementTye>:
-      progress: <value>
-      completed: <true/false>
+<player-uuid>:
+  progress: 
+    <IAchievementTye>: <progress>
+  completedIds: 
+    - <achievement-id>

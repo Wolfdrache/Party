@@ -3,6 +3,7 @@ package com.wolfdrache.party.general;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -20,7 +21,6 @@ import com.wolfdrache.party.friends.PlayerFriends;
 import com.wolfdrache.party.general.ConfigurationManager.PlayerConfiguration;
 import com.wolfdrache.serverapi.achievements.AchievementCategory;
 import com.wolfdrache.serverapi.achievements.AchievementProgress;
-import com.wolfdrache.serverapi.achievements.Achievement;
 import com.wolfdrache.serverapi.achievements.Achievement.IAchievementType;
 import com.wolfdrache.serverapi.configuration.ConfigurationService.FriendRequestMode;
 import com.wolfdrache.serverapi.configuration.ConfigurationService.MsgMode;
@@ -293,7 +293,7 @@ public class FileManager {
         }
     }
 
-    public Map<OfflinePlayer, Map<IAchievementType, AchievementProgress>> getAchievementProgress(AchievementCategory category, Achievement achievement) {
+    public Map<OfflinePlayer, AchievementProgress> getAchievementProgress(AchievementCategory category) {
         File achievementFile = new File(achievementsFolder, category.getName() + ".yml");
         if (!achievementFile.exists()) {
             try {
@@ -305,23 +305,30 @@ public class FileManager {
         }
         YamlConfiguration config = YamlConfiguration.loadConfiguration(achievementFile);
 
-        ConfigurationSection achievementSection = config.getConfigurationSection(String.valueOf(achievement.getId()));
-        if (achievementSection == null) {
-            return new HashMap<>();
-        }
-
-        Map<OfflinePlayer, Map<IAchievementType, AchievementProgress>> progressMap = new HashMap<>();
-        for (String key : achievementSection.getKeys(false)) {
+        Map<OfflinePlayer, AchievementProgress> progressMap = new HashMap<>();
+        for (String key : config.getKeys(false)) {
             try {
                 OfflinePlayer player = Bukkit.getOfflinePlayer(UUID.fromString(key));
-                ConfigurationSection playerSection = achievementSection.getConfigurationSection(key);
-                for (String typeKey : playerSection.getKeys(false)) {
-                    IAchievementType type = achievement.getAchievementType(typeKey);
-                    if (type == null) continue;
-                    int progress = playerSection.getInt(typeKey + ".progress", 0);
-                    boolean completed = playerSection.getBoolean(typeKey + ".completed", false);
-                    progressMap.computeIfAbsent(player, k -> new HashMap<>()).put(type, new AchievementProgress(player, progress, completed));
+                ConfigurationSection playerSection = config.getConfigurationSection(key);
+                Set<Integer> completed = new HashSet<>();
+                List<String> completedIds = playerSection.getStringList("completedIds");
+                for (String completedId : completedIds) {
+                    try {
+                        completed.add(Integer.parseInt(completedId));
+                    } catch (NumberFormatException ignored) {
+                    }
                 }
+                Map<IAchievementType, Integer> progress = new HashMap<>();
+                ConfigurationSection progressSection = playerSection.getConfigurationSection("progress");
+                if (progressSection != null) {
+                    for (String typeName : progressSection.getKeys(false)) {
+                        IAchievementType type = category.getAchievementType(typeName);
+                        if (type != null) {
+                            progress.put(type, progressSection.getInt(typeName));
+                        }
+                    }
+                }
+                progressMap.put(player, new AchievementProgress(player, progress, completed));
             } catch (IllegalArgumentException ignored) {
                 // skip malformed entries
             }
@@ -329,27 +336,30 @@ public class FileManager {
         return progressMap;
     }
 
-    public void saveAchievementProgress(AchievementCategory category, Achievement achievement) {
+    public void saveAchievementProgress(AchievementCategory category) {
         File achievementFile = new File(achievementsFolder, category.getName() + ".yml");
         YamlConfiguration config = YamlConfiguration.loadConfiguration(achievementFile);
-
-        String achievementId = String.valueOf(achievement.getId());
-        ConfigurationSection achievementSection = config.getConfigurationSection(achievementId);
-        if (achievementSection == null) {
-            achievementSection = config.createSection(achievementId);
-        }
-
-        for (Map.Entry<OfflinePlayer, Map<IAchievementType, AchievementProgress>> entry : achievement.getProgress().entrySet()) {
+        Map<OfflinePlayer, AchievementProgress> progressMap = category.getProgress();
+        for (Map.Entry<OfflinePlayer, AchievementProgress> entry : progressMap.entrySet()) {
             OfflinePlayer player = entry.getKey();
-            Map<IAchievementType, AchievementProgress> playerProgress = entry.getValue();
-            for (Map.Entry<IAchievementType, AchievementProgress> typeEntry : playerProgress.entrySet()) {
-                IAchievementType type = typeEntry.getKey();
-                AchievementProgress progress = typeEntry.getValue();
-                achievementSection.set(player.getUniqueId().toString() + "." + type.getName() + ".progress", progress.getProgress());
-                achievementSection.set(player.getUniqueId().toString() + "." + type.getName() + ".completed", progress.isCompleted());
+            AchievementProgress progress = entry.getValue();
+            ConfigurationSection playerSection = config.getConfigurationSection(player.getUniqueId().toString());
+            if (playerSection == null) {
+                playerSection = config.createSection(player.getUniqueId().toString());
             }
+            ConfigurationSection progressSection = playerSection.getConfigurationSection("progress");
+            if (progressSection == null) {
+                progressSection = playerSection.createSection("progress");
+            }
+            for (Map.Entry<IAchievementType, Integer> progressEntry : progress.getProgress().entrySet()) {
+                progressSection.set(progressEntry.getKey().getName(), progressEntry.getValue());
+            }
+            List<String> completedIds = new ArrayList<>();
+            for (Integer completedId : progress.getCompleted()) {
+                completedIds.add(String.valueOf(completedId));
+            }
+            playerSection.set("completedIds", completedIds);
         }
-
         try {
             config.save(achievementFile);
         } catch (Exception e) {

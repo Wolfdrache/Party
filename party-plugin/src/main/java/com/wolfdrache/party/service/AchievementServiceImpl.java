@@ -1,6 +1,7 @@
 package com.wolfdrache.party.service;
 
 import java.util.List;
+import java.util.Set;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -19,8 +20,8 @@ public class AchievementServiceImpl implements AchievementService {
     }
 
     @Override 
-    public AchievementCategory registerAchievementCategory(String name, Material icon, String displayName) {
-        AchievementCategory category = new AchievementCategory(name, icon, displayName);
+    public AchievementCategory registerAchievementCategory(String name, Material icon, String displayName, Set<IAchievementType> types) {
+        AchievementCategory category = new AchievementCategory(name, icon, displayName, types); 
         achievementManager.registerCategory(category);
         return category;
     }
@@ -31,13 +32,8 @@ public class AchievementServiceImpl implements AchievementService {
     }
 
     @Override
-    public void unlockAchievementType(Player player, Achievement achievement, AchievementCategory category, IAchievementType type) {
-        achievementManager.unlockAchievementType(player, achievement, category, type);
-    }
-
-    @Override
-    public void updateAchievementProgress(Player player, Achievement achievement, AchievementCategory category, IAchievementType type, int progress) {
-        achievementManager.updateAchievementProgress(player, achievement, category, type, progress);
+    public void updateAchievementTypeProgress(Player player, AchievementCategory category, IAchievementType type, int progress) {
+        achievementManager.updateAchievementProgress(player, category, type, progress);
     }
 
     @Override
@@ -56,7 +52,7 @@ public class AchievementServiceImpl implements AchievementService {
     }
 
     @Override
-    public IAchievementType getAchievementType(Achievement achievement, String typeName) {
-        return achievement.getAchievementType(typeName);
+    public IAchievementType getAchievementType(AchievementCategory category, String typeName) {
+        return category.getAchievementType(typeName);
     }
 }

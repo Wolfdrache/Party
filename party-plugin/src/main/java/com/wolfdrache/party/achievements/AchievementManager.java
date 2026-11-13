@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
-import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import com.wolfdrache.party.general.CoinManager;
@@ -20,7 +20,7 @@ public class AchievementManager {
     private final FileManager fileManager;
     private final CoinManager coinManager;
     
-    private final Map<AchievementCategory, List<Achievement>> achievements = new HashMap<>();
+    private final Map<AchievementCategory, Map<IAchievementType, List<Achievement>>> achievements = new HashMap<>();
 
     public AchievementManager(FileManager fileManager, CoinManager coinManager) {
         this.fileManager = fileManager;
@@ -29,49 +29,50 @@ public class AchievementManager {
 
     public boolean registerAchievement(AchievementCategory category, Achievement achievement) {
         if (category.hasAchievement(achievement.getId())) return false;
-        achievements.get(category).add(achievement);
-        achievement.setProgress(fileManager.getAchievementProgress(category, achievement));
+        Map<IAchievementType, List<Achievement>> categoryMap = achievements.computeIfAbsent(category, k -> new HashMap<>());
+        for (IAchievementType type : achievement.getTypes()) {
+            List<Achievement> typeList = categoryMap.computeIfAbsent(type, k -> new ArrayList<>());
+            typeList.add(achievement);
+        }
         category.addAchievement(achievement.getId());
         return true;
     }
 
-    public void updateAchievementProgress(Player player, Achievement achievement, AchievementCategory category, IAchievementType type, int progress) {
-        if (achievement.isCompleted(player)) {
-            return;
+    public void updateAchievementProgress(Player player, AchievementCategory category, IAchievementType type, int progress) {
+        AchievementProgress playerProgress = category.getProgress(player);
+        int newProgress = playerProgress.getProgress(type) + progress;
+        playerProgress.setProgress(type, newProgress);
+        for (Achievement achievement : achievements.get(category).getOrDefault(type, new ArrayList<>())) {
+            if (category.isCompleted(player, achievement)) continue;
+            boolean completed = true;
+            for (IAchievementType acType : achievement.getTypes()) {
+                if (playerProgress.getProgress(acType) < achievement.getMaxProgress(acType)) {
+                    completed = false;
+                    break;
+                }
+            }
+            if (completed) {
+                unlockAchievement(player, achievement, category);
+            }
         }
-        Map<OfflinePlayer, Map<IAchievementType, AchievementProgress>> progressMap = achievement.getProgress();
-        Map<IAchievementType, AchievementProgress> playerProgress = progressMap.getOrDefault(player, new HashMap<>());
-        AchievementProgress currentProgress = playerProgress.getOrDefault(type, new AchievementProgress(player, 0, false));
-        int newProgress = currentProgress.getProgress() + progress;
-        playerProgress.put(type, new AchievementProgress(player, newProgress, currentProgress.isCompleted()));
-        progressMap.put(player, playerProgress);
-        fileManager.saveAchievementProgress(category, achievement);
-        if (newProgress >= achievement.getMaxProgress(type)) {
-            unlockAchievementType(player, achievement, category, type);
-        }
+        category.setProgress(player, playerProgress);
+        fileManager.saveAchievementProgress(category);
     }
 
     public void registerCategory(AchievementCategory category) {
-        achievements.putIfAbsent(category, new ArrayList<>());
+        achievements.putIfAbsent(category, new HashMap<>());
+        category.setProgress(fileManager.getAchievementProgress(category));
     }
 
-    public void unlockAchievementType(Player player, Achievement achievement, AchievementCategory category, IAchievementType type) {
-        if (!achievement.isCompleted(player)) {
-            Map<IAchievementType, AchievementProgress> playerProgress = achievement.getProgress().getOrDefault(player, new HashMap<>());
-            AchievementProgress currentProgress = playerProgress.getOrDefault(type, new AchievementProgress(player, 0, false));
-            playerProgress.put(type, new AchievementProgress(player, currentProgress.getProgress(), true));
-            achievement.getProgress().put(player, playerProgress);
-            fileManager.saveAchievementProgress(category, achievement);
-            if (achievement.isCompleted(player)) {
-                coinManager.depositCoins(player, achievement.getReward());
-                MessageHelper.sendMessage(player, MessageHelper.Type.ACHIEVEMENT, "§7Du hast das Achievement§8: §e" + achievement.getName() + " §7freigeschaltet!");
-                MessageHelper.sendMessage(player, MessageHelper.Type.ACHIEVEMENT, "§7Du erhältst §6" + achievement.getReward() + " §7Coins!");
-            }
-        }
+    public void unlockAchievement(Player player, Achievement achievement, AchievementCategory category) {
+            category.completeAchievement(player, achievement);
+            coinManager.depositCoins(player, achievement.getReward());
+            MessageHelper.sendMessage(player, MessageHelper.Type.ACHIEVEMENT, "§7Du hast das Achievement§8: §e" + achievement.getName() + " §7freigeschaltet!");
+            MessageHelper.sendMessage(player, MessageHelper.Type.ACHIEVEMENT, "§7Du erhältst §6" + achievement.getReward() + " §7Coins!");
     }
 
     public List<Achievement> getAchievements(AchievementCategory category) {
-        return achievements.getOrDefault(category, new ArrayList<>());
+        return new ArrayList<>(achievements.getOrDefault(category, new HashMap<>()).values().stream().flatMap(List::stream).collect(Collectors.toSet()));
     }
 
     public List<AchievementCategory> getCategories() {
@@ -80,9 +81,9 @@ public class AchievementManager {
 
     public int getAmountDone(Player player, AchievementCategory category) {
         int amountDone = 0;
-        List<Achievement> achievementList = achievements.getOrDefault(category, new ArrayList<>());
+        List<Achievement> achievementList = getAchievements(category);
         for (Achievement achievement : achievementList) {
-            if (achievement.isCompleted(player)) {
+            if (category.isCompleted(player, achievement)) {
                 amountDone++;
             }
         }
