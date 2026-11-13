@@ -68,7 +68,12 @@ public class AchievementManager {
     public void updateAchievementProgress(Player player, AchievementCategory category, IAchievementType type, int progress) {
         AchievementProgress playerProgress = category.getProgress(player);
         category.setProgress(player, playerProgress);
-        int newProgress = playerProgress.getProgress(type) + progress;
+        int newProgress;
+        if (type.getSyncFunction() != null) {
+            newProgress = type.getSyncFunction().apply(player);
+        } else {
+            newProgress = playerProgress.getProgress(type) + progress;
+        }
         playerProgress.setProgress(type, newProgress);
         for (Achievement achievement : achievements.get(category).getOrDefault(type, new ArrayList<>())) {
             if (category.isCompleted(player, achievement)) continue;

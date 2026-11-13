@@ -351,8 +351,8 @@ public class FileManager {
             if (progressSection == null) {
                 progressSection = playerSection.createSection("progress");
             }
-            for (Map.Entry<IAchievementType, Integer> progressEntry : progress.getProgress().entrySet()) {
-                progressSection.set(progressEntry.getKey().getName(), progressEntry.getValue());
+            for (IAchievementType achievementType : progress.getProgress().keySet()) {
+                progressSection.set(achievementType.getName(), progress.getProgress(achievementType));
             }
             List<String> completedIds = new ArrayList<>();
             for (Integer completedId : progress.getCompleted()) {
