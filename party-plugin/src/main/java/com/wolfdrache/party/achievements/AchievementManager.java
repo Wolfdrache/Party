@@ -40,6 +40,7 @@ public class AchievementManager {
 
     public void updateAchievementProgress(Player player, AchievementCategory category, IAchievementType type, int progress) {
         AchievementProgress playerProgress = category.getProgress(player);
+        category.setProgress(player, playerProgress);
         int newProgress = playerProgress.getProgress(type) + progress;
         playerProgress.setProgress(type, newProgress);
         for (Achievement achievement : achievements.get(category).getOrDefault(type, new ArrayList<>())) {
@@ -55,7 +56,6 @@ public class AchievementManager {
                 unlockAchievement(player, achievement, category);
             }
         }
-        category.setProgress(player, playerProgress);
         fileManager.saveAchievementProgress(category);
     }
 
