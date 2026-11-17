@@ -49,7 +49,7 @@ class ArmorstandLB {
         this.itemInOffHand = itemInOffHand;
     }
 
-    public void summon(int rank) {
+    public void summon(Plugin plugin) {
         armorStand = (ArmorStand) location.getWorld().spawnEntity(location, EntityType.ARMOR_STAND);
         armorStand.setHeadPose(headPose);
         armorStand.setBodyPose(bodyPose);
@@ -69,7 +69,7 @@ class ArmorstandLB {
         armorStand.getEquipment().setBoots(boots);
         armorStand.getEquipment().setItemInMainHand(itemInMainHand);
         armorStand.getEquipment().setItemInOffHand(itemInOffHand);
-        armorStand.getPersistentDataContainer().set(LEADERBOARD_KEY, PersistentDataType.INTEGER, rank);
+        armorStand.getPersistentDataContainer().set(LEADERBOARD_KEY, PersistentDataType.STRING, plugin.getName());
 
         statisticArmorStand = (ArmorStand) location.getWorld().spawnEntity(location.clone().add(0, small ? 1.5 : 2.5, 0), EntityType.ARMOR_STAND);
         statisticArmorStand.setVisible(false);
@@ -78,11 +78,19 @@ class ArmorstandLB {
         statisticArmorStand.setBasePlate(false);
         statisticArmorStand.setCustomNameVisible(true);
         statisticArmorStand.setMarker(true);
-        statisticArmorStand.getPersistentDataContainer().set(LEADERBOARD_KEY, PersistentDataType.INTEGER, rank);
+        statisticArmorStand.getPersistentDataContainer().set(LEADERBOARD_KEY, PersistentDataType.STRING, plugin.getName());
+    }
+
+    public static boolean isLeaderboardArmorstand(ArmorStand armorStand, Plugin plugin) {
+        if (armorStand == null) return false;
+        if (armorStand.getPersistentDataContainer().has(LEADERBOARD_KEY, PersistentDataType.STRING)) {
+            return armorStand.getPersistentDataContainer().get(LEADERBOARD_KEY, PersistentDataType.STRING).equals(plugin.getName());
+        }
+        return false;
     }
 
     public static boolean isLeaderboardArmorstand(ArmorStand armorStand) {
         if (armorStand == null) return false;
-        return armorStand.getPersistentDataContainer().has(LEADERBOARD_KEY, PersistentDataType.INTEGER);
+        return armorStand.getPersistentDataContainer().has(LEADERBOARD_KEY, PersistentDataType.STRING);
     }
 }

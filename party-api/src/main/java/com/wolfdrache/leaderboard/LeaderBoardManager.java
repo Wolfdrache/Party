@@ -28,24 +28,26 @@ public class LeaderBoardManager {
     private final List<UUID> leaderboard = new ArrayList<>();
 
     private final Map<Integer, ArmorstandLB> armorstandMap = new HashMap<>();
+    private final Plugin plugin;
 
     public LeaderBoardManager(Plugin plugin, Function<OfflinePlayer, IPlayerStats> playerStatsProvider) {
+        this.plugin = plugin;
         this.playerStatsProvider = playerStatsProvider;
         LeaderBoardFileManager leaderBoardFileManager = new LeaderBoardFileManager(plugin);
         this.leaderboard.addAll(leaderBoardFileManager.getLeaderboard());
         sortLeaderboard();
         this.armorstandMap.putAll(leaderBoardFileManager.loadArmorstandLB());
-        removeOldArmorstands();
-        updateArmorstands();
+        removeOldArmorstands(plugin);
+        updateArmorstands(plugin);
     }
 
-    public void removeOldArmorstands() {
+    public void removeOldArmorstands(Plugin plugin) {
         for (ArmorstandLB armLB : armorstandMap.values()) {
             if (armLB == null || armLB.location == null || armLB.location.getWorld() == null) continue;
             Chunk armorstandChunk = armLB.location.getChunk();
             armorstandChunk.load();
             for (ArmorStand armorStand : armLB.location.getWorld().getEntitiesByClass(ArmorStand.class)) {
-                if (ArmorstandLB.isLeaderboardArmorstand(armorStand)) {
+                if (ArmorstandLB.isLeaderboardArmorstand(armorStand, plugin)) {
                     armorStand.remove();
                 }
             }
@@ -69,24 +71,24 @@ public class LeaderBoardManager {
 
     public void updateLeaderboard() {
         sortLeaderboard();
-        updateArmorstands();
+        updateArmorstands(plugin);
     }
 
     public int getRank(OfflinePlayer player) {
         return leaderboard.indexOf(player.getUniqueId()) + 1;
     }
 
-    private void updateArmorstands() {
+    private void updateArmorstands(Plugin plugin) {
         for (Map.Entry<Integer, ArmorstandLB> entry : armorstandMap.entrySet()) {
-            updateArmorstand(entry.getValue(), entry.getKey());
+            updateArmorstand(entry.getValue(), entry.getKey(), plugin);
         }
     }
 
-    private void updateArmorstand(ArmorstandLB armorstandLB, int rank) {
+    private void updateArmorstand(ArmorstandLB armorstandLB, int rank, Plugin plugin) {
         if (leaderboard.size() < rank) return;
         if (armorstandLB == null) return;
         if (armorstandLB.armorStand == null || armorstandLB.armorStand.isDead()) {
-            armorstandLB.summon(rank);
+            armorstandLB.summon(plugin);
         }
         OfflinePlayer topPlayer = Bukkit.getOfflinePlayer(leaderboard.get(rank - 1));
         ItemStack playerHead = createPlayerHead(topPlayer);
