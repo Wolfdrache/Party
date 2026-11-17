@@ -71,7 +71,7 @@ class ArmorstandLB {
         armorStand.getEquipment().setItemInOffHand(itemInOffHand);
         armorStand.getPersistentDataContainer().set(LEADERBOARD_KEY, PersistentDataType.INTEGER, rank);
 
-        statisticArmorStand = (ArmorStand) location.getWorld().spawnEntity(location.clone().add(0, small ? 1.5 : 2.5, 0), EntityType.ARMOR_STAND);
+        statisticArmorStand = (ArmorStand) location.getWorld().spawnEntity(location.clone().add(0, small ? 1.25 : 2.25, 0), EntityType.ARMOR_STAND);
         statisticArmorStand.setVisible(false);
         statisticArmorStand.setInvulnerable(true);
         statisticArmorStand.setGravity(false);
