@@ -2,6 +2,7 @@ package com.wolfdrache.leaderboard;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -38,6 +39,19 @@ class LeaderBoardFileManager {
             leaderboard.add(UUID.fromString(uuid));
         }
         return leaderboard;
+    }
+
+    Map<Integer, ArmorstandLB> loadArmorstandLB() {
+        YamlConfiguration config = YamlConfiguration.loadConfiguration(armorstandsFile);
+        Map<Integer, ArmorstandLB> armorstandMap = new HashMap<>();
+        for (String key : config.getConfigurationSection("rank").getKeys(false)) {
+            int rank = Integer.parseInt(key);
+            ArmorstandLB armorstandLB = loadArmorstandLB(rank);
+            if (armorstandLB != null) {
+                armorstandMap.put(rank, armorstandLB);
+            }
+        }
+        return armorstandMap;
     }
 
     ArmorstandLB loadArmorstandLB(int rank) {

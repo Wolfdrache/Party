@@ -1,7 +1,9 @@
 package com.wolfdrache.leaderboard;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.function.Function;
 
@@ -25,27 +27,20 @@ public class LeaderBoardManager {
 
     private final List<UUID> leaderboard = new ArrayList<>();
 
-    private final ArmorstandLB armorstandRank1;
-    private final ArmorstandLB armorstandRank2;
-    private final ArmorstandLB armorstandRank3;
+    private final Map<Integer, ArmorstandLB> armorstandMap = new HashMap<>();
 
     public LeaderBoardManager(Plugin plugin, Function<OfflinePlayer, IPlayerStats> playerStatsProvider) {
         this.playerStatsProvider = playerStatsProvider;
         LeaderBoardFileManager leaderBoardFileManager = new LeaderBoardFileManager(plugin);
-
         this.leaderboard.addAll(leaderBoardFileManager.getLeaderboard());
         sortLeaderboard();
-        this.armorstandRank1 = leaderBoardFileManager.loadArmorstandLB(1);
-        this.armorstandRank2 = leaderBoardFileManager.loadArmorstandLB(2);
-        this.armorstandRank3 = leaderBoardFileManager.loadArmorstandLB(3);
-
+        this.armorstandMap.putAll(leaderBoardFileManager.loadArmorstandLB());
         removeOldArmorstands();
-
         updateArmorstands();
     }
 
     public void removeOldArmorstands() {
-        for (ArmorstandLB armLB : new ArmorstandLB[]{armorstandRank1, armorstandRank2, armorstandRank3}) {
+        for (ArmorstandLB armLB : armorstandMap.values()) {
             if (armLB == null || armLB.location == null || armLB.location.getWorld() == null) continue;
             Chunk armorstandChunk = armLB.location.getChunk();
             armorstandChunk.load();
@@ -74,7 +69,6 @@ public class LeaderBoardManager {
 
     public void updateLeaderboard() {
         sortLeaderboard();
-
         updateArmorstands();
     }
 
@@ -83,9 +77,9 @@ public class LeaderBoardManager {
     }
 
     private void updateArmorstands() {
-        updateArmorstand(armorstandRank1, 1);
-        updateArmorstand(armorstandRank2, 2);
-        updateArmorstand(armorstandRank3, 3);
+        for (Map.Entry<Integer, ArmorstandLB> entry : armorstandMap.entrySet()) {
+            updateArmorstand(entry.getValue(), entry.getKey());
+        }
     }
 
     private void updateArmorstand(ArmorstandLB armorstandLB, int rank) {
@@ -100,6 +94,7 @@ public class LeaderBoardManager {
         armorstandLB.armorStand.customName(createComponent("§6" + rank + ". " + topPlayer.getName() + " §7- §e" + points));
         EntityEquipment equipment = armorstandLB.armorStand.getEquipment();
         equipment.setHelmet(playerHead);
+        armorstandLB.statisticArmorStand.customName(createComponent("§e" + playerStatsProvider.apply(topPlayer).getPointsStatistics()));
     }
 
     private ItemStack createPlayerHead(OfflinePlayer player) {

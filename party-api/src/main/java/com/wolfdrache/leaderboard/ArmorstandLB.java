@@ -30,6 +30,7 @@ class ArmorstandLB {
     private final ItemStack itemInMainHand;
     private final ItemStack itemInOffHand;
     ArmorStand armorStand;
+    ArmorStand statisticArmorStand;
 
     ArmorstandLB(EulerAngle headPose, EulerAngle bodyPose, EulerAngle leftArmPose, EulerAngle rightArmPose, EulerAngle leftLegPose, EulerAngle rightLegPose, boolean small, Location location, ItemStack chestplate, ItemStack leggings, ItemStack boots, ItemStack itemInMainHand, ItemStack itemInOffHand) {
         this.headPose = headPose;
@@ -69,6 +70,15 @@ class ArmorstandLB {
         armorStand.getEquipment().setItemInMainHand(itemInMainHand);
         armorStand.getEquipment().setItemInOffHand(itemInOffHand);
         armorStand.getPersistentDataContainer().set(LEADERBOARD_KEY, PersistentDataType.INTEGER, rank);
+
+        statisticArmorStand = (ArmorStand) location.getWorld().spawnEntity(location.add(0, small ? 1.5 : 2.5, 0), EntityType.ARMOR_STAND);
+        statisticArmorStand.setVisible(false);
+        statisticArmorStand.setInvulnerable(true);
+        statisticArmorStand.setGravity(false);
+        statisticArmorStand.setBasePlate(false);
+        statisticArmorStand.setCustomNameVisible(true);
+        statisticArmorStand.setMarker(true);
+        statisticArmorStand.getPersistentDataContainer().set(LEADERBOARD_KEY, PersistentDataType.INTEGER, rank);
     }
 
     public static boolean isLeaderboardArmorstand(ArmorStand armorStand) {
