@@ -235,12 +235,13 @@ public class FriendsManager {
         Bukkit.getPluginManager().callEvent(updateEvent);
     }
 
-    public boolean areFriends(Player player, OfflinePlayer target) {
+    public boolean areFriends(OfflinePlayer player, OfflinePlayer target) {
         PlayerFriends playerFriends = getPlayerFriends(player);
         return playerFriends.friends.stream().map(fd -> fd.friend).toList().contains(target);
     }
 
-    public boolean haveCommonFriends(Player player, OfflinePlayer target) {
+    public boolean haveCommonFriends(OfflinePlayer player, OfflinePlayer target) {
+        if (areFriends(player, target)) return true;
         PlayerFriends playerFriends = getPlayerFriends(player);
         PlayerFriends targetFriends = getPlayerFriends(target);
         Set<OfflinePlayer> playerFriendSet = playerFriends.friends.stream().map(fd -> fd.friend).collect(Collectors.toSet());

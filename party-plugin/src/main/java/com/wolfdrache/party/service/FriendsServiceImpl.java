@@ -50,4 +50,14 @@ public class FriendsServiceImpl implements FriendsService {
     public void removeFriend(Player player, OfflinePlayer friend) {
         friendsManager.removeFriend(player, friend);
     }
+
+    @Override
+    public boolean areFriends(OfflinePlayer player, OfflinePlayer friend) {
+        return friendsManager.areFriends(player, friend);
+    }
+
+    @Override
+    public boolean haveCommonFriends(OfflinePlayer player, OfflinePlayer friend) {
+        return friendsManager.haveCommonFriends(player, friend);
+    }
 }

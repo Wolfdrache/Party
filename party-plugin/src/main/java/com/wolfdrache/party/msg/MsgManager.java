@@ -36,7 +36,7 @@ public class MsgManager {
                 }
                 break;
             case COMMON_FRIEND:
-                if (!friendsManager.haveCommonFriends(player, target) && !friendsManager.areFriends(player, target)) {
+                if (!friendsManager.haveCommonFriends(player, target)) {
                     MessageHelper.sendMessage(player, MessageHelper.Type.MSG, Helper.getPlayerRankName(target) + "§7 empfängt nur Nachrichten von gemeinsamen Freunden.");
                     return;
                 }

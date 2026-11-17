@@ -39,7 +39,7 @@ public class PartyManager {
             case ALL:
                 break;
             case COMMON_FRIEND:
-                if (!friendsManager.haveCommonFriends(player, invitedPlayer) && !friendsManager.areFriends(player, invitedPlayer)) {
+                if (!friendsManager.haveCommonFriends(player, invitedPlayer)) {
                     MessageHelper.sendMessage(player, MessageHelper.Type.PARTY, "§7" + Helper.getPlayerRankName(invitedPlayer) + "§c akzeptiert nur Party-Einladungen von gemeinsamen Freunden.");
                     return;
                 }

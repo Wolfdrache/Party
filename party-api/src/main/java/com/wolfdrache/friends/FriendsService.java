@@ -13,4 +13,6 @@ public interface FriendsService {
     void replyFriendRequest(Player player, OfflinePlayer requester, boolean accept);
     void sendFriendRequest(Player player, OfflinePlayer target);
     void removeFriend(Player player, OfflinePlayer friend);
+    boolean areFriends(OfflinePlayer player, OfflinePlayer friend);
+    boolean haveCommonFriends(OfflinePlayer player, OfflinePlayer friend);
 }
