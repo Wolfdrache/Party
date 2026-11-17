@@ -94,7 +94,8 @@ public class LeaderBoardManager {
         armorstandLB.armorStand.customName(createComponent("§6" + rank + ". " + topPlayer.getName() + " §7- §e" + points));
         EntityEquipment equipment = armorstandLB.armorStand.getEquipment();
         equipment.setHelmet(playerHead);
-        armorstandLB.statisticArmorStand.customName(createComponent("§e" + playerStatsProvider.apply(topPlayer).getPointsStatistics()));
+        double pointsStatistics = playerStatsProvider.apply(topPlayer).getPointsStatistics();
+        armorstandLB.statisticArmorStand.customName(createComponent("§e" + String.format("%.2f", pointsStatistics) + "%"));
     }
 
     private ItemStack createPlayerHead(OfflinePlayer player) {

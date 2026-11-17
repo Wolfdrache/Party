@@ -2,5 +2,5 @@ package com.wolfdrache.leaderboard;
 
 public interface IPlayerStats {
     int getPoints();
-    String getPointsStatistics();
+    double getPointsStatistics();
 }
