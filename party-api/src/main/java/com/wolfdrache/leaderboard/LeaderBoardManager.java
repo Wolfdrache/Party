@@ -78,6 +78,17 @@ public class LeaderBoardManager {
         return leaderboard.indexOf(player.getUniqueId()) + 1;
     }
 
+    public int getPointsOfRank(int rank) {
+        if (leaderboard.size() < rank) return 0;
+        OfflinePlayer player = Bukkit.getOfflinePlayer(leaderboard.get(rank - 1));
+        return playerStatsProvider.apply(player).getPoints();
+    }
+
+    public int getLowestLeaderboardRank() {
+        if (armorstandMap.isEmpty()) return 1;
+        return armorstandMap.keySet().stream().max(Integer::compareTo).orElse(1);
+    }
+
     private void updateArmorstands(Plugin plugin) {
         for (Map.Entry<Integer, ArmorstandLB> entry : armorstandMap.entrySet()) {
             updateArmorstand(entry.getValue(), entry.getKey(), plugin);
