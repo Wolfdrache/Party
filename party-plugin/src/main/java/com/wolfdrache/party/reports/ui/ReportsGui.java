@@ -54,6 +54,7 @@ public class ReportsGui implements Listener {
         Map<OfflinePlayer, PlayerReports> reports = reportManager.getAllReports();
         List<PlayerReports> playerReportsList = new ArrayList<>(reports.values());
         playerReportsList.sort((a, b) -> b.receivedReportsOpen.size() - a.receivedReportsOpen.size());
+        playerReportsList.removeIf(playerReports -> playerReports.receivedReportsOpen.isEmpty() && playerReports.receivedReportsClosed.isEmpty());
         playerReportsList = playerReportsList.subList(page * 45, Math.min((page + 1) * 45, playerReportsList.size()));
         int size = getSize(playerReportsList);
         
