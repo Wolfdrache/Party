@@ -96,4 +96,17 @@ public class GameCommandManager {
         }
         return items;
     }
+
+    public boolean isPlayingAnyGame(Player player) {
+        return playerPluginMap.containsKey(player);
+    }
+
+    public void leaveCurrentGame(Player player) {
+        Plugin plugin = playerPluginMap.get(player);
+        TabExecutor executor = getExecutorForCommand(CommandType.LEAVE, plugin);
+        if (executor != null) {
+            executor.onCommand(player, null, "leave", new String[0]);
+        }
+        playerPluginMap.remove(player);
+    }
 }

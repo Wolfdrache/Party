@@ -33,4 +33,6 @@ public interface GameService {
     void registerPluginAlias(Plugin plugin, String alias);
     void registerStatsDisplayItem(Function<OfflinePlayer, ItemStack> itemSupplier);
     List<ItemStack> getStatsItems(OfflinePlayer player);
+    boolean isPlayingAnyGame(Player player);
+    void leaveCurrentGame(Player player);
 }

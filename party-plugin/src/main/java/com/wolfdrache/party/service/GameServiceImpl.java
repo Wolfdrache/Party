@@ -54,4 +54,14 @@ public class GameServiceImpl implements GameService {
     public void registerCommand(Plugin plugin, GameService.CommandType command, TabExecutor executor) {
         gameCommandManager.registerCommand(plugin, command, executor);
     }
+
+    @Override
+    public boolean isPlayingAnyGame(Player player) {
+        return gameCommandManager.isPlayingAnyGame(player);
+    }
+
+    @Override
+    public void leaveCurrentGame(Player player) {
+        gameCommandManager.leaveCurrentGame(player);
+    }
 }
