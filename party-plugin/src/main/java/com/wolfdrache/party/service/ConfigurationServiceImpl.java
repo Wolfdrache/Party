@@ -54,21 +54,41 @@ public class ConfigurationServiceImpl implements ConfigurationService {
 
     @Override
     public MsgMode rotateMsgStatus(Player player) {
-        return configurationManager.rotateMsgStatus(player);
+        return configurationManager.rotateMsgStatus(player, true);
     }
 
     @Override
     public PartyInviteMode rotatePartyInviteStatus(Player player) {
-        return configurationManager.rotatePartyInviteStatus(player);
+        return configurationManager.rotatePartyInviteStatus(player, true);
     }
 
     @Override
     public FriendRequestMode rotateFriendRequestStatus(Player player) {
-        return configurationManager.rotateFriendRequestStatus(player);
+        return configurationManager.rotateFriendRequestStatus(player, true);
     }
     
     @Override
     public Status rotateStatus(Player player, ConfigurationKey key) {
-        return configurationManager.rotateStatus(player, key);
+        return configurationManager.rotateStatus(player, key, true);
+    }
+    
+    @Override
+    public Status rotateStatus(Player player, ConfigurationKey key, boolean forward) {
+        return configurationManager.rotateStatus(player, key, forward);
+    }
+
+    @Override
+    public MsgMode rotateMsgStatus(Player player, boolean forward) {
+        return configurationManager.rotateMsgStatus(player, forward);
+    }
+
+    @Override
+    public PartyInviteMode rotatePartyInviteStatus(Player player, boolean forward) {
+        return configurationManager.rotatePartyInviteStatus(player, forward);
+    }
+
+    @Override
+    public FriendRequestMode rotateFriendRequestStatus(Player player, boolean forward) {
+        return configurationManager.rotateFriendRequestStatus(player, forward);
     }
 }

@@ -88,4 +88,9 @@ public interface ConfigurationService {
     PartyInviteMode rotatePartyInviteStatus(Player player);
     FriendRequestMode rotateFriendRequestStatus(Player player);
     Status rotateStatus(Player player, ConfigurationKey key);
+    
+    Status rotateStatus(Player player, ConfigurationKey key, boolean forward);
+    MsgMode rotateMsgStatus(Player player, boolean forward);
+    PartyInviteMode rotatePartyInviteStatus(Player player, boolean forward);
+    FriendRequestMode rotateFriendRequestStatus(Player player, boolean forward);
 }
