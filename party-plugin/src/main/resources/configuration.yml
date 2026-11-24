@@ -1,4 +1,7 @@
 uuid:
+  name: <player_name>
   msgMode: ALL
   partyInviteMode: ALL
   friendRequestMode: ALL
+  coins:
+    spent: 0

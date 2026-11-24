@@ -30,11 +30,11 @@ public class LeaderBoardManager {
     private final Map<Integer, ArmorstandLB> armorstandMap = new HashMap<>();
     private final Plugin plugin;
 
-    public LeaderBoardManager(Plugin plugin, Function<OfflinePlayer, IPlayerStats> playerStatsProvider) {
+    public LeaderBoardManager(Plugin plugin, Function<OfflinePlayer, IPlayerStats> playerStatsProvider, List<UUID> startLeaderboard) {
         this.plugin = plugin;
         this.playerStatsProvider = playerStatsProvider;
         LeaderBoardFileManager leaderBoardFileManager = new LeaderBoardFileManager(plugin);
-        this.leaderboard.addAll(leaderBoardFileManager.getLeaderboard());
+        this.leaderboard.addAll(startLeaderboard);
         sortLeaderboard();
         this.armorstandMap.putAll(leaderBoardFileManager.loadArmorstandLB());
         removeOldArmorstands(plugin);

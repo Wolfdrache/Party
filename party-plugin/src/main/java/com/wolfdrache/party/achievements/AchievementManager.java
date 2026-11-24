@@ -99,17 +99,14 @@ public class AchievementManager {
     public void unlockAchievement(OfflinePlayer player, Achievement achievement, AchievementCategory category) {
             category.completeAchievement(player, achievement);
             coinManager.depositCoins(player, achievement.getReward());
-            if (player instanceof Player) {
-                Player onlinePlayer = (Player) player;
+            if (player instanceof Player onlinePlayer) {
                 MessageHelper.sendMessage(onlinePlayer, MessageHelper.Type.ACHIEVEMENT, "§7Du hast das Achievement§8: §e" + achievement.getName() + " §7freigeschaltet!");
                 MessageHelper.sendMessage(onlinePlayer, MessageHelper.Type.ACHIEVEMENT, "§7Du erhältst §6" + achievement.getReward() + " §7Coins!");
             }
     }
 
     public List<Achievement> getAchievements(AchievementCategory category) {
-        List<Achievement> achievementList = new ArrayList<>(achievements.getOrDefault(category, new HashMap<>()).values().stream().flatMap(List::stream).collect(Collectors.toSet()));
-        achievementList.sort(Comparator.comparing(Achievement::getId));
-        return achievementList;
+        return achievements.getOrDefault(category, new HashMap<>()).values().stream().flatMap(List::stream).distinct().sorted(Comparator.comparing(Achievement::getId)).collect(Collectors.toList());
     }
 
     public List<AchievementCategory> getCategories() {

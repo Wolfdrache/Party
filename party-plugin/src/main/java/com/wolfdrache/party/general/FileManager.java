@@ -28,7 +28,7 @@ import com.wolfdrache.serverapi.configuration.ConfigurationService.PartyInviteMo
 import com.wolfdrache.serverapi.reports.ReportModel;
 
 public class FileManager {
-    public static enum FriendsConfig {
+    public enum FriendsConfig {
         maxFriendsPerPage(5),
         maxFriends(25);
 
@@ -282,6 +282,7 @@ public class FileManager {
 
         String uuid = player.getUniqueId().toString();
 
+        config.set(uuid + ".name", player.getName());
         config.set(uuid + ".msgMode", configuration.msgMode.name());
         config.set(uuid + ".partyInviteMode", configuration.partyInviteMode.name());
         config.set(uuid + ".friendRequestMode", configuration.friendRequestMode.name());
@@ -362,6 +363,22 @@ public class FileManager {
         }
         try {
             config.save(achievementFile);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public int getSpentCoins(OfflinePlayer player) {
+        YamlConfiguration config = YamlConfiguration.loadConfiguration(configurationFile);
+        return config.getInt(player.getUniqueId().toString() + ".coins.spent", 0);
+    }
+
+    public void setSpentCoins(OfflinePlayer player, int amount) {
+        YamlConfiguration config = YamlConfiguration.loadConfiguration(configurationFile);
+        config.set(player.getUniqueId().toString() + ".name", player.getName());
+        config.set(player.getUniqueId().toString() + ".coins.spent", amount);
+        try {
+            config.save(configurationFile);
         } catch (Exception e) {
             e.printStackTrace();
         }

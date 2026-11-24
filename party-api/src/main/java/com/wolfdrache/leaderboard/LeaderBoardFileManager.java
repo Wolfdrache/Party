@@ -17,28 +17,11 @@ import org.bukkit.util.EulerAngle;
 
 class LeaderBoardFileManager {
     private final Plugin plugin;
-    private final File statsFile;
     private final File armorstandsFile;
 
     LeaderBoardFileManager(Plugin plugin) {
         this.plugin = plugin;
-        this.statsFile = new File(plugin.getDataFolder(), "stats.yml");
         this.armorstandsFile = new File(plugin.getDataFolder(), "armorstands.yml");
-    }
-    
-    LeaderBoardFileManager(Plugin plugin, File statsFile, File armorstandsFile) {
-        this.plugin = plugin;
-        this.statsFile = statsFile;
-        this.armorstandsFile = armorstandsFile;
-    }
-
-    List<UUID> getLeaderboard() {
-        YamlConfiguration statsConfig = YamlConfiguration.loadConfiguration(statsFile);
-        List<UUID> leaderboard = new ArrayList<>();
-        for (String uuid : statsConfig.getKeys(false)) {
-            leaderboard.add(UUID.fromString(uuid));
-        }
-        return leaderboard;
     }
 
     Map<Integer, ArmorstandLB> loadArmorstandLB() {

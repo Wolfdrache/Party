@@ -13,6 +13,7 @@ import com.wolfdrache.party.reports.*;
 import com.wolfdrache.party.reports.ui.*;
 import com.wolfdrache.party.service.*;
 import com.wolfdrache.serverapi.achievements.AchievementService;
+import com.wolfdrache.serverapi.coins.CoinService;
 import com.wolfdrache.serverapi.configuration.ConfigurationService;
 import com.wolfdrache.serverapi.gamemodes.GameService;
 import com.wolfdrache.serverapi.gamemodes.GameService.CommandType;
@@ -30,6 +31,7 @@ public class Party extends JavaPlugin {
     
     private CoinManager coinManager;
     private FileManager fileManager;
+    private CoinService coinService;
 
     private PartyService partyService;
     private PartyManager partyManager;
@@ -63,7 +65,10 @@ public class Party extends JavaPlugin {
             return;
         }
         this.fileManager = new FileManager(this);
-        this.coinManager = new CoinManager(economy);
+        this.coinManager = new CoinManager(economy, fileManager);
+
+        this.coinService = new CoinServiceImpl(coinManager);
+        Bukkit.getServicesManager().register(CoinService.class, this.coinService, this, ServicePriority.Normal);
 
         this.configurationManager = new ConfigurationManager(fileManager);
         this.configurationService = new ConfigurationServiceImpl(configurationManager);
