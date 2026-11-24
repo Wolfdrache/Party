@@ -18,7 +18,7 @@ public class CoinUpdateEvent extends Event implements Cancellable {
     }
 
     public static enum UpdateType {
-        DEPOSIT, SPEND
+        DEPOSIT, SPEND, LOST
     }
     private final OfflinePlayer player;
     private final int changeAmount;

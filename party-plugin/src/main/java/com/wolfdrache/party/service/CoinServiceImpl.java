@@ -3,6 +3,7 @@ package com.wolfdrache.party.service;
 import com.wolfdrache.party.general.CoinManager;
 import com.wolfdrache.serverapi.coins.CoinService;
 import org.bukkit.OfflinePlayer;
+import org.checkerframework.checker.units.qual.C;
 
 public class CoinServiceImpl implements CoinService {
     private final CoinManager coinManager;
@@ -79,5 +80,10 @@ public class CoinServiceImpl implements CoinService {
     @Override
     public boolean hasEnoughCoins(OfflinePlayer player, int amount) {
         return coinManager.hasEnoughCoins(player, amount);
+    }
+
+    @Override
+    public boolean loseCoins(OfflinePlayer player, int amount) {
+        return coinManager.loseCoins(player, amount);
     }
 }

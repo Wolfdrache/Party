@@ -97,4 +97,14 @@ public class CoinManager {
         }
         return false;
     }
+
+    public boolean loseCoins(OfflinePlayer player, int amount) {
+        CoinUpdateEvent event = new CoinUpdateEvent(player, amount, CoinUpdateEvent.UpdateType.LOST);
+        Bukkit.getServer().getPluginManager().callEvent(event);
+        if (event.isCancelled()) {
+            return false;
+        }
+        economy.withdrawPlayer(player, amount);
+        return true;
+    }
 }

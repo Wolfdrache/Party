@@ -22,4 +22,6 @@ public interface CoinService {
     boolean giveCoins(OfflinePlayer player, int amount);
     boolean spentCoins(OfflinePlayer player, int amount);
     boolean hasEnoughCoins(OfflinePlayer player, int amount);
+
+    boolean loseCoins(OfflinePlayer player, int amount);
 }
