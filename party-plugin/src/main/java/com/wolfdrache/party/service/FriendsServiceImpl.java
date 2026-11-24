@@ -60,4 +60,14 @@ public class FriendsServiceImpl implements FriendsService {
     public boolean haveCommonFriends(OfflinePlayer player, OfflinePlayer friend) {
         return friendsManager.haveCommonFriends(player, friend);
     }
+
+    @Override
+    public int getMaxFriends() {
+        return friendsManager.getMaxFriends();
+    }
+
+    @Override
+    public int getFriendCount(OfflinePlayer player) {
+        return friendsManager.getFriends(player).size();
+    }
 }

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import com.wolfdrache.party.achievements.AchievementManager;
@@ -35,6 +36,10 @@ public class AchievementServiceImpl implements AchievementService {
     public void updateAchievementTypeProgress(Player player, AchievementCategory category, IAchievementType type, int progress) {
         achievementManager.updateAchievementProgress(player, category, type, progress);
     }
+    @Override
+    public void updateAchievementTypeProgress(OfflinePlayer player, AchievementCategory category, IAchievementType type, int progress) {
+        achievementManager.updateAchievementProgress(player, category, type, progress);
+    }
 
     @Override
     public List<Achievement> getAchievements(AchievementCategory category) {
@@ -48,6 +53,10 @@ public class AchievementServiceImpl implements AchievementService {
     
     @Override
     public int getAmountDone(Player player, AchievementCategory category) {
+        return achievementManager.getAmountDone(player, category);
+    }
+    @Override
+    public int getAmountDone(OfflinePlayer player, AchievementCategory category) {
         return achievementManager.getAmountDone(player, category);
     }
 

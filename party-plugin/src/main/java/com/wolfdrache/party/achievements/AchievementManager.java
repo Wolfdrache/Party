@@ -65,7 +65,7 @@ public class AchievementManager {
         return anyUnlocked;
     }
 
-    public void updateAchievementProgress(Player player, AchievementCategory category, IAchievementType type, int progress) {
+    public void updateAchievementProgress(OfflinePlayer player, AchievementCategory category, IAchievementType type, int progress) {
         AchievementProgress playerProgress = category.getProgress(player);
         category.setProgress(player, playerProgress);
         int newProgress;
@@ -113,7 +113,7 @@ public class AchievementManager {
         return new ArrayList<>(achievements.keySet());
     }
 
-    public int getAmountDone(Player player, AchievementCategory category) {
+    public int getAmountDone(OfflinePlayer player, AchievementCategory category) {
         int amountDone = 0;
         List<Achievement> achievementList = getAchievements(category);
         for (Achievement achievement : achievementList) {

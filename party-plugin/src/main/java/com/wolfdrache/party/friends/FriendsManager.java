@@ -249,4 +249,8 @@ public class FriendsManager {
         playerFriendSet.retainAll(targetFriendSet);
         return !playerFriendSet.isEmpty();
     }
+
+    public int getMaxFriends() {
+        return fileManager.getFriendsConfig(FileManager.FriendsConfig.maxFriends);
+    }
 }

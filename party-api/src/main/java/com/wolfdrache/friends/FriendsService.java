@@ -15,4 +15,6 @@ public interface FriendsService {
     void removeFriend(Player player, OfflinePlayer friend);
     boolean areFriends(OfflinePlayer player, OfflinePlayer friend);
     boolean haveCommonFriends(OfflinePlayer player, OfflinePlayer friend);
+    int getMaxFriends();
+    int getFriendCount(OfflinePlayer player);
 }

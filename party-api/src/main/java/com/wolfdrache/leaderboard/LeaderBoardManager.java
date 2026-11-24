@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.function.Function;
 
+import com.wolfdrache.helper.Helper;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Material;
@@ -104,11 +105,11 @@ public class LeaderBoardManager {
         OfflinePlayer topPlayer = Bukkit.getOfflinePlayer(leaderboard.get(rank - 1));
         ItemStack playerHead = createPlayerHead(topPlayer);
         int points = playerStatsProvider.apply(topPlayer).getPoints();
-        armorstandLB.armorStand.customName(createComponent("§6" + rank + ". " + topPlayer.getName() + " §7- §e" + points));
+        armorstandLB.armorStand.customName(Helper.createComponent("§6" + rank + ". " + topPlayer.getName() + " §7- §e" + Helper.formatNumber(points)));
         EntityEquipment equipment = armorstandLB.armorStand.getEquipment();
         equipment.setHelmet(playerHead);
         String pointsStatistics = playerStatsProvider.apply(topPlayer).getPointsStatistics();
-        armorstandLB.statisticArmorStand.customName(createComponent("§e" + pointsStatistics));
+        armorstandLB.statisticArmorStand.customName(Helper.createComponent("§e" + pointsStatistics));
     }
 
     private ItemStack createPlayerHead(OfflinePlayer player) {
@@ -119,9 +120,5 @@ public class LeaderBoardManager {
             head.setItemMeta(meta);
         }
         return head;
-    }
-
-    private Component createComponent(String text) {
-        return LegacyComponentSerializer.legacySection().deserialize(text).decoration(TextDecoration.ITALIC, false);
     }
 }
