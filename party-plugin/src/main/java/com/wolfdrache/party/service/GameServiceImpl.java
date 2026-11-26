@@ -64,4 +64,9 @@ public class GameServiceImpl implements GameService {
     public void leaveCurrentGame(Player player) {
         gameCommandManager.leaveCurrentGame(player);
     }
+
+    @Override
+    public String getPluginAlias(Plugin plugin) {
+        return gameCommandManager.getPluginAlias(plugin);
+    }
 }

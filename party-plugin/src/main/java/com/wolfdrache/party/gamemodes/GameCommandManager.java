@@ -109,4 +109,8 @@ public class GameCommandManager {
         }
         playerPluginMap.remove(player);
     }
+
+    public String getPluginAlias(Plugin plugin) {
+        return pluginAliases.get(plugin);
+    }
 }

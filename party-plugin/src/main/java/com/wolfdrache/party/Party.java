@@ -6,6 +6,7 @@ import com.wolfdrache.party.achievements.*;
 import com.wolfdrache.party.api.PartyService;
 import com.wolfdrache.party.friends.*;
 import com.wolfdrache.party.gamemodes.*;
+import com.wolfdrache.party.gamemodes.roundManagement.RoundManager;
 import com.wolfdrache.party.general.*;
 import com.wolfdrache.party.msg.*;
 import com.wolfdrache.party.party.*;
@@ -17,11 +18,13 @@ import com.wolfdrache.serverapi.coins.CoinService;
 import com.wolfdrache.serverapi.configuration.ConfigurationService;
 import com.wolfdrache.serverapi.gamemodes.GameService;
 import com.wolfdrache.serverapi.gamemodes.GameService.CommandType;
+import com.wolfdrache.serverapi.gamemodes.roundManagement.RoundService;
 import com.wolfdrache.serverapi.reports.*;
 
 import net.milkbowl.vault.economy.Economy;
 
 import org.bukkit.Bukkit;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -47,6 +50,8 @@ public class Party extends JavaPlugin {
 
     private GameService gameService;
     private GameCommandManager gameManager;
+    private RoundService roundService;
+    private RoundManager roundManager;
 
     private MsgManager msgManager;
 
@@ -111,9 +116,14 @@ public class Party extends JavaPlugin {
         this.gameManager = new GameCommandManager();
         this.gameService = new GameServiceImpl(gameManager);
         Bukkit.getServicesManager().register(GameService.class, this.gameService, this, ServicePriority.Normal);
+        this.roundManager = new RoundManager();
+        this.roundService = new RoundServiceImpl(roundManager, gameService);
+        Bukkit.getServicesManager().register(RoundService.class, this.roundService, this, ServicePriority.Normal);
 
         for (CommandType commandType : CommandType.values()) {
-            getCommand(commandType.name().toLowerCase()).setExecutor(new GameCommands(gameManager, commandType));
+            PluginCommand command = getCommand(commandType.name().toLowerCase());
+            assert command != null;
+            command.setExecutor(new GameCommands(gameManager, commandType));
         }
         gameService.registerPluginAlias(this, "reports");
         gameService.registerCommand(this, CommandType.ADMIN, reportsTeamCommand);
