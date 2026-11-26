@@ -5,16 +5,16 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.BiFunction;
-import java.util.function.Function;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 public class PluginData {
-    private Function<IRound, Void> saveFunction;
-    private BiFunction<Player, IRound, Void> debugFunction;
-    private BiFunction<Player, IRound, Void> editFunction;
-    private BiFunction<Player, IRound, Void> spectateFunction;
-    private BiFunction<Player, IRound, Void> joinFunction;
-    private BiFunction<Player, IRound, Void> leaveFunction;
+    private Consumer<IRound> saveFunction;
+    private BiConsumer<Player, IRound> debugFunction;
+    private BiConsumer<Player, IRound> editFunction;
+    private BiConsumer<Player, IRound> spectateFunction;
+    private BiConsumer<Player, IRound> joinFunction;
+    private BiConsumer<Player, IRound> leaveFunction;
     private final List<IRound> rounds = new ArrayList<>();
     private final Material displayItem;
 
@@ -26,22 +26,22 @@ public class PluginData {
         return displayItem;
     }
 
-    public void setSaveFunction(Function<IRound, Void> saveFunction) {
+    public void setSaveFunction(Consumer<IRound> saveFunction) {
         this.saveFunction = saveFunction;
     }
-    public void setDebugFunction (BiFunction<Player, IRound, Void> debugFunction) {
+    public void setDebugFunction(BiConsumer<Player, IRound> debugFunction) {
         this.debugFunction = debugFunction;
     }
-    public void setEditFunction(BiFunction<Player, IRound, Void> editFunction) {
+    public void setEditFunction(BiConsumer<Player, IRound> editFunction) {
         this.editFunction = editFunction;
     }
-    public void setSpectateFunction(BiFunction<Player, IRound, Void> spectateFunction) {
+    public void setSpectateFunction(BiConsumer<Player, IRound> spectateFunction) {
         this.spectateFunction = spectateFunction;
     }
-    public void setJoinFunction(BiFunction<Player, IRound, Void> joinFunction) {
+    public void setJoinFunction(BiConsumer<Player, IRound> joinFunction) {
         this.joinFunction = joinFunction;
     }
-    public void setLeaveFunction(BiFunction<Player, IRound, Void> leaveFunction) {
+    public void setLeaveFunction(BiConsumer<Player, IRound> leaveFunction) {
         this.leaveFunction = leaveFunction;
     }
 
@@ -53,22 +53,22 @@ public class PluginData {
         return rounds;
     }
 
-    public BiFunction<Player, IRound, Void> getDebugFunction() {
+    public BiConsumer<Player, IRound> getDebugFunction() {
         return debugFunction;
     }
-    public BiFunction<Player, IRound, Void> getEditFunction() {
+    public BiConsumer<Player, IRound> getEditFunction() {
         return editFunction;
     }
-    public Function<IRound, Void> getSaveFunction() {
+    public Consumer<IRound> getSaveFunction() {
         return saveFunction;
     }
-    public BiFunction<Player, IRound, Void> getSpectateFunction() {
+    public BiConsumer<Player, IRound> getSpectateFunction() {
         return spectateFunction;
     }
-    public BiFunction<Player, IRound, Void> getJoinFunction() {
+    public BiConsumer<Player, IRound> getJoinFunction() {
         return joinFunction;
     }
-    public BiFunction<Player, IRound, Void> getLeaveFunction() {
+    public BiConsumer<Player, IRound> getLeaveFunction() {
         return leaveFunction;
     }
 }

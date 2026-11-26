@@ -11,8 +11,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.BiFunction;
-import java.util.function.Function;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 public class RoundManager {
     private final Map<Player, RoundData> playerRoundMap = new HashMap<>();
@@ -23,7 +23,7 @@ public class RoundManager {
         pluginDataMap.put(plugin, new PluginData(displayMaterial));
     }
 
-    public boolean registerDebugFunction(BiFunction<Player, IRound, Void> debugFunction, Plugin plugin) {
+    public boolean registerDebugFunction(BiConsumer<Player, IRound> debugFunction, Plugin plugin) {
         PluginData pluginData = pluginDataMap.get(plugin);
         if (pluginData == null) {
             return false;
@@ -32,7 +32,7 @@ public class RoundManager {
         return true;
     }
 
-    public boolean registerEditFunction(BiFunction<Player, IRound, Void> editFunction, Plugin plugin) {
+    public boolean registerEditFunction(BiConsumer<Player, IRound> editFunction, Plugin plugin) {
         PluginData pluginData = pluginDataMap.get(plugin);
         if (pluginData == null) {
             return false;
@@ -41,7 +41,7 @@ public class RoundManager {
         return true;
     }
 
-    public boolean registerSaveFunction(Function<IRound, Void> saveFunction, Plugin plugin) {
+    public boolean registerSaveFunction(Consumer<IRound> saveFunction, Plugin plugin) {
         PluginData pluginData = pluginDataMap.get(plugin);
         if (pluginData == null) {
             return false;
@@ -50,7 +50,7 @@ public class RoundManager {
         return true;
     }
 
-    public boolean registerSpectateFunction(BiFunction<Player, IRound, Void> spectateFunction, Plugin plugin) {
+    public boolean registerSpectateFunction(BiConsumer<Player, IRound> spectateFunction, Plugin plugin) {
         PluginData pluginData = pluginDataMap.get(plugin);
         if (pluginData == null) {
             return false;
@@ -59,7 +59,7 @@ public class RoundManager {
         return true;
     }
 
-    public boolean registerJoinFunction(BiFunction<Player, IRound, Void> joinFunction, Plugin plugin) {
+    public boolean registerJoinFunction(BiConsumer<Player, IRound> joinFunction, Plugin plugin) {
         PluginData pluginData = pluginDataMap.get(plugin);
         if (pluginData == null) {
             return false;
@@ -68,7 +68,7 @@ public class RoundManager {
         return true;
     }
 
-    public boolean registerLeaveFunction(BiFunction<Player, IRound, Void> leaveFunction, Plugin plugin) {
+    public boolean registerLeaveFunction(BiConsumer<Player, IRound> leaveFunction, Plugin plugin) {
         PluginData pluginData = pluginDataMap.get(plugin);
         if (pluginData == null) {
             return false;
@@ -131,7 +131,7 @@ public class RoundManager {
         Plugin plugin = roundData.getPlugin();
         PluginData pluginData = pluginDataMap.get(plugin);
         if (pluginData == null || pluginData.getDebugFunction() == null) return false;
-        pluginData.getDebugFunction().apply(player, round);
+        pluginData.getDebugFunction().accept(player, round);
         return true;
     }
     public boolean executeEditFunction(Player player, IRound round) {
@@ -140,7 +140,7 @@ public class RoundManager {
         Plugin plugin = roundData.getPlugin();
         PluginData pluginData = pluginDataMap.get(plugin);
         if (pluginData == null || pluginData.getEditFunction() == null) return false;
-        pluginData.getEditFunction().apply(player, round);
+        pluginData.getEditFunction().accept(player, round);
         return true;
     }
     public boolean executeSaveFunction(IRound round) {
@@ -149,7 +149,7 @@ public class RoundManager {
         Plugin plugin = roundData.getPlugin();
         PluginData pluginData = pluginDataMap.get(plugin);
         if (pluginData == null || pluginData.getSaveFunction() == null) return false;
-        pluginData.getSaveFunction().apply(round);
+        pluginData.getSaveFunction().accept(round);
         return true;
     }
     public boolean executeSpectateFunction(Player player, IRound round) {
@@ -158,7 +158,7 @@ public class RoundManager {
         Plugin plugin = roundData.getPlugin();
         PluginData pluginData = pluginDataMap.get(plugin);
         if (pluginData == null || pluginData.getSpectateFunction() == null) return false;
-        pluginData.getSpectateFunction().apply(player, round);
+        pluginData.getSpectateFunction().accept(player, round);
         return true;
     }
     public boolean executeJoinFunction(Player player, IRound round) {
@@ -167,7 +167,7 @@ public class RoundManager {
         Plugin plugin = roundData.getPlugin();
         PluginData pluginData = pluginDataMap.get(plugin);
         if (pluginData == null || pluginData.getJoinFunction() == null) return false;
-        pluginData.getJoinFunction().apply(player, round);
+        pluginData.getJoinFunction().accept(player, round);
         return true;
     }
     public boolean executeLeaveFunction(Player player, IRound round) {
@@ -176,7 +176,7 @@ public class RoundManager {
         Plugin plugin = roundData.getPlugin();
         PluginData pluginData = pluginDataMap.get(plugin);
         if (pluginData == null || pluginData.getLeaveFunction() == null) return false;
-        pluginData.getLeaveFunction().apply(player, round);
+        pluginData.getLeaveFunction().accept(player, round);
         return true;
     }
 

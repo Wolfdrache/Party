@@ -13,8 +13,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Map;
-import java.util.function.BiFunction;
-import java.util.function.Function;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 public class RoundServiceImpl implements RoundService {
     private final RoundManager roundManager;
@@ -26,32 +26,32 @@ public class RoundServiceImpl implements RoundService {
     }
 
     @Override
-    public boolean registerDebugFunction(BiFunction<Player, IRound, Void> debugFunction, Plugin plugin) {
+    public boolean registerDebugFunction(BiConsumer<Player, IRound> debugFunction, Plugin plugin) {
         return roundManager.registerDebugFunction(debugFunction, plugin);
     }
 
     @Override
-    public boolean registerEditFunction(BiFunction<Player, IRound, Void> editFunction, Plugin plugin) {
+    public boolean registerEditFunction(BiConsumer<Player, IRound> editFunction, Plugin plugin) {
         return roundManager.registerEditFunction(editFunction, plugin);
     }
 
     @Override
-    public boolean registerSaveFunction(Function<IRound, Void> saveFunction, Plugin plugin) {
+    public boolean registerSaveFunction(Consumer<IRound> saveFunction, Plugin plugin) {
         return roundManager.registerSaveFunction(saveFunction, plugin);
     }
 
     @Override
-    public boolean registerSpectateFunction(BiFunction<Player, IRound, Void> spectateFunction, Plugin plugin) {
+    public boolean registerSpectateFunction(BiConsumer<Player, IRound> spectateFunction, Plugin plugin) {
         return roundManager.registerSpectateFunction(spectateFunction, plugin);
     }
 
     @Override
-    public boolean registerJoinFunction(BiFunction<Player, IRound, Void> joinFunction, Plugin plugin) {
+    public boolean registerJoinFunction(BiConsumer<Player, IRound> joinFunction, Plugin plugin) {
         return roundManager.registerJoinFunction(joinFunction, plugin);
     }
 
     @Override
-    public boolean registerLeaveFunction(BiFunction<Player, IRound, Void> leaveFunction, Plugin plugin) {
+    public boolean registerLeaveFunction(BiConsumer<Player, IRound> leaveFunction, Plugin plugin) {
         return roundManager.registerLeaveFunction(leaveFunction, plugin);
     }
 

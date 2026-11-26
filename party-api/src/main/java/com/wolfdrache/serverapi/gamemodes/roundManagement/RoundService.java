@@ -7,16 +7,16 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Map;
-import java.util.function.BiFunction;
-import java.util.function.Function;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 public interface RoundService {
-    boolean registerDebugFunction(BiFunction<Player, IRound, Void> debugFunction, Plugin plugin);
-    boolean registerEditFunction(BiFunction<Player, IRound, Void> editFunction, Plugin plugin);
-    boolean registerSaveFunction(Function<IRound, Void> saveFunction, Plugin plugin);
-    boolean registerSpectateFunction(BiFunction<Player, IRound, Void> spectateFunction, Plugin plugin);
-    boolean registerJoinFunction(BiFunction<Player, IRound, Void> joinFunction, Plugin plugin);
-    boolean registerLeaveFunction(BiFunction<Player, IRound, Void> leaveFunction, Plugin plugin);
+    boolean registerDebugFunction(BiConsumer<Player, IRound> debugFunction, Plugin plugin);
+    boolean registerEditFunction(BiConsumer<Player, IRound> editFunction, Plugin plugin);
+    boolean registerSaveFunction(Consumer<IRound> saveFunction, Plugin plugin);
+    boolean registerSpectateFunction(BiConsumer<Player, IRound> spectateFunction, Plugin plugin);
+    boolean registerJoinFunction(BiConsumer<Player, IRound> joinFunction, Plugin plugin);
+    boolean registerLeaveFunction(BiConsumer<Player, IRound> leaveFunction, Plugin plugin);
     boolean registerPlayerToRound(Player player, IRound round, Plugin plugin);
     void removePlayerFromRound(Player player);
     boolean registerAllRoundsForPlugin(Plugin plugin, Map<IRound, Material> rounds);
