@@ -36,7 +36,7 @@ public class AchievementManager {
             List<Achievement> typeList = categoryMap.computeIfAbsent(type, k -> new ArrayList<>());
             typeList.add(achievement);
         }
-        category.addAchievement(achievement.getId());
+        category.addAchievement(achievement);
         if (checkPlayerUnlocks(category, achievement)) {
             fileManager.saveAchievementProgress(category);
         }
@@ -106,7 +106,7 @@ public class AchievementManager {
     }
 
     public List<Achievement> getAchievements(AchievementCategory category) {
-        return achievements.getOrDefault(category, new HashMap<>()).values().stream().flatMap(List::stream).distinct().sorted(Comparator.comparing(Achievement::getId)).collect(Collectors.toList());
+        return category.getAchievements();
     }
 
     public List<AchievementCategory> getCategories() {

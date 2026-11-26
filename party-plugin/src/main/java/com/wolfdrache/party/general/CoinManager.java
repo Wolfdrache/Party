@@ -16,12 +16,9 @@ public class CoinManager {
     }
     
     public boolean depositCoins(OfflinePlayer player, double amount) {
+        economy.depositPlayer(player, amount);
         CoinUpdateEvent event = new CoinUpdateEvent(player, (int) amount, CoinUpdateEvent.UpdateType.DEPOSIT);
         Bukkit.getServer().getPluginManager().callEvent(event);
-        if (event.isCancelled()) {
-            return false;
-        }
-        economy.depositPlayer(player, amount);
         return true;
     }
 
@@ -85,26 +82,20 @@ public class CoinManager {
 
     public boolean spentCoins(OfflinePlayer player, int amount) {
         if (hasEnoughCoins(player, amount)) {
-            CoinUpdateEvent event = new CoinUpdateEvent(player, amount, CoinUpdateEvent.UpdateType.SPEND);
-            Bukkit.getServer().getPluginManager().callEvent(event);
-            if (event.isCancelled()) {
-                return false;
-            }
             economy.withdrawPlayer(player, amount);
             int spentCoins = getSpentCoins(player);
             fileManager.setSpentCoins(player, spentCoins + amount);
+            CoinUpdateEvent event = new CoinUpdateEvent(player, amount, CoinUpdateEvent.UpdateType.SPEND);
+            Bukkit.getServer().getPluginManager().callEvent(event);
             return true;
         }
         return false;
     }
 
     public boolean loseCoins(OfflinePlayer player, int amount) {
+        economy.withdrawPlayer(player, amount);
         CoinUpdateEvent event = new CoinUpdateEvent(player, amount, CoinUpdateEvent.UpdateType.LOST);
         Bukkit.getServer().getPluginManager().callEvent(event);
-        if (event.isCancelled()) {
-            return false;
-        }
-        economy.withdrawPlayer(player, amount);
         return true;
     }
 }

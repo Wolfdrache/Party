@@ -6,24 +6,13 @@ import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 
-public class CoinUpdateEvent extends Event implements Cancellable {
-    @Override
-    public boolean isCancelled() {
-        return cancelled;
-    }
-
-    @Override
-    public void setCancelled(boolean cancel) {
-        this.cancelled = cancel;
-    }
-
+public class CoinUpdateEvent extends Event {
     public static enum UpdateType {
         DEPOSIT, SPEND, LOST
     }
     private final OfflinePlayer player;
     private final int changeAmount;
     private final UpdateType updateType;
-    private boolean cancelled = false;
 
     public CoinUpdateEvent(OfflinePlayer player, int changeAmount, UpdateType updateType) {
         this.player = player;

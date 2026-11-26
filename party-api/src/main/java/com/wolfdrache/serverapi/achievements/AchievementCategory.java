@@ -16,7 +16,7 @@ public class AchievementCategory {
     private final String name;
     private final Material material;
     private final String displayName;
-    private final List<Integer> achievementIds = new ArrayList<>();
+    private final List<Achievement> achievements = new ArrayList<>();
     private final Map<OfflinePlayer, AchievementProgress> progress = new HashMap<>();
     private final Map<String, IAchievementType> types = new HashMap<>();
 
@@ -41,13 +41,17 @@ public class AchievementCategory {
         return displayName;
     }
 
-    public boolean hasAchievement(int achievementId) {
-        return achievementIds.contains(achievementId);
+    public List<Achievement> getAchievements() {
+        return achievements;
     }
 
-    public void addAchievement(int achievementId) {
-        if (!achievementIds.contains(achievementId)) {
-            achievementIds.add(achievementId);
+    public boolean hasAchievement(int achievementId) {
+        return achievements.stream().anyMatch(a -> a.getId() == achievementId);
+    }
+
+    public void addAchievement(Achievement achievement) {
+        if (!hasAchievement(achievement.getId())) {
+            achievements.add(achievement);
         }
     }
 
