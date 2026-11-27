@@ -6,7 +6,7 @@ import org.bukkit.entity.Player;
 
 public interface ConfigurationService {
     public enum ConfigurationKey {
-        PARTY, MSG, FRIEND
+        PARTY, MSG, FRIEND, FRIEND_ONLINE_STATUS
     }
     public interface Status {
         Material getMaterial();
@@ -76,21 +76,50 @@ public interface ConfigurationService {
             return ConfigurationKey.FRIEND;
         }
     }
+    public enum FriendOnlineStatusMode implements Status {
+        ALL (Material.LIME_DYE, "§aAn", true, true), JOIN (Material.GREEN_DYE, "§2Online", true, false), LEAVE (Material.RED_DYE, "§cOffline", false, true), OFF (Material.GRAY_DYE, "§7Aus", false, false);
+        private final Material material;
+        private final String displayName;
+        public final boolean notifyOnJoin;
+        public final boolean notifyOnLeave;
+        FriendOnlineStatusMode(Material material, String displayName, boolean notifyOnJoin, boolean notifyOnLeave) {
+            this.material = material;
+            this.displayName = displayName;
+            this.notifyOnJoin = notifyOnJoin;
+            this.notifyOnLeave = notifyOnLeave;
+        }
+        @Override
+        public Material getMaterial() {
+            return material;
+        }
+        @Override
+        public String getDisplayName() {
+            return displayName;
+        }
+        @Override
+        public ConfigurationKey getConfigurationKey() {
+            return ConfigurationKey.FRIEND_ONLINE_STATUS;
+        }
+    }
     void setMsgStatus(Player player, MsgMode mode);
     void setPartyInviteStatus(Player player, PartyInviteMode mode);
     void setFriendRequestStatus(Player player, FriendRequestMode mode);
+    void setFriendOnlineStatus(Player player, FriendOnlineStatusMode mode);
 
     MsgMode getMsgStatus(Player player);
     PartyInviteMode getPartyInviteStatus(Player player);
     FriendRequestMode getFriendRequestStatus(OfflinePlayer player);
+    FriendOnlineStatusMode getFriendOnlineStatus(Player player);
 
     MsgMode rotateMsgStatus(Player player);
     PartyInviteMode rotatePartyInviteStatus(Player player);
     FriendRequestMode rotateFriendRequestStatus(Player player);
+    FriendOnlineStatusMode rotateFriendOnlineStatus(Player player);
     Status rotateStatus(Player player, ConfigurationKey key);
     
     Status rotateStatus(Player player, ConfigurationKey key, boolean forward);
     MsgMode rotateMsgStatus(Player player, boolean forward);
     PartyInviteMode rotatePartyInviteStatus(Player player, boolean forward);
     FriendRequestMode rotateFriendRequestStatus(Player player, boolean forward);
+    FriendOnlineStatusMode rotateFriendOnlineStatus(Player player, boolean forward);
 }

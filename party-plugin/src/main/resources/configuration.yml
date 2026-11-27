@@ -1,7 +1,9 @@
 uuid:
   name: <player_name>
-  msgMode: ALL
-  partyInviteMode: ALL
-  friendRequestMode: ALL
+  configuration:
+    msgMode: <msg_mode>
+    partyInviteMode: <party_invite_mode>
+    friendRequestMode: <friend_request_mode>
+    friendOnlineStatusMode: <friend_online_status_mode>
   coins:
     spent: 0

@@ -84,7 +84,7 @@ public class Party extends JavaPlugin {
         Bukkit.getServicesManager().register(FriendsService.class, this.friendsService, this, ServicePriority.Normal);
 
         getCommand("friends").setExecutor(new FriendsCommand(friendsManager));
-        getServer().getPluginManager().registerEvents(new FriendsListener(friendsManager), this);
+        getServer().getPluginManager().registerEvents(new FriendsListener(friendsManager, configurationManager), this);
 
         this.partyManager = new PartyManager(configurationManager, friendsManager);
         friendsManager.setPartyManager(partyManager);

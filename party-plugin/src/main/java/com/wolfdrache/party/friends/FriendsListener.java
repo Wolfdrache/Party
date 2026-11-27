@@ -2,6 +2,7 @@ package com.wolfdrache.party.friends;
 
 import java.util.List;
 
+import com.wolfdrache.party.general.ConfigurationManager;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -15,9 +16,11 @@ import com.wolfdrache.party.general.MessageHelper;
 
 public class FriendsListener implements Listener {
     private final FriendsManager friendsManager;
+    private final ConfigurationManager configurationManager;
 
-    public FriendsListener(FriendsManager friendsManager) {
+    public FriendsListener(FriendsManager friendsManager, ConfigurationManager configurationManager) {
         this.friendsManager = friendsManager;
+        this.configurationManager = configurationManager;
     }
 
     @EventHandler 
@@ -28,8 +31,11 @@ public class FriendsListener implements Listener {
         if (!onlineFriends.isEmpty()) {
             MessageHelper.sendMessage(player, MessageHelper.Type.FRIEND, "§a" + onlineFriends.size() + " deiner Freunde sind online.");
             for (Player friend : onlineFriends) {
-                MessageHelper.sendMessage(friend, MessageHelper.Type.FRIEND, "§e" + Helper.getPlayerRankName(player) + "§a ist nun online.");
-                friendsManager.fireFriendsUpdate(friend, player, FriendsUpdateEvent.FriendsUpdateType.FRIEND_ONLINE);
+                ConfigurationManager.PlayerConfiguration configuration = configurationManager.getPlayerConfiguration(friend);
+                if (configuration.friendOnlineStatusMode.notifyOnJoin) {
+                    MessageHelper.sendMessage(friend, MessageHelper.Type.FRIEND, "§e" + Helper.getPlayerRankName(player) + "§a ist nun online.");
+                    friendsManager.fireFriendsUpdate(friend, player, FriendsUpdateEvent.FriendsUpdateType.FRIEND_ONLINE);
+                }
             }
         }
         List<OfflinePlayer> newFriendRequests = friendsManager.getNewFriendRequests(player);
@@ -46,8 +52,11 @@ public class FriendsListener implements Listener {
         Player player = event.getPlayer();
         List<Player> onlineFriends = friendsManager.getOnlineFriends(player);
         for (Player friend : onlineFriends) {
-            MessageHelper.sendMessage(friend, MessageHelper.Type.FRIEND, "§e" + Helper.getPlayerRankName(player) + "§c ist nun offline.");
-            friendsManager.fireFriendsUpdate(friend, player, FriendsUpdateEvent.FriendsUpdateType.FRIEND_OFFLINE);
+            ConfigurationManager.PlayerConfiguration configuration = configurationManager.getPlayerConfiguration(friend);
+            if (configuration.friendOnlineStatusMode.notifyOnLeave) {
+                MessageHelper.sendMessage(friend, MessageHelper.Type.FRIEND, "§e" + Helper.getPlayerRankName(player) + "§c ist nun offline.");
+                friendsManager.fireFriendsUpdate(friend, player, FriendsUpdateEvent.FriendsUpdateType.FRIEND_OFFLINE);
+            }
         }
         friendsManager.savePlayerFriends(player, true);
     }

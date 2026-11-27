@@ -35,6 +35,13 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     }
 
     @Override
+    public void setFriendOnlineStatus(Player player, FriendOnlineStatusMode mode) {
+        ConfigurationManager.PlayerConfiguration configuration = configurationManager.getPlayerConfiguration(player);
+        configuration.friendOnlineStatusMode = mode;
+        configurationManager.savePlayerConfiguration(player, configuration);
+    }
+
+    @Override
     public MsgMode getMsgStatus(Player player) {
         ConfigurationManager.PlayerConfiguration configuration = configurationManager.getPlayerConfiguration(player);
         return configuration.msgMode;
@@ -53,6 +60,12 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     }
 
     @Override
+    public FriendOnlineStatusMode getFriendOnlineStatus(Player player) {
+        ConfigurationManager.PlayerConfiguration configuration = configurationManager.getPlayerConfiguration(player);
+        return configuration.friendOnlineStatusMode;
+    }
+
+    @Override
     public MsgMode rotateMsgStatus(Player player) {
         return configurationManager.rotateMsgStatus(player, true);
     }
@@ -66,7 +79,12 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     public FriendRequestMode rotateFriendRequestStatus(Player player) {
         return configurationManager.rotateFriendRequestStatus(player, true);
     }
-    
+
+    @Override
+    public FriendOnlineStatusMode rotateFriendOnlineStatus(Player player) {
+        return configurationManager.rotateFriendOnlineStatus(player, true);
+    }
+
     @Override
     public Status rotateStatus(Player player, ConfigurationKey key) {
         return configurationManager.rotateStatus(player, key, true);
@@ -90,5 +108,10 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     @Override
     public FriendRequestMode rotateFriendRequestStatus(Player player, boolean forward) {
         return configurationManager.rotateFriendRequestStatus(player, forward);
+    }
+
+    @Override
+    public FriendOnlineStatusMode rotateFriendOnlineStatus(Player player, boolean forward) {
+        return configurationManager.rotateFriendOnlineStatus(player, forward);
     }
 }

@@ -22,9 +22,7 @@ import com.wolfdrache.party.general.ConfigurationManager.PlayerConfiguration;
 import com.wolfdrache.serverapi.achievements.AchievementCategory;
 import com.wolfdrache.serverapi.achievements.AchievementProgress;
 import com.wolfdrache.serverapi.achievements.Achievement.IAchievementType;
-import com.wolfdrache.serverapi.configuration.ConfigurationService.FriendRequestMode;
-import com.wolfdrache.serverapi.configuration.ConfigurationService.MsgMode;
-import com.wolfdrache.serverapi.configuration.ConfigurationService.PartyInviteMode;
+import com.wolfdrache.serverapi.configuration.ConfigurationService.*;
 import com.wolfdrache.serverapi.reports.ReportModel;
 
 public class FileManager {
@@ -264,28 +262,32 @@ public class FileManager {
     public PlayerConfiguration getPlayerConfiguration(OfflinePlayer player) {
         YamlConfiguration config = YamlConfiguration.loadConfiguration(configurationFile);
 
-        String uuid = player.getUniqueId().toString();
+        String path = player.getUniqueId() + ".configuration";
 
-        String msgModeStrg = config.getString(uuid + ".msgMode", "ALL");
-        String partyInviteModeStrg = config.getString(uuid + ".partyInviteMode", "ALL");
-        String friendRequestModeStrg = config.getString(uuid + ".friendRequestMode", "ALL");
+        String msgModeStrg = config.getString(path + ".msgMode", "ALL");
+        String partyInviteModeStrg = config.getString(path + ".partyInviteMode", "ALL");
+        String friendRequestModeStrg = config.getString(path + ".friendRequestMode", "ALL");
+        String friendOnlineStatusModeStrg = config.getString(path + ".friendOnlineStatusMode", "ALL");
 
         MsgMode msgMode = MsgMode.valueOf(msgModeStrg);
         PartyInviteMode partyInviteMode = PartyInviteMode.valueOf(partyInviteModeStrg);
         FriendRequestMode friendRequestMode = FriendRequestMode.valueOf(friendRequestModeStrg);
+        FriendOnlineStatusMode friendOnlineStatusMode = FriendOnlineStatusMode.valueOf(friendOnlineStatusModeStrg);
 
-        return new PlayerConfiguration(msgMode, partyInviteMode, friendRequestMode);
+        return new PlayerConfiguration(msgMode, partyInviteMode, friendRequestMode, friendOnlineStatusMode);
     }
 
     public void savePlayerConfiguration(OfflinePlayer player, PlayerConfiguration configuration) {
         YamlConfiguration config = YamlConfiguration.loadConfiguration(configurationFile);
 
         String uuid = player.getUniqueId().toString();
-
         config.set(uuid + ".name", player.getName());
-        config.set(uuid + ".msgMode", configuration.msgMode.name());
-        config.set(uuid + ".partyInviteMode", configuration.partyInviteMode.name());
-        config.set(uuid + ".friendRequestMode", configuration.friendRequestMode.name());
+
+        String path = uuid + ".configuration";
+        config.set(path + ".msgMode", configuration.msgMode.name());
+        config.set(path + ".partyInviteMode", configuration.partyInviteMode.name());
+        config.set(path + ".friendRequestMode", configuration.friendRequestMode.name());
+        config.set(path + ".friendOnlineStatusMode", configuration.friendOnlineStatusMode.name());
 
         try {
             config.save(configurationFile);
