@@ -29,7 +29,7 @@ public interface RoundService {
     boolean executeSpectateFunction(Player player, IRound round);
     boolean executeJoinFunction(Player player, IRound round);
     boolean executeLeaveFunction(Player player, IRound round);
-    void registerPluginData(Plugin plugin, Material displayItem);
+    void registerPluginData(Plugin plugin, Material displayItem, String displayName);
     @Nullable RoundData getActiveRoundDataForPlayer(Player player);
     List<PluginData> getAllPluginData();
 }

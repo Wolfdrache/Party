@@ -19,8 +19,8 @@ public class RoundManager {
     private final Map<Plugin, PluginData> pluginDataMap = new HashMap<>();
     private final Map<IRound, RoundData> roundDataMap = new HashMap<>();
 
-    public void registerPluginData(Plugin plugin, Material displayMaterial) {
-        pluginDataMap.put(plugin, new PluginData(displayMaterial));
+    public void registerPluginData(Plugin plugin, Material displayMaterial, String displayName) {
+        pluginDataMap.put(plugin, new PluginData(displayMaterial, displayName));
     }
 
     public boolean registerDebugFunction(BiConsumer<Player, IRound> debugFunction, Plugin plugin) {

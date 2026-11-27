@@ -1,7 +1,9 @@
 package com.wolfdrache.serverapi.gamemodes.roundManagement;
 
+import com.wolfdrache.helper.Helper;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,14 +18,24 @@ public class PluginData {
     private BiConsumer<Player, IRound> joinFunction;
     private BiConsumer<Player, IRound> leaveFunction;
     private final List<IRound> rounds = new ArrayList<>();
-    private final Material displayItem;
+    private final Material displayMaterial;
+    private final String displayName;
 
-    public PluginData(Material displayItem) {
-        this.displayItem = displayItem;
+    public PluginData(Material displayItem, String displayName) {
+        this.displayMaterial = displayItem;
+        this.displayName = displayName;
     }
 
-    public Material getDisplayItem() {
-        return displayItem;
+    public ItemStack getDisplayItem() {
+        return Helper.createNamedItem(displayMaterial, displayName);
+    }
+
+    public Material getDisplayMaterial() {
+        return displayMaterial;
+    }
+
+    public String getDisplayName() {
+        return displayName;
     }
 
     public void setSaveFunction(Consumer<IRound> saveFunction) {

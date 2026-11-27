@@ -111,6 +111,10 @@ public class GameCommandManager {
     }
 
     public String getPluginAlias(Plugin plugin) {
-        return pluginAliases.get(plugin);
+        String alias = pluginAliases.get(plugin);
+        if (alias == null) {
+            return plugin.getName();
+        }
+        return alias;
     }
 }

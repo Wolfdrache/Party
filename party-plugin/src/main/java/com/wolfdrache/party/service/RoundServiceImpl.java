@@ -120,8 +120,8 @@ public class RoundServiceImpl implements RoundService {
     }
 
     @Override
-    public void registerPluginData(Plugin plugin, Material displayItem) {
-        roundManager.registerPluginData(plugin, displayItem);
+    public void registerPluginData(Plugin plugin, Material displayItem, String displayName) {
+        roundManager.registerPluginData(plugin, displayItem, displayName);
     }
 
     @Override
