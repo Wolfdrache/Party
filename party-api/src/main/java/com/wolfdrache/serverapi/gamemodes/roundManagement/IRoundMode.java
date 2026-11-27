@@ -4,5 +4,6 @@ public interface IRoundMode {
     boolean isEdited();
     boolean isWaiting();
     boolean isEnding();
+    boolean isRunning();
     String getModeName();
 }
