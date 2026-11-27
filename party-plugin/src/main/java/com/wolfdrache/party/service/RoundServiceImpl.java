@@ -133,4 +133,19 @@ public class RoundServiceImpl implements RoundService {
     public List<PluginData> getAllPluginData() {
         return roundManager.getAllPluginData();
     }
+
+    @Override
+    public RoundData getRoundDataForRound(IRound round) {
+        return roundManager.getRoundDataForRound(round);
+    }
+
+    @Override
+    public @Nullable PluginData getPluginDataForPlugin(Plugin plugin) {
+        return roundManager.getPluginDataForPlugin(plugin);
+    }
+
+    @Override
+    public @Nullable Plugin getPluginForPluginData(PluginData pluginData) {
+        return roundManager.getPluginForPluginData(pluginData);
+    }
 }

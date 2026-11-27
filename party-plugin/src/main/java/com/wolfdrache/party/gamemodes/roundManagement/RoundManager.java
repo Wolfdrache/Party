@@ -198,4 +198,21 @@ public class RoundManager {
     public List<PluginData> getAllPluginData() {
         return List.copyOf(pluginDataMap.values());
     }
+
+    public @Nullable Plugin getPluginForPluginData(PluginData pluginData) {
+        for (Map.Entry<Plugin, PluginData> entry : pluginDataMap.entrySet()) {
+            if (entry.getValue().equals(pluginData)) {
+                return entry.getKey();
+            }
+        }
+        return null;
+    }
+
+    public @Nullable PluginData getPluginDataForPlugin(Plugin plugin) {
+        return pluginDataMap.get(plugin);
+    }
+
+    public RoundData getRoundDataForRound(IRound round) {
+        return roundDataMap.get(round);
+    }
 }

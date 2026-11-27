@@ -32,4 +32,7 @@ public interface RoundService {
     void registerPluginData(Plugin plugin, Material displayItem, String displayName);
     @Nullable RoundData getActiveRoundDataForPlayer(Player player);
     List<PluginData> getAllPluginData();
+    RoundData getRoundDataForRound(IRound round);
+    @Nullable PluginData getPluginDataForPlugin(Plugin plugin);
+    @Nullable Plugin getPluginForPluginData(PluginData pluginData);
 }
